@@ -48,6 +48,19 @@ F01 is Ready; all other issues are open/Backlog. MVP work has Priority P1;
 the historical F00 record has P2. No assignees, delivery dates, or effort
 estimates are imposed. Status changes should reflect actual progress.
 
+## Publication verification
+
+On 2026-10-22, all 19 issue memberships and their Status/Priority values were
+verified individually through GitHub, along with five milestones and 32 native
+dependency relationships. However, the Project's aggregate item listing returned
+zero items, and its board showed no persistent cards after reload. Re-adding a
+test card and assigning its position did not resolve the discrepancy.
+
+**Board visibility remains unresolved.** Use the issue index and repository
+milestones to navigate the published work until the Project listing is corrected.
+The verified issue records and individual Project associations do not establish
+that the board currently displays the cards correctly.
+
 ## Completion and scope
 
 Do not mark the MVP complete until [#19](https://github.com/Dev-Peter21/enrama/issues/19)
