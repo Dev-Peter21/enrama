@@ -60,6 +60,7 @@ Start with the [documentation index](docs/README.md), or go directly to:
 - [Themes](docs/themes.md)
 - [Deployment](docs/deployment.md)
 - [Roadmap and implementation tasks](docs/roadmap.md)
+- [Published MVP backlog and Kanban](docs/backlog.md)
 - [Testing strategy](docs/testing.md)
 - [Release process](docs/releasing.md)
 - [Decisions and open questions](docs/decisions.md)

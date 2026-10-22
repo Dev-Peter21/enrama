@@ -1,12 +1,16 @@
 # Roadmap
 
 This is the implementation backlog specification. Task IDs below are stable
-documentation identifiers, **not GitHub issue numbers**. No GitHub milestones or
-issues are created by this initialization. When publishing a backlog, preserve
-these dependencies, scope boundaries, and acceptance criteria.
+documentation identifiers, **not GitHub issue numbers**. The M0–M4 work is now
+published as [GitHub issues](backlog.md) and tracked in the
+[EnRama Project Kanban](https://github.com/users/Dev-Peter21/projects/5).
+The issue index maps task IDs to issue numbers. Preserve these dependencies,
+scope boundaries, and acceptance criteria when updating the backlog.
 
 `0.1.0` is unreleased. All product tasks below are planned. Only the documentation
-foundation delivered by this repository is present.
+foundation delivered by this repository is present, recorded in
+[F00 #1](https://github.com/Dev-Peter21/enrama/issues/1). M5 remains a future
+0.2 proposal and is outside the published MVP backlog.
 
 ## Milestones
 

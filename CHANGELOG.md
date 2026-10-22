@@ -13,5 +13,8 @@ repository; a roadmap target does not imply that a release exists.
   editor, with task dependencies and acceptance criteria.
 - Contribution, conduct, support, security, and governance policies.
 - MIT license, repository housekeeping files, and issue/PR templates.
+- Published MVP backlog: five milestones (M0–M4), a completed foundation record,
+  17 planned implementation tasks, and a final acceptance issue, tracked in the
+  existing EnRama Project Kanban with priorities and native dependencies.
 
 No application code, Python package, generated site, or release is included.
