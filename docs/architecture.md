@@ -1,0 +1,118 @@
+# Architecture
+
+Status: intended design. No application modules exist yet.
+
+## System boundary
+
+Enrama is one repository and one Python distribution. A build runs on the
+developer's machine or in CI; only its static output goes to production.
+Each client's YAML and assets live outside the generator repository.
+
+```text
+CLI (0.1)                         Local editor (0.2)
+    |                                   |
+    +------------ Application/Core -----+
+                     |
+          Load YAML -> Validate models
+                     |
+          Resolve theme and local assets
+                     |
+          Render HTML / CSS / metadata
+                     |
+                 dist/ files
+                     |
+             Any suitable static host
+```
+
+## Responsibilities
+
+| Area | Responsibility | Boundary |
+| --- | --- | --- |
+| CLI | Parse commands, display errors, select paths | Calls core services; does not duplicate validation |
+| Configuration | Safely load YAML, validate typed data and schema version | No rendering or terminal output |
+| Core/build | Coordinate validated configuration, renderer, and asset processing | Usable without Typer or FastAPI |
+| Rendering | Render trusted theme templates with validated data | Escape content; no arbitrary HTML from YAML |
+| Assets | Resolve, validate, and copy local files | Enforce client-project containment, including symlinks |
+| Themes | Supply templates, CSS, and controlled presentation | Keep business rules in models/core |
+| Preview | Serve generated files locally | Default interface `127.0.0.1`; no required production service |
+| Editor (later) | Edit YAML and invoke existing services | Local by default; preserve YAML comments on save |
+
+Validation errors should identify the configuration field or file and explain
+how to fix the problem. The CLI translates core failures into readable messages
+and appropriate nonzero exit codes. Exact command behavior is defined before
+implementation, not implicitly by a framework exception.
+
+## Selected technologies
+
+These choices come from the product brief. Dependencies are not installed or
+pinned yet; exact compatible versions belong in M0's metadata and lockfile.
+
+| Concern | Choice |
+| --- | --- |
+| Runtime | Python 3.12+ |
+| CLI | Typer |
+| YAML loading | PyYAML, using safe loading |
+| Models and generated JSON Schema | Pydantic v2 |
+| Templates | Jinja2 with HTML autoescaping |
+| Environment and dependency workflow | uv |
+| Packaging | Hatchling |
+| Tests | pytest |
+| Formatting, linting, and typing | Ruff and mypy |
+| Generated frontend | HTML, CSS, and minimal JavaScript |
+| Future editor | FastAPI and Jinja2; evaluate ruamel.yaml for round-trip writes |
+
+The design uses simple modules rather than a full Clean Architecture stack.
+External integrations and abstractions should be introduced only for a concrete need.
+
+## Planned source layout
+
+This is a target layout, not a list of existing files.
+
+```text
+src/enrama/
+  __init__.py
+  cli.py
+  config/
+    loader.py
+    models.py
+  core/
+    builder.py
+    renderer.py
+    assets.py
+  preview/
+    server.py
+  themes/
+    minimal/
+      index.html
+      style.css
+    bold/
+      index.html
+      style.css
+tests/
+  unit/
+  integration/
+  fixtures/
+examples/demo/
+  enrama.yaml
+  assets/
+```
+
+M0 introduces `pyproject.toml`, `uv.lock`, packaging configuration, and CI.
+The package must include built-in theme files in wheel and source distributions.
+Version `0.2` adds `src/enrama/editor/` without another repository or engine.
+
+## Trust and compatibility
+
+Treat configuration and local assets as untrusted inputs. Reject unsupported
+URL schemes and paths outside the client project. Icons come from a controlled
+catalog; YAML cannot provide executable templates, scripts, or raw icon HTML.
+Do not fetch remote assets implicitly during a build.
+
+`schema_version` identifies the configuration contract independently of package
+versions. Build output should be repeatable for the same supported configuration,
+assets, theme, and generator version. Detailed overwrite/cleanup rules and output
+path safety must be agreed before the builder is implemented.
+
+Client assets remain the client's property. Bundled theme assets need compatible
+licenses and attribution. Prefer self-contained generated pages without runtime
+dependencies on a third-party CDN.
