@@ -53,7 +53,9 @@ Install uv **0.13.5** using the [setup instructions](docs/development-setup.md),
 then start from `develop` with Python 3.12. Follow the documented locked sync,
 Ruff, strict mypy, pytest, and constrained build commands before submitting a PR.
 The intended compatibility matrix is 3.12–3.15; F03 will automate it. Local
-Python 3.12 evidence alone does not establish the full matrix.
+Python 3.12 evidence alone does not establish the full matrix. The accepted
+[F03 design](docs/continuous-integration.md) also requires macOS and Windows
+checks on Python 3.12; its workflow is not implemented yet.
 
 Commit dependency declarations and `uv.lock` together. Review updates to
 `build-constraints.txt` alongside the backend pin; the development lock does

@@ -223,8 +223,10 @@ The [verification record](verification/f02.md) records local Python 3.12 evidenc
    with the source revision and actual tool/interpreter versions recorded.
 9. Implementation integrated into `develop`, without publishing a package/release.
 
-F03 automates the agreed 3.12–3.15 matrix and quality/packaging checks. Its CI
-workflow is a separate delivery; F02 neither adds it nor claims it passed.
+The accepted [F03 CI design](continuous-integration.md) adds Linux/Python
+3.12–3.15 plus macOS and Windows/Python 3.12 verification, and one Linux/3.12
+quality job. Its workflow implementation remains a later delivery on `develop`;
+this documentation neither adds it nor claims the matrix passed.
 Full CLI and theme verification follows the later tasks in the
 [testing strategy](testing.md).
 

@@ -57,11 +57,18 @@ independent documentation/design work to happen sooner.
 
 ### F03 — Add foundation CI
 
+- **Design artifact:** [Accepted foundation CI design](continuous-integration.md),
+  agreed on 2026-10-22. Documentation is delivered; workflow implementation
+  remains pending on `develop`.
 - **Scope:** GitHub Actions for lint, formatting, typing, tests, and packaging.
 - **Dependencies:** F02.
-- **Acceptance:** CI executes on PRs and `main`, has restricted permissions,
-  reports positive test counts, and verifies installation of built artifacts.
-  Include a meaningful packaging/import smoke test. No release/deployment credentials.
+- **Acceptance:** CI executes on PRs targeting `develop`/`main` and pushes to
+  both branches. One Linux/Python 3.12 quality job and six mandatory verification
+  environments cover Linux/Python 3.12–3.15 plus macOS and Windows/Python 3.12.
+  Each environment reports positive test counts and isolated installation of
+  wheel and sdist. Use read-only permissions and reviewed action pins; keep
+  reports/artifacts for seven days. No release/deployment credentials.
+  All workflow execution evidence remains pending.
 
 ## M1 — Configuration
 

@@ -9,6 +9,7 @@ The CLI, generator, themes, and editor remain planned unless stated otherwise.
 | [Architecture](architecture.md) | Boundaries, data flow, stack, and planned layout |
 | [CLI and filesystem contract](cli-contract.md) | Accepted MVP commands, paths, overwrite/cleanup rules, manual preview, and exit codes |
 | [Python development setup](development-setup.md) | Accepted F02 environment, dependency/build policy, quality tools, and executable packaging checks |
+| [Foundation CI design](continuous-integration.md) | Accepted F03 triggers, quality job, six verification environments, permissions, and future evidence |
 | [Configuration](configuration.md) | Draft public YAML contract and compatibility |
 | [Themes](themes.md) | Built-in theme requirements and extension boundaries |
 | [Deployment](deployment.md) | Client repositories, static hosting, and Pages plan |

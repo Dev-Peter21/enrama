@@ -76,6 +76,7 @@ Start with the [documentation index](docs/README.md), or go directly to:
 - [Architecture](docs/architecture.md)
 - [CLI and filesystem contract](docs/cli-contract.md)
 - [Python development setup](docs/development-setup.md)
+- [Accepted CI and compatibility matrix design](docs/continuous-integration.md)
 - [Draft YAML contract](docs/configuration.md)
 - [Themes](docs/themes.md)
 - [Deployment](docs/deployment.md)

@@ -44,7 +44,12 @@ F02's accepted [implementation checks](development-setup.md#implementation-accep
 cover package/tooling setup and isolated artifact installation on Python 3.12.
 See the [F02 verification record](verification/f02.md) for executed evidence.
 The five current tests cover wheel/sdist installs, explicit contents/repeatability,
-and missing/stale lock rejection. F03 will automate the target 3.12–3.15 matrix.
+and missing/stale lock rejection. The accepted [F03 CI design](continuous-integration.md)
+will automate six required verification environments: Linux/Python 3.12–3.15,
+macOS/Python 3.12, and Windows/Python 3.12. A separate Linux/3.12 job checks
+Ruff, formatting, and strict mypy. No F03 workflow or matrix run exists yet;
+software acceptance requires positive test and isolated wheel/sdist installation
+evidence in every selected environment.
 
 Build wheel and source distributions. Inspect their content, install in clean
 environments outside the source checkout. Later product tasks must additionally

@@ -7,6 +7,12 @@ repository; a roadmap target does not imply that a release exists.
 
 ### Added
 
+- Accepted F03 CI design: one Linux/Python 3.12 quality job, six mandatory
+  test/build/install environments (Linux 3.12–3.15, macOS 3.12, Windows 3.12),
+  PR/push triggers for `develop` and `main`, locked tooling, restricted
+  permissions, pinned actions, and seven-day reports/artifacts. This documents
+  future behavior; workflow implementation and execution remain pending.
+
 - F02 implementation on `develop`: importable `enrama` `0.1.0.dev0`, Python 3.12
   selector, uv lock, Hatchling metadata, hashed isolated-build constraints,
   Ruff/strict mypy/pytest tooling, and artifact/locking integration tests.
