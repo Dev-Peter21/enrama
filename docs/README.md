@@ -8,6 +8,7 @@ document says otherwise, product behavior below describes a future implementatio
 | [Product](product.md) | Audience, problem, scope, and MVP acceptance criteria |
 | [Architecture](architecture.md) | Boundaries, data flow, stack, and planned layout |
 | [CLI and filesystem contract](cli-contract.md) | Accepted MVP commands, paths, overwrite/cleanup rules, manual preview, and exit codes |
+| [Python development setup](development-setup.md) | Accepted F02 environment, dependency/build policy, quality tools, and future implementation checks |
 | [Configuration](configuration.md) | Draft public YAML contract and compatibility |
 | [Themes](themes.md) | Built-in theme requirements and extension boundaries |
 | [Deployment](deployment.md) | Client repositories, static hosting, and Pages plan |

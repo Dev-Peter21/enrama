@@ -7,6 +7,9 @@ repository; a roadmap target does not imply that a release exists.
 
 ### Added
 
+- Accepted F02 setup design: Python 3.12 local, target 3.12–3.15 matrix,
+  `0.1.0.dev0`, src-layout packaging, dependency/build constraints, quality tools,
+  and future artifact-verification steps; implementation remains pending on `develop`.
 - Accepted F01 CLI/filesystem specification: fixed `dist/` output, explicit
   configuration paths, safe overwrite/cleanup and concurrency rules, manual
   local preview, exit codes, and acceptance examples for all four commands.

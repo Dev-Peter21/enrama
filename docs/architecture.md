@@ -47,6 +47,9 @@ implementation, independently of framework exception defaults.
 
 These choices come from the product brief. Dependencies are not installed or
 pinned yet; exact compatible versions belong in M0's metadata and lockfile.
+The accepted [F02 setup](development-setup.md) defines Python 3.12 local
+development, the target 3.12–3.15 matrix, version `0.1.0.dev0`, dependency groups,
+and separate control of isolated build requirements.
 
 | Concern | Choice |
 | --- | --- |

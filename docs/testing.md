@@ -41,12 +41,17 @@ because the editor is outside version `0.1`.
 
 ## Distribution tests
 
+F02's accepted [implementation checks](development-setup.md#implementation-acceptance-and-evidence)
+cover package/tooling setup and isolated artifact installation on Python 3.12.
+F03 automates the target Python 3.12–3.15 matrix. Neither has executable test
+evidence from the current documentation-only delivery.
+
 Build wheel and source distributions. Inspect their content, install in clean
 environments outside the source checkout, invoke the entry point, and render
 both themes. Ensure templates, CSS, icons, and license files are present and that
 tests do not accidentally import from the working tree.
 
-Test the supported Python matrix once defined. Run an end-to-end example with
+Execute the agreed Python matrix before claiming compatibility. Run an end-to-end example with
 the installed artifact. Public release verification must additionally install
 the actual published package and record the resolved version.
 

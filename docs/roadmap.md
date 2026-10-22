@@ -44,9 +44,13 @@ independent documentation/design work to happen sooner.
 
 ### F02 — Establish Python packaging and development tooling
 
+- **Design artifact:** [Accepted Python development setup](development-setup.md),
+  agreed on 2026-10-22. Documentation is delivered; software acceptance remains
+  pending and implementation must integrate into `develop`.
 - **Scope:** Introduce the `src/` package, Python 3.12+ metadata, Hatchling, uv
   lockfile, pytest, Ruff, mypy, and documented developer commands.
-- **Dependencies:** F01; confirm intended package naming and supported Python matrix.
+- **Dependencies:** Completed F01; intended name `enrama` and target Python
+  3.12–3.15 matrix are recorded in the setup. Namespace checks remain under O01.
 - **Acceptance:** A fresh checkout can sync a locked environment, build wheel
   and source distributions, and import the package from an installed wheel.
   No functional generator or public PyPI release is required.

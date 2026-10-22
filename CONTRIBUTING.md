@@ -49,10 +49,16 @@ automated product checks or release workflow.
 
 ## Future implementation workflow
 
-M0 will introduce `pyproject.toml`, `uv.lock`, the `src/` layout, and developer
-commands. The intended toolchain is Python 3.12+, uv, Hatchling, pytest, Ruff,
-and mypy. Do not invent installation instructions before those files exist.
-When introduced, dependencies and their lockfile should be updated together.
+The accepted [F02 setup](docs/development-setup.md) selects Python 3.12 for local
+development, a target 3.12–3.15 matrix, initial package version `0.1.0.dev0`, uv,
+Hatchling, pytest, Ruff, and mypy. Its planned commands are design examples,
+not executable setup instructions for the current repository.
+
+M0 implementation will introduce `pyproject.toml`, `.python-version`, `uv.lock`,
+the `src/` layout, and real tests on `develop` after implementation is authorized.
+Update dependency declarations and their lockfile together; isolated build
+dependencies require their own reviewed constraints. Do not claim this design
+delivery installed tools, built artifacts, or passed product tests.
 
 Tests should demonstrate acceptance criteria and meaningful failure cases;
 see the [testing strategy](docs/testing.md). No tests executed means no test
