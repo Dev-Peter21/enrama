@@ -1,4 +1,4 @@
-# Python and tooling (implementation is planned)
+# Python and tooling
 __pycache__/
 *.py[cod]
 *.egg-info/
@@ -32,4 +32,4 @@ Thumbs.db
 *.swp
 *.swo
 
-# Keep uv.lock tracked when the Python project is introduced.
+# uv.lock and build-constraints.txt are intentionally tracked.

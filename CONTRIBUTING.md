@@ -1,8 +1,8 @@
 # Contributing to Enrama
 
 Thank you for helping make independently hosted link pages easier to maintain.
-Enrama is currently a documentation-only project. Product implementation has
-not started; there are no setup, build, or test commands to run yet.
+The Python package foundation and developer tooling are implemented on
+`develop`. The product CLI and generator remain planned.
 
 ## Before you start
 
@@ -47,22 +47,25 @@ does not authorize starting implementation during a documentation/design-only ta
 A maintainer reviews and merges contributions; the project currently has no
 automated product checks or release workflow.
 
-## Future implementation workflow
+## Python development workflow
 
-The accepted [F02 setup](docs/development-setup.md) selects Python 3.12 for local
-development, a target 3.12–3.15 matrix, initial package version `0.1.0.dev0`, uv,
-Hatchling, pytest, Ruff, and mypy. Its planned commands are design examples,
-not executable setup instructions for the current repository.
+Install uv **0.13.5** using the [setup instructions](docs/development-setup.md),
+then start from `develop` with Python 3.12. Follow the documented locked sync,
+Ruff, strict mypy, pytest, and constrained build commands before submitting a PR.
+The intended compatibility matrix is 3.12–3.15; F03 will automate it. Local
+Python 3.12 evidence alone does not establish the full matrix.
 
-M0 implementation will introduce `pyproject.toml`, `.python-version`, `uv.lock`,
-the `src/` layout, and real tests on `develop` after implementation is authorized.
-Update dependency declarations and their lockfile together; isolated build
-dependencies require their own reviewed constraints. Do not claim this design
-delivery installed tools, built artifacts, or passed product tests.
+Commit dependency declarations and `uv.lock` together. Review updates to
+`build-constraints.txt` alongside the backend pin; the development lock does
+not freeze isolated build dependencies. Keep `.venv/` and `dist/` untracked.
+When adding package modules or data, update explicit wheel/sdist inclusion and
+archive-content tests in the same change. Do not add unused runtime libraries.
 
 Tests should demonstrate acceptance criteria and meaningful failure cases;
-see the [testing strategy](docs/testing.md). No tests executed means no test
-evidence. An inherited failing suite must be reported as failing.
+see the [testing strategy](docs/testing.md). The current packaging suite installs
+each archive into its own environment outside the checkout. It requires uv on
+PATH and may download pinned build inputs from PyPI; it never publishes a package.
+No tests executed means no test evidence. Report inherited failures as failures.
 
 ## Learning and automation
 

@@ -7,9 +7,9 @@ published as [GitHub issues](backlog.md) and tracked in the
 The issue index maps task IDs to issue numbers. Preserve these dependencies,
 scope boundaries, and acceptance criteria when updating the backlog.
 
-`0.1.0` is unreleased. All product tasks below are planned. Only the documentation
-foundation delivered by this repository is present, recorded in
-[F00 #1](https://github.com/Dev-Peter21/enrama/issues/1). M5 remains a future
+`0.1.0` is unreleased. F00 documentation, the F01 contract, and the F02 Python
+package/tooling foundation are delivered on `develop`; the CLI and generator
+remain planned. See [F02 verification](verification/f02.md). M5 remains a future
 0.2 proposal and is outside the published MVP backlog.
 
 ## Milestones
@@ -45,8 +45,8 @@ independent documentation/design work to happen sooner.
 ### F02 — Establish Python packaging and development tooling
 
 - **Design artifact:** [Accepted Python development setup](development-setup.md),
-  agreed on 2026-10-22. Documentation is delivered; software acceptance remains
-  pending and implementation must integrate into `develop`.
+  agreed on 2026-10-22; implemented on `develop` with
+  [local verification evidence](verification/f02.md).
 - **Scope:** Introduce the `src/` package, Python 3.12+ metadata, Hatchling, uv
   lockfile, pytest, Ruff, mypy, and documented developer commands.
 - **Dependencies:** Completed F01; intended name `enrama` and target Python

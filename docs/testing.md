@@ -1,8 +1,7 @@
 # Testing strategy
 
-Status: planned coverage. There are no application tests or test tooling in this
-initialization. The current verification concerns documentation and repository
-configuration only.
+Status: F02 packaging/locking tests are executable on `develop`. Product CLI,
+generation, themes, and security behavior below remain planned coverage.
 
 The accepted [CLI/filesystem scenarios](cli-contract.md#acceptance-examples)
 define future command and path-safety acceptance checks. Their documented
@@ -43,12 +42,13 @@ because the editor is outside version `0.1`.
 
 F02's accepted [implementation checks](development-setup.md#implementation-acceptance-and-evidence)
 cover package/tooling setup and isolated artifact installation on Python 3.12.
-F03 automates the target Python 3.12–3.15 matrix. Neither has executable test
-evidence from the current documentation-only delivery.
+See the [F02 verification record](verification/f02.md) for executed evidence.
+The five current tests cover wheel/sdist installs, explicit contents/repeatability,
+and missing/stale lock rejection. F03 will automate the target 3.12–3.15 matrix.
 
 Build wheel and source distributions. Inspect their content, install in clean
-environments outside the source checkout, invoke the entry point, and render
-both themes. Ensure templates, CSS, icons, and license files are present and that
+environments outside the source checkout. Later product tasks must additionally
+invoke the CLI entry point and render both themes. Ensure templates, CSS, icons, and license files are present and that
 tests do not accidentally import from the working tree.
 
 Execute the agreed Python matrix before claiming compatibility. Run an end-to-end example with

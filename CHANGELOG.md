@@ -7,9 +7,13 @@ repository; a roadmap target does not imply that a release exists.
 
 ### Added
 
+- F02 implementation on `develop`: importable `enrama` `0.1.0.dev0`, Python 3.12
+  selector, uv lock, Hatchling metadata, hashed isolated-build constraints,
+  Ruff/strict mypy/pytest tooling, and artifact/locking integration tests.
+
 - Accepted F02 setup design: Python 3.12 local, target 3.12–3.15 matrix,
   `0.1.0.dev0`, src-layout packaging, dependency/build constraints, quality tools,
-  and future artifact-verification steps; implementation remains pending on `develop`.
+  and artifact-verification requirements.
 - Accepted F01 CLI/filesystem specification: fixed `dist/` output, explicit
   configuration paths, safe overwrite/cleanup and concurrency rules, manual
   local preview, exit codes, and acceptance examples for all four commands.
@@ -23,7 +27,8 @@ repository; a roadmap target does not imply that a release exists.
   17 planned implementation tasks, and a final acceptance issue, tracked in the
   existing EnRama Project Kanban with priorities and native dependencies.
 
-No application code, Python package, generated site, or release is included.
+The CLI, generator, themes, and editor remain planned. No package or release
+has been published.
 
 ### Fixed
 

@@ -1,0 +1,64 @@
+[build-system]
+requires = ["hatchling==1.32.4"]
+build-backend = "hatchling.build"
+
+[project]
+name = "enrama"
+version = "0.1.0.dev0"
+description = "Open-source, self-hosted link-in-bio site generator built with Python."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Enrama contributors" }]
+keywords = ["link-in-bio", "static-site", "self-hosted"]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP :: Site Management",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/Dev-Peter21/enrama"
+Documentation = "https://github.com/Dev-Peter21/enrama/tree/develop/docs"
+Repository = "https://github.com/Dev-Peter21/enrama"
+Issues = "https://github.com/Dev-Peter21/enrama/issues"
+Changelog = "https://github.com/Dev-Peter21/enrama/blob/develop/CHANGELOG.md"
+
+[dependency-groups]
+dev = ["pytest==9.1.1", "ruff==0.17.2", "mypy==2.4.0"]
+
+[tool.uv]
+required-version = "==0.13.5"
+
+[tool.hatch.build.targets.wheel]
+only-include = ["src/enrama/__init__.py"]
+sources = ["src"]
+
+[tool.hatch.build.targets.sdist]
+only-include = [
+    "src/enrama/__init__.py",
+    "pyproject.toml",
+    "README.md",
+    "LICENSE",
+    "build-constraints.txt",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

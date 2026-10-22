@@ -1,18 +1,17 @@
 # Python development setup
 
-Status: **accepted F02 design**, approved on 2026-10-22 for
-[issue #3](https://github.com/Dev-Peter21/enrama/issues/3).
-This document defines the setup to implement later. It does not deliver a
-Python project, installed dependencies, lockfile, executable tests, or build
-artifacts. F02's implementation acceptance criteria remain pending.
+Status: **implemented F02 foundation on `develop`**, following the design
+approved on 2026-10-22 for [issue #3](https://github.com/Dev-Peter21/enrama/issues/3).
+This repository supplies an importable package, locked developer tools, real
+packaging tests, and local build commands. See the [verification record](verification/f02.md).
 
 ## Branch and delivery boundary
 
-Future source-code implementation must integrate into `develop`. Implementation
+Source-code implementation must integrate into `develop`. Implementation
 branches, when used, start from and target `develop`. The repository's default
-branch remains `main`; this documentation does not authorize starting code work.
+branch remains `main`; F02 is delivered on `develop`.
 
-The implemented F02 scope will be an installable, importable Python package and
+The implemented F02 scope is an installable, importable Python package and
 its developer tooling. Functional CLI commands, YAML loading/models, generation,
 themes, preview, and the editor remain their existing roadmap tasks. Do not add
 placeholder commands that imply the accepted CLI contract is already implemented.
@@ -24,7 +23,7 @@ F02 does not publish to PyPI or create a public release.
 | --- | --- |
 | Minimum package requirement | Python `>=3.12` |
 | Local development interpreter | Python `3.12` |
-| Future `.python-version` | `3.12`, allowing compatible security/patch updates |
+| Committed `.python-version` | `3.12`, allowing compatible security/patch updates |
 | Target compatibility matrix | Python `3.12`, `3.13`, `3.14`, and `3.15` |
 | Tool syntax/type-checking baseline | Python `3.12` |
 
@@ -47,7 +46,7 @@ machines. Raising the minimum Python version requires a later compatibility deci
   of truth. Do not maintain a separate manually synchronized version constant.
 - Include the English README, MIT license declaration/license file, project
   description, Python requirement, and canonical repository/documentation links
-  in the eventual distribution metadata.
+  in the distribution metadata.
 - Select explicit package inclusion rules for the wheel and source distribution.
   Include the package and required license/metadata, not local virtual environments,
   caches, credentials, or unrelated client data.
@@ -56,8 +55,7 @@ The intended name is not a PyPI reservation or trademark clearance. O01 remains
 open: verify the namespace/ownership before public package metadata or publication.
 Do not silently rename the distribution while keeping conflicting documentation.
 
-The initial implementation is expected to introduce these files, which **do not
-exist as part of this documentation delivery**:
+The initial implementation supplies these files (only meaningful tests are created):
 
 ```text
 .python-version
@@ -65,8 +63,8 @@ pyproject.toml
 uv.lock
 src/enrama/
   __init__.py
+build-constraints.txt
 tests/
-  unit/
   integration/
 ```
 
@@ -96,8 +94,7 @@ F02's initial importable skeleton need not declare unused runtime libraries.
 ## Environment, locking, and updates
 
 Use uv to manage a project-local `.venv/`. Keep the virtual environment untracked;
-commit `.python-version`, `pyproject.toml`, and `uv.lock` when implementation is
-authorized. No global package installation is part of the project workflow.
+commit `.python-version`, `pyproject.toml`, and `uv.lock`. No global package installation is part of the project workflow.
 
 Use `uv sync --locked` for verification. A stale or missing lockfile must fail
 that verification instead of being silently repaired. Use `uv run --locked` for
@@ -105,27 +102,63 @@ the documented quality/test commands, so normal checks cannot rewrite the lockfi
 Changing dependency declarations and regenerating the lockfile is an intentional
 maintenance action, reviewed together in one change.
 
-Select, record, and pin the uv version during implementation, and use that same
-version in F03 automation. Select compatible exact resolved versions at that
-time; this design does not invent unverified version numbers or a fake lockfile.
-Routine dependency updates must rerun the relevant checks and preserve the
-Python 3.12 baseline.
+The selected uv version is **0.13.5**, enforced by `tool.uv.required-version`.
+F03 must use this same version. Install it with the official standalone installer
+([installation guide](https://docs.astral.sh/uv/getting-started/installation/)):
+
+```console
+curl -LsSf https://astral.sh/uv/0.13.5/install.sh | sh
+uv --version
+uv python install 3.12
+```
+
+The installer creates a user-local uv executable; it does not install packages
+into system Python. Follow its PATH instructions. Then run the project commands
+below; `.python-version` selects Python 3.12 for the local `.venv/`.
+
+Routine dependency updates are intentional maintenance: edit declarations, run
+`uv lock`, review `uv.lock`, and repeat all checks on Python 3.12. Normal checks
+use `--locked` and cannot silently refresh the lock. No global Python package
+installation is required.
 
 ## Build reproducibility and artifacts
 
 Use **Hatchling** as the backend and **uv** as the build frontend. Build both a
 wheel and a source distribution. Their creation is separate from publishing them.
 
-Do not claim `uv.lock` alone freezes an isolated build: the backend and its
-transitive build dependencies also need explicit version control. During F02
-implementation, record the selected build-tool versions and apply reviewed build
-constraints; use hash verification where specified by the chosen build workflow.
-Any constraint files must be maintained with the backend configuration. The
-implementation must document the exact reproducible build invocation it verifies.
+`uv.lock` freezes the development graph, not the isolated backend environment.
+`build-constraints.txt` pins Hatchling **1.32.4** and all five transitive build
+dependencies with SHA-256 hashes. The verified build invocation is:
 
-The baseline `uv build` command below describes the build operation, not a claim
-that every isolated build input is already pinned. Record interpreter, uv,
-backend/build dependency versions, and the verified source revision with results.
+```console
+uv build --python 3.12 --build-constraint build-constraints.txt --require-build-hashes
+```
+
+This builds the sdist and then the wheel from that sdist. Both archives are
+written to `dist/`. The constraints file is included in the sdist. Plain
+`uv build` works, but does not apply all the reviewed transitive constraints;
+use the invocation above for verification. Build hash verification is marked
+experimental by uv 0.13.5; the uv pin makes that choice explicit.
+
+Build constraints can be intentionally regenerated after updating the backend
+pin in `pyproject.toml`:
+
+```console
+uv pip compile - --python-version 3.12 --universal --generate-hashes --no-annotate --no-header --output-file build-constraints.txt <<'EOF'
+hatchling==1.32.4
+EOF
+```
+
+Keep the input backend version equal to `build-system.requires`.
+Review every changed version/hash and rerun artifact installation and repeatable
+build tests. The development editable install from `uv sync` is not the evidence
+for archive installation: pytest builds and installs each archive separately.
+
+The wheel explicitly includes the package initializer and generated metadata;
+the sdist includes the initializer, `pyproject.toml`, README, license, and build
+constraints. Hatchling also includes `.gitignore` and `PKG-INFO`. Tests, client
+files, environments, caches, and credentials are not distributed. Extend the
+inclusion lists and content tests together when future tasks add package files.
 
 The repository's packaging `dist/` holds wheel/source archives. A client project's
 `dist/` holds a generated static website under the [F01 contract](cli-contract.md).
@@ -147,11 +180,9 @@ Put the tool configuration in `pyproject.toml`. Keep F02 focused: an additional
 task runner, container workflow, or parallel environment-management stack is not
 required for this setup.
 
-## Planned developer commands
+## Developer commands
 
-The following commands are the **future baseline**, not current installation
-instructions. They must not be reported as executed successfully in this
-documentation-only stage:
+Run from a clean `develop` checkout with uv 0.13.5 on PATH:
 
 ```console
 uv sync --locked
@@ -159,17 +190,20 @@ uv run --locked ruff check .
 uv run --locked ruff format --check .
 uv run --locked mypy src tests
 uv run --locked pytest
-uv build
+uv build --python 3.12 --build-constraint build-constraints.txt --require-build-hashes
 ```
 
-The implementation must supply the package, configuration, lockfile, and real
-tests that make those commands valid. Add the selected build constraints to the
-documented build invocation as described above. Artifact installation checks
-use separate clean environments rather than replacing the developer environment.
+The tests create temporary builds and two consumer environments outside the
+checkout. Each consumer uses isolated Python (`-I`) and verifies the installed
+import location, metadata, MIT license, absence of runtime dependencies and CLI
+entry points. Further tests compare archive hashes, reject synthetic private
+files, and exercise missing/stale lock rejection without changing the inputs.
+uv must remain on PATH. Downloads from PyPI may be needed for pinned tools;
+no test uploads artifacts or requires publishing credentials.
 
 ## Implementation acceptance and evidence
 
-F02's software delivery is complete only when the implementer records evidence for:
+The [verification record](verification/f02.md) records local Python 3.12 evidence for:
 
 1. A clean checkout on Python 3.12 synchronizing the locked development environment.
 2. The required tools passing with the accepted configuration; ordinary checks
@@ -188,7 +222,7 @@ F02's software delivery is complete only when the implementer records evidence f
 9. Implementation integrated into `develop`, without publishing a package/release.
 
 F03 automates the agreed 3.12–3.15 matrix and quality/packaging checks. Its CI
-workflow is a separate delivery; this design neither adds it nor claims it passed.
+workflow is a separate delivery; F02 neither adds it nor claims it passed.
 Full CLI and theme verification follows the later tasks in the
 [testing strategy](testing.md).
 
