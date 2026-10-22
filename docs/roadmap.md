@@ -32,10 +32,12 @@ independent documentation/design work to happen sooner.
 
 ### F01 — Define the CLI and filesystem contract
 
+- **Design artifact:** [Accepted CLI and filesystem contract](cli-contract.md),
+  agreed on 2026-10-22. This specification does not implement the commands.
 - **Scope:** Agree on config discovery, command syntax, flags/defaults, exit
   codes, project/output paths, overwrite and cleanup rules, and preview lifecycle.
-- **Dependencies:** Product and architecture documents; resolve O02 in the
-  [decision log](decisions.md).
+- **Dependencies:** Product and architecture documents; O02 is resolved by the
+  accepted contract and recorded in the [decision log](decisions.md).
 - **Acceptance:** Document valid and failing invocations of all four commands,
   including missing configuration, existing destination, unsafe output paths,
   occupied preview port, and clean shutdown. No generator implementation.

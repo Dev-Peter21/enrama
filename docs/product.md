@@ -36,8 +36,9 @@ service, account, Python runtime, API, or database.
 | Quality | Run automated tests, typing, linting, and packaging checks in CI |
 
 The intended commands are `enrama init`, `enrama validate`, `enrama preview`,
-and `enrama build`. Their exact options and filesystem behavior are a decision
-for M0/M1; see [decisions](decisions.md).
+and `enrama build`. Their options and filesystem behavior are defined by the
+accepted [CLI and filesystem contract](cli-contract.md). Preview rebuilds
+manually: stop it, restart it, and refresh the browser to see source edits.
 
 ## Target 0.2
 

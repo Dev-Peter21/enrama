@@ -39,8 +39,9 @@ CLI (0.1)                         Local editor (0.2)
 
 Validation errors should identify the configuration field or file and explain
 how to fix the problem. The CLI translates core failures into readable messages
-and appropriate nonzero exit codes. Exact command behavior is defined before
-implementation, not implicitly by a framework exception.
+and appropriate nonzero exit codes. The accepted
+[CLI and filesystem contract](cli-contract.md) defines command behavior before
+implementation, independently of framework exception defaults.
 
 ## Selected technologies
 
@@ -110,8 +111,11 @@ Do not fetch remote assets implicitly during a build.
 
 `schema_version` identifies the configuration contract independently of package
 versions. Build output should be repeatable for the same supported configuration,
-assets, theme, and generator version. Detailed overwrite/cleanup rules and output
-path safety must be agreed before the builder is implemented.
+assets, theme, and generator version. F01 fixes output to the project-local
+`dist/`, with ownership/integrity checks, staged replacement, protected inputs,
+and exclusive output ownership. The [contract](cli-contract.md) governs these
+behaviors; manifest serialization and coordination mechanics remain implementation
+details for the builder tasks.
 
 Client assets remain the client's property. Bundled theme assets need compatible
 licenses and attribution. Prefer self-contained generated pages without runtime

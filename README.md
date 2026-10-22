@@ -56,6 +56,7 @@ Start with the [documentation index](docs/README.md), or go directly to:
 
 - [Product definition](docs/product.md)
 - [Architecture](docs/architecture.md)
+- [CLI and filesystem contract](docs/cli-contract.md)
 - [Draft YAML contract](docs/configuration.md)
 - [Themes](docs/themes.md)
 - [Deployment](docs/deployment.md)

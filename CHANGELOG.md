@@ -7,6 +7,9 @@ repository; a roadmap target does not imply that a release exists.
 
 ### Added
 
+- Accepted F01 CLI/filesystem specification: fixed `dist/` output, explicit
+  configuration paths, safe overwrite/cleanup and concurrency rules, manual
+  local preview, exit codes, and acceptance examples for all four commands.
 - Initial product definition, architecture, draft YAML contract, theme and
   deployment documentation.
 - Roadmap for the `0.1.0` CLI and static generator, followed by the `0.2` local

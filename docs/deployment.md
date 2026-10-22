@@ -51,7 +51,10 @@ See the [official custom Pages workflow documentation](https://docs.github.com/e
 
 The future preview command serves generated files on `127.0.0.1` by default.
 It is a local development convenience. Deployment does not require running it.
-Port selection, rebuilding, and shutdown behavior are defined with the CLI task.
+The accepted [CLI contract](cli-contract.md#manual-preview-lifecycle) fixes the
+default port to `8000`, allows `--port`, and requires manual stop/restart to
+rebuild. An occupied port fails without changing output. Normal `Ctrl+C` while
+serving releases the port and retains `dist/`.
 
 ## Verification
 

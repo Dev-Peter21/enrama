@@ -4,6 +4,10 @@ Status: planned coverage. There are no application tests or test tooling in this
 initialization. The current verification concerns documentation and repository
 configuration only.
 
+The accepted [CLI/filesystem scenarios](cli-contract.md#acceptance-examples)
+define future command and path-safety acceptance checks. Their documented
+expected outcomes are not executed product tests.
+
 ## Core layers
 
 | Layer | Cases to verify |
