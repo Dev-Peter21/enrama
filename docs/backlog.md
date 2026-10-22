@@ -50,16 +50,15 @@ estimates are imposed. Status changes should reflect actual progress.
 
 ## Publication verification
 
-On 2026-10-22, all 19 issue memberships and their Status/Priority values were
-verified individually through GitHub, along with five milestones and 32 native
-dependency relationships. However, the Project's aggregate item listing returned
-zero items, and its board showed no persistent cards after reload. Re-adding a
-test card and assigning its position did not resolve the discrepancy.
+The initial publication encountered a mismatch between individual Project
+memberships and the Project listing. On 2026-10-22, the existing issues were
+reattached through GitHub's repository item selector, with their saved fields
+restored. The board and aggregate listing now contain all 19 original issues.
 
-**Board visibility remains unresolved.** Use the issue index and repository
-milestones to navigate the published work until the Project listing is corrected.
-The verified issue records and individual Project associations do not establish
-that the board currently displays the cards correctly.
+Verification confirmed exactly one Project association per issue, 17 Backlog
+cards, one Ready card, and one Done card. Issue numbers, open/closed states,
+priorities, five milestones, and 32 native dependency relationships were
+preserved. No duplicate issues or additional projects were created.
 
 ## Completion and scope
 

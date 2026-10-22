@@ -18,3 +18,9 @@ repository; a roadmap target does not imply that a release exists.
   existing EnRama Project Kanban with priorities and native dependencies.
 
 No application code, Python package, generated site, or release is included.
+
+### Fixed
+
+- Restored visibility of all 19 original MVP issues in the EnRama Project
+  Kanban, preserving saved fields, milestones, and native dependencies without
+  duplicate issues or Project associations.
