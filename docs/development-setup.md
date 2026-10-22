@@ -52,7 +52,8 @@ machines. Raising the minimum Python version requires a later compatibility deci
   caches, credentials, or unrelated client data.
 
 The intended name is not a PyPI reservation or trademark clearance. O01 remains
-open: verify the namespace/ownership before public package metadata or publication.
+open: namespace availability was checked (PyPI returned 404 on 2026-10-22),
+but ownership/name clearance must be settled before reservation or publication.
 Do not silently rename the distribution while keeping conflicting documentation.
 
 The initial implementation supplies these files (only meaningful tests are created):
@@ -94,7 +95,8 @@ F02's initial importable skeleton need not declare unused runtime libraries.
 ## Environment, locking, and updates
 
 Use uv to manage a project-local `.venv/`. Keep the virtual environment untracked;
-commit `.python-version`, `pyproject.toml`, and `uv.lock`. No global package installation is part of the project workflow.
+commit `.python-version`, `pyproject.toml`, and `uv.lock`. No global package
+installation is part of the project workflow.
 
 Use `uv sync --locked` for verification. A stale or missing lockfile must fail
 that verification instead of being silently repaired. Use `uv run --locked` for
