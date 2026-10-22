@@ -21,9 +21,13 @@ need review. It does not imply any implementation is present.
 | D12 | pytest, Ruff, mypy, and GitHub Actions | Test behavior, typing, style, and eventual packaging |
 | D13 | Documentation-only initialization | Product programming remains future work |
 | D14 | Accepted [CLI and filesystem contract](cli-contract.md) for F01 | Explicit config selection, fixed project-local `dist/`, protected replacement, manual loopback preview, and documented exit codes |
+| D15 | Future source-code implementation integrates into `develop` | Explicit maintainer instruction on 2026-10-22; the current F02 stage defines setup only and does not authorize implementation |
 
 The GitHub repository uses `main`. Version `0.1.0` is the first release target,
 not an existing release. The PyPI name and CLI command are intended to be `enrama`.
+`main` remains the default branch; source-code implementation must target
+`develop`. Creating/configuring the Python project remains future work, even
+while its setup is being discussed.
 
 ## Open decisions and when to resolve them
 

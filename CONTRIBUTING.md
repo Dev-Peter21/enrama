@@ -40,8 +40,12 @@ you do not have permission to redistribute.
 - Keep planned functionality clearly labeled until it is implemented.
 
 Use a descriptive branch and commit name, such as `docs: clarify YAML versioning`.
-The default branch is `main`. A maintainer reviews and merges contributions;
-the project currently has no automated product checks or release workflow.
+The default branch is `main`. Future source-code implementation must integrate
+into `develop`; implementation branches, when used, should start from and target
+`develop`. Do not publish application code directly to `main`. This branch policy
+does not authorize starting implementation during a documentation/design-only task.
+A maintainer reviews and merges contributions; the project currently has no
+automated product checks or release workflow.
 
 ## Future implementation workflow
 
