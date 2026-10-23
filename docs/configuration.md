@@ -433,14 +433,16 @@ generator versions accept identifiers those versions do not know.
   defaults, and model tests against this contract on `develop`, following
   implementation authorization on 2026-10-23.
 - **C02:** safe YAML parsing, rejection of unsafe constructors, and useful file/
-  field diagnostics. No parser is delivered here.
+  field diagnostics under the accepted [loader contract](yaml-loader.md), with
+  fixed resource limits and at most 20 returned diagnostics. No parser is
+  implemented yet.
 - **C03:** generate JSON Schema from implemented models and document editor use;
   do not hand-maintain a second schema or publish a nonexistent schema URL.
 - **G01:** actual asset resolution, file-format/size checks, and copying.
 - **G02:** HTML escaping, metadata omission/base-path handling, and rendering.
 - **U03/U04:** bundled icons, licenses, themes, layout, and accessibility evidence.
 
-The accepted contract resolves O03. Issue #5 remains open for maintainer
-acceptance of the implementation and evidence. C01 adds only its used runtime
+The accepted contract resolves O03. The maintainer accepted C01's implementation
+and evidence on 2026-10-23; issue #5 is closed/completed. C01 adds only its used runtime
 dependencies, Pydantic and the pinned registry-data provider. CLI/generator work,
 PyPI publication, and deployment are not delivered or authorized by this issue.

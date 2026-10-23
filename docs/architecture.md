@@ -43,6 +43,9 @@ how to fix the problem. The CLI translates core failures into readable messages
 and appropriate nonzero exit codes. The accepted
 [CLI and filesystem contract](cli-contract.md) defines command behavior before
 implementation, independently of framework exception defaults.
+The accepted [C02 loader/diagnostics contract](yaml-loader.md) defines the safe
+YAML subset, bounded reading/parsing, source positions, and structured failures.
+Its implementation remains pending; the core does not print or exit.
 
 ## Selected technologies
 

@@ -30,6 +30,8 @@ See the [development setup](docs/development-setup.md) for installation,
 dependency updates, isolated artifact tests, and build constraints.
 The [configuration contract](docs/configuration.md) documents the implemented
 Python model API; YAML file loading is not implemented yet.
+The accepted [safe YAML loader design](docs/yaml-loader.md) specifies C02's future
+input restrictions, resource limits, and diagnostics.
 
 ## Why Enrama?
 
@@ -80,6 +82,7 @@ Start with the [documentation index](docs/README.md), or go directly to:
 - [Python development setup](docs/development-setup.md)
 - [Accepted CI and compatibility matrix design](docs/continuous-integration.md)
 - [Accepted YAML v1 contract](docs/configuration.md)
+- [Accepted safe YAML loader and diagnostics contract](docs/yaml-loader.md)
 - [Themes](docs/themes.md)
 - [Deployment](docs/deployment.md)
 - [Roadmap and implementation tasks](docs/roadmap.md)

@@ -7,6 +7,12 @@ repository; a roadmap target does not imply that a release exists.
 
 ### Added
 
+- Accepted C02 safe YAML loader/diagnostics design: explicit plain-data subset,
+  no anchors/aliases/merges, bounded 1 MiB/32-container/10,000-node processing,
+  up to 20 diagnostics with honest source locations, safe English messages,
+  and future acceptance cases. Documentation only; no loader or dependencies
+  are implemented/added by this change.
+
 - C01 implementation on `develop`: six strict Pydantic YAML v1 data models,
   URL/language/lexical-path validators, stable presentation catalogs, model tests,
   and isolated wheel/sdist model validation. Adds used Pydantic and pinned

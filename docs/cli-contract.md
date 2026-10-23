@@ -39,8 +39,8 @@ option, or automatic browser-opening option. These are not implicit aliases.
   exists but cannot be read because of permissions or another I/O failure returns `3`.
 - The published output is always `<project root>/dist/`. There is no configurable
   output location in the MVP, including through YAML or environment overrides.
-- YAML field/default rules, allowed asset formats, and URL policies remain the
-  responsibility of M1 and the asset tasks. They cannot override these path rules.
+- The [C01 field contract](configuration.md), [C02 loader contract](yaml-loader.md),
+  and later asset tasks define input validation. They cannot override these path rules.
 
 For example, running `enrama build --config clients/shop/enrama.yaml` from a
 workspace uses `clients/shop/` as the project root and writes
