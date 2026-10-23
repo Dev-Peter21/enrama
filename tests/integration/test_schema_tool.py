@@ -144,3 +144,31 @@ def test_fifo_artifact_fails_without_waiting_for_a_peer(
     )
     assert result.returncode == 1
     assert "Traceback" not in result.stderr
+
+
+def test_git_checkout_preserves_schema_bytes_with_autocrlf(tmp_path: Path) -> None:
+    checkout = tmp_path / "git-checkout"
+    checkout.mkdir()
+    output = checkout / "schemas/enrama-v1.schema.json"
+    output.parent.mkdir()
+    output.write_bytes(generate_schema())
+    attributes = ROOT / ".gitattributes"
+    if attributes.exists():
+        shutil.copyfile(attributes, checkout / ".gitattributes")
+    git = shutil.which("git")
+    assert git is not None
+    for args in (("init", "--quiet"), ("add", ".")):
+        subprocess.run(
+            [git, "-c", "core.autocrlf=true", *args],
+            cwd=checkout,
+            check=True,
+            capture_output=True,
+        )
+    output.unlink()
+    subprocess.run(
+        [git, "-c", "core.autocrlf=true", "checkout-index", "--all", "--force"],
+        cwd=checkout,
+        check=True,
+        capture_output=True,
+    )
+    assert output.read_bytes() == generate_schema()

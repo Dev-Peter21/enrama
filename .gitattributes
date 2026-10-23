@@ -10,3 +10,6 @@ LICENSE text eol=lf
 *.jpeg binary
 *.webp binary
 *.ico binary
+
+# Keep the generated artifact byte-identical across Git checkout platforms.
+schemas/enrama-v1.schema.json text eol=lf

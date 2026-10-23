@@ -38,7 +38,7 @@ C03 implementation follows these requirements:
 - Generate one checked-in artifact at **`schemas/enrama-v1.schema.json`** in the
   Enrama repository. The same relative path is used for the copied client file.
   The repository artifact is implemented; client copies remain a manual step.
-- Produce deterministic UTF-8 output from the reviewed models and locked tooling.
+- Produce deterministic UTF-8/LF output from the reviewed models and locked tooling.
   Regeneration must not introduce current timestamps, machine paths, or a live
   Git HEAD value that changes merely because the artifact is committed.
 - Keep definitions/references self-contained so loading the local schema does not
@@ -118,6 +118,17 @@ in generated `dist/` or become a required runtime dependency of the published si
    a clean Problems panel is not complete validation evidence.
 5. Commit the schema, generator version reference, README provenance and any
    necessary settings/YAML changes **together in the same client commit**.
+
+Preserve the artifact's LF bytes when versioning it, including in Windows
+checkouts using `core.autocrlf=true`. The Enrama repository has this
+`.gitattributes` rule; clients should retain the same rule for their copied file:
+
+```gitattributes
+schemas/enrama-v1.schema.json text eol=lf
+```
+
+Track that rule with the schema/tool-reference update. It prevents Git from
+silently changing the reviewed bytes or provenance digest on checkout.
 
 This is a deliberate manual update. C03 adds no updater, notification service,
 background network synchronization, YAML migration, client rewrite, or automatic
