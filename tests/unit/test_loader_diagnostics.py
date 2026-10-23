@@ -30,9 +30,22 @@ def failure(content: bytes, source: str = "enrama.yaml") -> ConfigurationError:
     return caught.value
 
 
-def test_documented_examples_match_independent_model_fixtures() -> None:
+@pytest.mark.parametrize("default_encoding", ["utf-8", "cp1252"])
+def test_documented_examples_match_independent_model_fixtures(
+    default_encoding: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    original_read = Path.read_text
+
+    def locale_read(
+        path: Path, encoding: str | None = None, errors: str | None = None
+    ) -> str:
+        return original_read(path, encoding=encoding or default_encoding, errors=errors)
+
+    monkeypatch.setattr(Path, "read_text", locale_read)
     fixtures = json.loads(
-        (Path(__file__).parents[1] / "fixtures/configuration.json").read_text()
+        (Path(__file__).parents[1] / "fixtures/configuration.json").read_text(
+            encoding="utf-8"
+        )
     )
     minimal = parse(MINIMAL)
     assert minimal == EnramaConfig.model_validate(fixtures["minimal"])
