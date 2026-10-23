@@ -91,8 +91,10 @@ independent documentation/design work to happen sooner.
 - **Contract:** The [safe loader and diagnostics design](yaml-loader.md) was
   accepted on 2026-10-23: controlled YAML without anchors/aliases/merges,
   explicit scalar resolution, 1 MiB/32-container/10,000-node limits, and at most
-  20 diagnostics with honest source context. Documentation only; future source
-  implementation targets `develop` after separate authorization.
+  20 diagnostics with honest source context. Implementation and
+  [verification evidence](verification/c02.md) on `develop` were accepted by the
+  maintainer on 2026-10-23; issue #6 is closed/completed and its existing Kanban
+  card is Done.
 - **Dependencies:** C01.
 - **Acceptance:** Test malformed YAML, unsupported versions, invalid/duplicate
   IDs, missing files, unsafe YAML tags, and the URL protocol policy including

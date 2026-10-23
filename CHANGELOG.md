@@ -11,7 +11,9 @@ repository; a roadmap target does not imply that a release exists.
   policy, duplicate/unsafe-construct rejection, C01 validation with source-aware
   safe diagnostics capped at 20, and read-only file loading. Adds used PyYAML
   and dev-only stubs, hashed source-build inputs, unit/installed-consumer tests,
-  and verification evidence. No CLI, generator, generated JSON Schema, or PyPI upload.
+  and verification evidence. Accepted by the maintainer on 2026-10-23; issue #6
+  is closed/completed and its existing Kanban card is Done. No CLI, generator,
+  generated JSON Schema, or PyPI upload.
 
 - Accepted C02 safe YAML loader/diagnostics design: explicit plain-data subset,
   no anchors/aliases/merges, bounded 1 MiB/32-container/10,000-node processing,

@@ -1,6 +1,6 @@
 # Safe YAML loader and diagnostics contract
 
-Status: **C02 implemented on `develop`, awaiting maintainer acceptance**, following
+Status: **C02 implemented on `develop` and accepted by the maintainer**, following
 the contract and implementation authorization on 2026-10-23 for
 [issue #6](https://github.com/Dev-Peter21/enrama/issues/6).
 The loader, diagnostics, PyYAML dependency, and tests are implemented. See the
@@ -273,8 +273,10 @@ G01 owns asset I/O; CLI presentation/exit behavior is implemented with the CLI
 tasks; generator, themes, editor, package publication, and deployment remain
 separate work. No round-trip writer or schema migration is introduced here.
 
-The maintainer authorized implementation on `develop`. Issue #6 remains open
-until acceptance; no PyPI publication, release, CLI, or generation is included.
+The maintainer accepted implementation on `develop` on 2026-10-23 and requested
+issue #6 closure/completed and its existing Kanban card Done. Both are recorded
+in the [verification record](verification/c02.md). No PyPI publication, release,
+CLI, or generation is included.
 
 ## Python API
 
