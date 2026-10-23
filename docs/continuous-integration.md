@@ -1,9 +1,10 @@
 # Foundation CI design
 
-Status: **accepted F03 design**, approved on 2026-10-22 for
+Status: **implemented on `develop`**, following the design approved on
+2026-10-22 and implementation authorized on 2026-10-23 for
 [issue #4](https://github.com/Dev-Peter21/enrama/issues/4).
-This document specifies future GitHub Actions behavior. No workflow is delivered
-or executed by this documentation change, and no matrix result is claimed.
+The [workflow](../.github/workflows/ci.yml) and CI evidence gates are executable.
+See the [verification record](verification/f03.md) for actual run results.
 
 ## Purpose and delivery boundary
 
@@ -14,8 +15,8 @@ be installed independently of the source checkout.
 
 Implementation must integrate into **`develop`**. Implementation branches, when
 used, start from and target `develop`. The default branch remains `main`.
-Approval of this design/documentation does not authorize creating workflows,
-changing source or tests, or enabling CI. Implementation requires a later task.
+The maintainer subsequently authorized F03 implementation on 2026-10-23.
+Its source changes remain limited to workflow, packaging tests and CI helpers.
 
 F03 covers foundation CI only. CLI/generator features, release workflows, PyPI
 publication, client deployment, and branch-protection configuration remain
@@ -23,7 +24,7 @@ separate work. The existing F02 source/package version remains `0.1.0.dev0`.
 
 ## Events and branches
 
-The future workflow must run for:
+The workflow is configured to run for:
 
 - Pull requests whose **base branch** is `develop` or `main`.
 - Pushes to `develop` or `main`.
@@ -67,8 +68,8 @@ each agreed minor version. Record the actual patch version used. If an
 interpreter or required tool cannot be installed, fail the job: do not substitute
 3.12, silently skip the environment, or report compatibility as verified.
 
-Concrete hosted-runner labels and reviewed action SHAs must be selected and
-recorded during implementation. Record runner image/OS and architecture in the
+The workflow selects `ubuntu-24.04`, `macos-15`, and `windows-2025`.
+Reviewed action SHAs and their releases are recorded below. Record runner image/OS and architecture in the
 evidence. This design verifies four Python versions on Linux and basic
 cross-platform behavior on 3.12; it does not establish a twelve-cell matrix or
 support for every CPU architecture/interpreter variant.
@@ -76,7 +77,9 @@ support for every CPU architecture/interpreter variant.
 ## Interpreter selection and locked setup
 
 - Install **uv 0.13.5**, matching `tool.uv.required-version` and F02.
-- Select Python explicitly for each job. The repository's `.python-version`
+- Install the current patch explicitly with `uv python install` for each
+  selected minor and set `UV_MANAGED_PYTHON=true`, so a preinstalled older patch
+  cannot win interpreter discovery. Select Python explicitly for each job. The repository's `.python-version`
   remains `3.12` for local development; it must not override the matrix.
 - Use the selected interpreter consistently for synchronization, `uv run`,
   builds, and both consumer-install environments. Set `UV_PYTHON` or the
@@ -104,7 +107,7 @@ Run once on Linux/Python 3.12 using the existing tool configuration:
 uv sync --locked
 uv run --locked ruff check .
 uv run --locked ruff format --check .
-uv run --locked mypy src tests
+uv run --locked mypy src tests scripts
 ```
 
 Ruff remains the only formatter. Both Ruff's syntax target and mypy's strict
@@ -121,7 +124,7 @@ uv run --locked pytest --junitxml=reports/pytest.xml
 uv build --build-constraint build-constraints.txt --require-build-hashes
 ```
 
-These are future CI command requirements, not an executed workflow. The build
+These operations execute in each verification job; see linked runs for evidence. The build
 must use the selected matrix interpreter; do not copy F02's local
 `--python 3.12` argument into every matrix job.
 
@@ -149,9 +152,11 @@ Each environment must verify:
 6. Missing/stale-lock rejection remains tested, and normal verification leaves
    committed inputs unchanged.
 
-Reuse F02's meaningful checks. Any portability adjustments needed during the
-later implementation must stay within packaging/test infrastructure; do not
-implement product features to satisfy a CI placeholder.
+F03 reuses F02's distribution/locking checks and adds real subprocess tests for
+CI evidence gates. `scripts/ci.py` asserts the interpreter, validates positive
+JUnit results, and records both distribution hashes. Consumer interpreter
+versions and import metadata are captured in the JUnit reports. No product
+features are implemented to satisfy a CI placeholder.
 
 ## Permissions and action dependencies
 
@@ -162,7 +167,19 @@ must work without repository secrets or a write-capable token.
 
 Pin every external action to a reviewed full commit SHA and record the release
 it corresponds to for maintainability. Pin the uv binary version separately;
-an action SHA alone does not choose the uv version. Do not add publishing
+an action SHA alone does not choose the uv version. The implementation uses:
+
+| Action | Release | Full commit SHA |
+| --- | --- | --- |
+| `actions/checkout` | v7.0.1 | `3d3c42e5aac5ba805825da76410c181273ba90b1` |
+| `astral-sh/setup-uv` | v10.3.2 | `07a047e608db84b3d8c06cd9a7c7dcc9c355c18e` |
+| `actions/upload-artifact` | v7.0.2 | `cf430e030ddbb5b0abf93d22962f4752f3646cd9` |
+
+No uv download cache is enabled, so the recorded runs exercise cold setup.
+Development sync retains F02's `uv sync --locked`; explicit build constraints
+and hash verification apply to artifact builds and consumer source installs.
+The development lock does not freeze editable-build transitive dependencies.
+Do not add publishing
 credentials, package uploads, deployments, or write-permission workarounds.
 
 ## Reports and artifact retention
@@ -181,7 +198,7 @@ CI evidence, not a PyPI publication or GitHub release.
 
 ## Implementation acceptance and evidence
 
-F03 remains open until a later implementation delivers:
+F03's implementation acceptance requires:
 
 - The workflow on `develop`, with the agreed triggers and all seven jobs.
 - An actual current-revision run showing successful quality checks and all six
@@ -197,8 +214,9 @@ F03 remains open until a later implementation delivers:
   evidence for a trigger, operating system, or Python version.
 
 The existing [F02 verification](verification/f02.md) covers local Python 3.12
-only. This documentation change adds no CI execution evidence and leaves F03's
-software acceptance criteria unchecked.
+only. F03's [verification record](verification/f03.md) reports Actions results,
+intentional negative checks and remaining trigger limitations separately.
+The issue remains open for maintainer acceptance after delivery.
 
 ## References
 

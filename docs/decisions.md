@@ -23,7 +23,7 @@ need review. It does not imply any implementation is present.
 | D14 | Accepted [CLI and filesystem contract](cli-contract.md) for F01 | Explicit config selection, fixed project-local `dist/`, protected replacement, manual loopback preview, and documented exit codes |
 | D15 | Future source-code implementation integrates into `develop` | Explicit maintainer instruction on 2026-10-22; F02 implementation subsequently authorized on develop |
 | D16 | Accepted [F02 development setup](development-setup.md): Python 3.12 local, target matrix 3.12–3.15, initial version `0.1.0.dev0`, src layout, uv/Hatchling, and a pytest/Ruff/mypy dev group | Maintainer-approved setup design; implemented on develop with local Python 3.12 verification; full matrix awaits F03 |
-| D17 | Accepted [F03 CI design](continuous-integration.md): PRs/pushes for `develop` and `main`, one Linux/3.12 quality job, Linux/3.12–3.15 plus macOS/3.12 and Windows/3.12 verification, all required, uv 0.13.5, hashed build constraints, read-only token, SHA-pinned actions, and seven-day artifacts | Maintainer-approved design; documentation only, implementation later on develop and matrix evidence pending |
+| D17 | Accepted [F03 CI design](continuous-integration.md): PRs/pushes for `develop` and `main`, one Linux/3.12 quality job, Linux/3.12–3.15 plus macOS/3.12 and Windows/3.12 verification, all required, uv 0.13.5, hashed build constraints, read-only token, SHA-pinned actions, and seven-day artifacts | Maintainer-approved design; implemented on develop after authorization on 2026-10-23; actual runs recorded in F03 verification |
 
 The GitHub repository uses `main`. Version `0.1.0` is the first release target,
 not an existing release. The PyPI name and CLI command are intended to be `enrama`.

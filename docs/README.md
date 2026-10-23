@@ -1,6 +1,6 @@
 # Documentation
 
-Enrama includes its F02 Python package/tooling foundation on `develop`.
+Enrama includes its F02 Python package/tooling foundation and F03 CI on `develop`.
 The CLI, generator, themes, and editor remain planned unless stated otherwise.
 
 | Document | Purpose |
@@ -9,12 +9,13 @@ The CLI, generator, themes, and editor remain planned unless stated otherwise.
 | [Architecture](architecture.md) | Boundaries, data flow, stack, and planned layout |
 | [CLI and filesystem contract](cli-contract.md) | Accepted MVP commands, paths, overwrite/cleanup rules, manual preview, and exit codes |
 | [Python development setup](development-setup.md) | Accepted F02 environment, dependency/build policy, quality tools, and executable packaging checks |
-| [Foundation CI design](continuous-integration.md) | Accepted F03 triggers, quality job, six verification environments, permissions, and future evidence |
+| [Foundation CI design](continuous-integration.md) | F03 workflow contract, quality job, six verification environments, permissions, and evidence |
 | [Configuration](configuration.md) | Draft public YAML contract and compatibility |
 | [Themes](themes.md) | Built-in theme requirements and extension boundaries |
 | [Deployment](deployment.md) | Client repositories, static hosting, and Pages plan |
 | [Roadmap](roadmap.md) | Milestones, scoped tasks, dependencies, and completion evidence |
 | [Published backlog](backlog.md) | MVP issue index, Kanban workflow, and final acceptance gate |
+| [F03 verification](verification/f03.md) | Actual Actions runs, interpreter versions, artifacts, and failure/cancellation checks |
 | [F02 verification](verification/f02.md) | Executed Python 3.12 setup and artifact evidence |
 | [Testing](testing.md) | Validation strategy and security/packaging coverage |
 | [Releasing](releasing.md) | Intended release process and first-release gates |

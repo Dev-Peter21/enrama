@@ -190,7 +190,7 @@ Run from a clean `develop` checkout with uv 0.13.5 on PATH:
 uv sync --locked
 uv run --locked ruff check .
 uv run --locked ruff format --check .
-uv run --locked mypy src tests
+uv run --locked mypy src tests scripts
 uv run --locked pytest
 uv build --python 3.12 --build-constraint build-constraints.txt --require-build-hashes
 ```
@@ -225,8 +225,8 @@ The [verification record](verification/f02.md) records local Python 3.12 evidenc
 
 The accepted [F03 CI design](continuous-integration.md) adds Linux/Python
 3.12–3.15 plus macOS and Windows/Python 3.12 verification, and one Linux/3.12
-quality job. Its workflow implementation remains a later delivery on `develop`;
-this documentation neither adds it nor claims the matrix passed.
+quality job. Its workflow is implemented on `develop`; actual runs are
+recorded in the [F03 verification record](verification/f03.md).
 Full CLI and theme verification follows the later tasks in the
 [testing strategy](testing.md).
 

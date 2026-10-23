@@ -21,7 +21,7 @@ cd enrama
 uv sync --locked
 uv run --locked ruff check .
 uv run --locked ruff format --check .
-uv run --locked mypy src tests
+uv run --locked mypy src tests scripts
 uv run --locked pytest
 uv build --python 3.12 --build-constraint build-constraints.txt --require-build-hashes
 ```

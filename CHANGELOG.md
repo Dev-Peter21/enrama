@@ -7,11 +7,16 @@ repository; a roadmap target does not imply that a release exists.
 
 ### Added
 
+- F03 implementation on `develop`: SHA-pinned read-only CI, Linux/Python
+  3.12–3.15 plus macOS and Windows/3.12 verification, explicit managed Python
+  patches, quality checks, isolated distribution tests, seven-day reports and
+  artifacts, and fail-closed interpreter/JUnit/archive evidence gates.
+
 - Accepted F03 CI design: one Linux/Python 3.12 quality job, six mandatory
   test/build/install environments (Linux 3.12–3.15, macOS 3.12, Windows 3.12),
   PR/push triggers for `develop` and `main`, locked tooling, restricted
   permissions, pinned actions, and seven-day reports/artifacts. This documents
-  future behavior; workflow implementation and execution remain pending.
+  the original design; implementation and actual run evidence are recorded above.
 
 - F02 implementation on `develop`: importable `enrama` `0.1.0.dev0`, Python 3.12
   selector, uv lock, Hatchling metadata, hashed isolated-build constraints,

@@ -45,17 +45,18 @@ into `develop`; implementation branches, when used, should start from and target
 `develop`. Do not publish application code directly to `main`. This branch policy
 does not authorize starting implementation during a documentation/design-only task.
 A maintainer reviews and merges contributions; the project currently has no
-automated product checks or release workflow.
+release workflow. Foundation CI runs on PRs targeting `develop`/`main` and
+pushes to both branches once the workflow is present on that branch.
 
 ## Python development workflow
 
 Install uv **0.13.5** using the [setup instructions](docs/development-setup.md),
 then start from `develop` with Python 3.12. Follow the documented locked sync,
 Ruff, strict mypy, pytest, and constrained build commands before submitting a PR.
-The intended compatibility matrix is 3.12–3.15; F03 will automate it. Local
+The intended compatibility matrix is 3.12–3.15; F03 automates it. Local
 Python 3.12 evidence alone does not establish the full matrix. The accepted
 [F03 design](docs/continuous-integration.md) also requires macOS and Windows
-checks on Python 3.12; its workflow is not implemented yet.
+checks on Python 3.12; see its verification record for actual results.
 
 Commit dependency declarations and `uv.lock` together. Review updates to
 `build-constraints.txt` alongside the backend pin; the development lock does
