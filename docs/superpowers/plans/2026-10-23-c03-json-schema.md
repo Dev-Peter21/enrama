@@ -48,17 +48,17 @@
 
 **Interfaces:** uv run --locked python scripts/schema.py writes the fixed repository artifact. --check returns0 for current bytes,1 for missing/stale/operational failure; usage errors2. It resolves the repository from its own file, never cwd; check mode performs no writes. This is not an enrama CLI command.
 
-- [ ] Write failing subprocess tests using copied helper paths/temporary roots: missing output/write/repeatable output, current/stale/missing checks with unchanged bytes, invocation from unrelated cwd, and unreadable/unwritable/nonregular output. Expected failures must be bounded readable messages with no successful result on failure.
-- [ ] Implement the minimal internal helper and run tests. Use the pure generate_schema bytes; no duplicated field serialization. Reject symlink output directory/file to avoid accidental replacement outside the developer checkout.
-- [ ] Add a quality job check step invoking --check; all existing six verification environments also run the artifact drift test. Document exact generation/check commands, client copy/provenance and manual update steps without claiming a published version.
-- [ ] Verify all tests, quality, --check, and constrained wheel/sdist build; commit.
+- [x] Write failing subprocess tests using copied helper paths/temporary roots: missing output/write/repeatable output, current/stale/missing checks with unchanged bytes, invocation from unrelated cwd, and unreadable/unwritable/nonregular output. Expected failures must be bounded readable messages with no successful result on failure.
+- [x] Implement the minimal internal helper and run tests. Use the pure generate_schema bytes; no duplicated field serialization. Reject symlink output directory/file to avoid accidental replacement outside the developer checkout.
+- [x] Add a quality job check step invoking --check; all existing six verification environments also run the artifact drift test. Document exact generation/check commands, client copy/provenance and manual update steps without claiming a published version.
+- [x] Verify all tests, quality, --check, and constrained wheel/sdist build; commit.
 
 ## Task 3: Actual editor verification, evidence and delivery
 
 **Files:** Update docs/json-schema.md, README/docs index/development/testing/architecture/configuration/roadmap/decision/changelog references as needed; create docs/verification/c03.md. Temporary client/profile/evidence lives under /private/tmp or ignored reports, never user client repositories.
 
 - [ ] Create a temporary client with the committed local schema, approved workspace settings, representative YAML and explicit provenance. Use the existing /Users/pedroivanmoauro/soft/Visual Studio Code.app, isolated user-data/extensions if feasible; record actual editor and Red Hat YAML versions. Never alter the user's existing projects/configuration.
-- [ ] Exercise the actual editor using cua_repl: correct schema association, theme/catalog completion, model-derived hover and representative structural errors. Verify local/offline loading with remote schema requests blocked for the isolated editor process/profile, plus an alternate config mapping; record actual observation rather than treating JSON parsing as editor evidence.
+- [ ] Exercise the actual editor using official VS Code Extension Host/provider APIs (see ledger ruling): correct schema association, theme/catalog completion, model-derived hover and representative structural errors. Verify local/offline loading with remote schema requests blocked for the isolated editor process/profile, plus an alternate config mapping; record actual observation rather than treating JSON parsing as editor evidence.
 - [ ] Run locked sync, lint/format, strict typing, full pytest/JUnit, --check and constrained builds; record positive counts, actual versions, schema SHA-256, archive inclusion and known runtime gaps.
 - [ ] Commit evidence, dispatch one independent whole-change review against the base, fix important findings with RED→GREEN regressions and a full suite, then publish develop. Verify all seven CI jobs and retained reports/archives. Update issue #7 with evidence, leaving it open for maintainer acceptance. No PyPI release/deployment.
 

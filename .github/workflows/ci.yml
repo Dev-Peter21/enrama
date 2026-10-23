@@ -43,6 +43,8 @@ jobs:
         run: uv run --locked ruff format --check .
       - name: Strict typing
         run: uv run --locked mypy src tests scripts
+      - name: Check generated configuration schema
+        run: uv run --locked python scripts/schema.py --check
       - name: Verify committed inputs remain unchanged
         if: always()
         run: git diff --exit-code -- pyproject.toml uv.lock .python-version build-constraints.txt

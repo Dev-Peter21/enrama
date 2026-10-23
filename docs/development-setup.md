@@ -212,6 +212,7 @@ uv sync --locked
 uv run --locked ruff check .
 uv run --locked ruff format --check .
 uv run --locked mypy src tests scripts
+uv run --locked python scripts/schema.py --check
 uv run --locked pytest
 uv build --python 3.12 --build-constraint build-constraints.txt --require-build-hashes
 ```
@@ -227,6 +228,12 @@ Further tests compare archive hashes, reject synthetic private
 files, and exercise missing/stale lock rejection without changing the inputs.
 uv must remain on PATH. Downloads from PyPI may be needed for pinned tools;
 no test uploads artifacts or requires publishing credentials.
+
+C03 adds the [generated schema](json-schema.md) and internal developer commands:
+`uv run --locked python scripts/schema.py` regenerates the checked artifact;
+append `--check` for read-only staleness verification. JSON Schema validation
+uses dev-only `jsonschema==4.26.0` and `types-jsonschema==4.26.0.20261006`;
+these do not enter the package runtime.
 
 ## Implementation acceptance and evidence
 
