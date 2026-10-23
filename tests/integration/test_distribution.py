@@ -56,9 +56,13 @@ def archives(tmp_path_factory: pytest.TempPathFactory) -> dict[str, Path]:
     return build(ROOT, tmp_path_factory.mktemp("artifacts"))
 
 
-@pytest.mark.parametrize("kind", [".whl", ".gz"], ids=["wheel", "sdist"])
+@pytest.mark.parametrize(
+    ("kind", "yaml_from_source"),
+    [(".whl", False), (".gz", False), (".whl", True)],
+    ids=["wheel", "sdist", "pyyaml-source"],
+)
 def test_install_outside_checkout(
-    kind: str, archives: dict[str, Path], tmp_path: Path
+    kind: str, yaml_from_source: bool, archives: dict[str, Path], tmp_path: Path
 ) -> None:
     environment = tmp_path / "consumer"
     created = run(
@@ -76,15 +80,19 @@ def test_install_outside_checkout(
         "--build-constraint",
         str(ROOT / "build-constraints.txt"),
         "--require-build-hashes",
+        *(["--no-binary", "pyyaml", "--no-cache"] if yaml_from_source else []),
         cwd=tmp_path,
     )
     assert installed.returncode == 0, installed.stderr
+    if yaml_from_source:
+        print(installed.stderr)
     probe_code = """
 import enrama
 import importlib.metadata as m
 import json
 import sys
-from enrama.config import EnramaConfig
+from pathlib import Path
+from enrama.config import EnramaConfig, ConfigurationError, load_config, parse_config
 from enrama.config._language import REGISTRY_DATE
 from pydantic import ValidationError
 
@@ -100,7 +108,21 @@ metadata = {
     "installed": sorted(x.metadata["Name"] for x in m.distributions()),
     "license_text": d.read_text("licenses/LICENSE"),
     "registry": REGISTRY_DATE,
+    "pyyaml": m.version("PyYAML"),
 }
+
+yaml_bytes = b'''schema_version: 1
+site: {title: Shop, description: Local shop, language: ES-ar}
+profile: {name: Shop, avatar: ./assets/not-present.png}
+links: [{id: contact, title: Email, url: 'mailto:hi@example.com'}]
+socials: [{id: social, platform: github, url: 'https://unrelated.example'}]
+'''
+selected = Path("selected.yaml")
+selected.write_bytes(yaml_bytes)
+before = sorted(str(p) for p in Path.cwd().iterdir())
+metadata["loaded"] = load_config(selected).model_dump()
+assert selected.read_bytes() == yaml_bytes
+assert before == sorted(str(p) for p in Path.cwd().iterdir())
 
 def forbid_io(event, arguments):
     if event == "open" or event.startswith("socket."):
@@ -115,6 +137,18 @@ config = EnramaConfig.model_validate({
     "socials": [{"id": "social", "platform": "github", "url": "https://unrelated.example"}],
 })
 metadata["config"] = config.model_dump()
+assert parse_config(yaml_bytes) == config
+try:
+    parse_config(yaml_bytes + b"private: SECRET\\n")
+except ConfigurationError as error:
+    metadata["diagnostic"] = {
+        "category": error.category, "total": error.total_count,
+        "location": list(error.diagnostics[0].location),
+        "position": [error.diagnostics[0].position.line, error.diagnostics[0].position.column],
+    }
+    assert "SECRET" not in str(error)
+else:
+    raise AssertionError("Invalid YAML accepted")
 metadata["social_icon"] = config.socials[0].icon
 try:
     EnramaConfig.model_validate({**config.model_dump(), "schema_version": True})
@@ -138,7 +172,19 @@ print(json.dumps(metadata))
     assert metadata["license"] == "MIT"
     assert metadata["license_files"] == ["LICENSE"]
     assert "Permission is hereby granted" in metadata["license_text"]
-    assert set(metadata["requires"]) == {"langcodes==3.5.1", "pydantic<3,>=2.14.1"}
+    assert set(metadata["requires"]) == {
+        "langcodes==3.5.1",
+        "pydantic<3,>=2.14.1",
+        "pyyaml<7,>=6.0.3",
+    }
+    assert metadata["pyyaml"] == "6.0.3"
+    assert metadata["loaded"] == metadata["config"]
+    assert metadata["diagnostic"] == {
+        "category": "model_validation",
+        "total": 1,
+        "location": ["private"],
+        "position": [6, 10],
+    }
     assert metadata["registry"] == "2021-08-06"
     assert metadata["config"]["site"]["language"] == "es-AR"
     assert metadata["config"]["site"]["url"] is None
@@ -146,14 +192,14 @@ print(json.dumps(metadata))
     assert metadata["social_icon"] == "github"
     assert metadata["invalid_version_location"] == ["schema_version"]
     assert metadata["entry_points"] == []
-    assert {"enrama", "pydantic", "langcodes"}.issubset(metadata["installed"])
+    assert {"enrama", "pydantic", "langcodes", "PyYAML"}.issubset(metadata["installed"])
     assert not {
         "pytest",
         "ruff",
         "mypy",
         "hatchling",
         "uv",
-        "PyYAML",
+        "types-PyYAML",
         "typer",
         "jinja2",
         "fastapi",
@@ -199,6 +245,9 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
             "enrama/config/_language.py",
             "enrama/config/_paths.py",
             "enrama/config/_urls.py",
+            "enrama/config/_yaml.py",
+            "enrama/config/diagnostics.py",
+            "enrama/config/loader.py",
             "enrama/config/catalogs.py",
             "enrama/config/models.py",
             "enrama/py.typed",
@@ -215,6 +264,9 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
             "src/enrama/config/_language.py",
             "src/enrama/config/_paths.py",
             "src/enrama/config/_urls.py",
+            "src/enrama/config/_yaml.py",
+            "src/enrama/config/diagnostics.py",
+            "src/enrama/config/loader.py",
             "src/enrama/config/catalogs.py",
             "src/enrama/config/models.py",
             "src/enrama/py.typed",

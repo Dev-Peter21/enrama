@@ -434,8 +434,8 @@ generator versions accept identifiers those versions do not know.
   implementation authorization on 2026-10-23.
 - **C02:** safe YAML parsing, rejection of unsafe constructors, and useful file/
   field diagnostics under the accepted [loader contract](yaml-loader.md), with
-  fixed resource limits and at most 20 returned diagnostics. No parser is
-  implemented yet.
+  fixed resource limits and at most 20 returned diagnostics. Implemented on
+  `develop`; see [C02 verification](verification/c02.md).
 - **C03:** generate JSON Schema from implemented models and document editor use;
   do not hand-maintain a second schema or publish a nonexistent schema URL.
 - **G01:** actual asset resolution, file-format/size checks, and copying.

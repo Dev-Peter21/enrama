@@ -6,7 +6,7 @@ from .diagnostics import (
     SourcePosition,
     format_diagnostic,
 )
-from .loader import parse_config
+from .loader import load_config, parse_config
 from .models import (
     EnramaConfig,
     LinkConfig,
@@ -21,6 +21,7 @@ __all__ = [
     "Diagnostic",
     "SourcePosition",
     "format_diagnostic",
+    "load_config",
     "parse_config",
     "EnramaConfig",
     "LinkConfig",

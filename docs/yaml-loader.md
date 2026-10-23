@@ -1,10 +1,11 @@
 # Safe YAML loader and diagnostics contract
 
-Status: **accepted C02 design for the 0.1 MVP**, agreed on 2026-10-23 for
+Status: **C02 implemented on `develop`, awaiting maintainer acceptance**, following
+the contract and implementation authorization on 2026-10-23 for
 [issue #6](https://github.com/Dev-Peter21/enrama/issues/6).
-This document specifies future behavior. No loader, diagnostic implementation,
-new dependency, CLI, generator, or executable test is delivered by this change.
-Future implementation must target **`develop`**, after separate authorization.
+The loader, diagnostics, PyYAML dependency, and tests are implemented. See the
+[verification record](verification/c02.md). CLI, generator, and generated JSON
+Schema remain separate tasks.
 
 ## Purpose, approaches, and boundaries
 
@@ -230,7 +231,8 @@ information, not a new public JSON terminal format or stable message wording API
 
 ## Required acceptance cases
 
-These are future implementation tests, not tests executed by this design task.
+These acceptance cases are exercised by C02 unit and installed-consumer tests;
+executed counts and environments are recorded in [C02 verification](verification/c02.md).
 
 | Case | Expected outcome |
 | --- | --- |
@@ -263,15 +265,50 @@ not just compare documented strings or test a framework in isolation.
 ## Delivery boundary
 
 C02 will introduce only the safe loader, its structured diagnostics/source context,
-necessary PyYAML dependency/setup changes, and focused tests. Exact dependency
-versions, internal API/class layout, and parser hooks belong to the later
-implementation plan and must support the established Python 3.12–3.15 matrix.
+necessary PyYAML dependency/setup changes, and focused tests. The [implementation plan](superpowers/plans/2026-10-23-c02-loader.md) records
+module boundaries and tests supporting the established Python 3.12–3.15 matrix.
 
 C01 models remain the field-policy authority. C03 owns generated JSON Schema;
 G01 owns asset I/O; CLI presentation/exit behavior is implemented with the CLI
 tasks; generator, themes, editor, package publication, and deployment remain
 separate work. No round-trip writer or schema migration is introduced here.
 
-The current authorization is documentation and an issue update only. Issue #6
-remains open with implementation acceptance unchecked. Its future implementation
-must integrate into `develop` only after the maintainer requests that work.
+The maintainer authorized implementation on `develop`. Issue #6 remains open
+until acceptance; no PyPI publication, release, CLI, or generation is included.
+
+## Python API
+
+```python
+from enrama.config import ConfigurationError, load_config, parse_config
+
+config = load_config("clients/shop/enrama.yaml")
+# Or validate bytes already supplied by an interface, with no filesystem read:
+config = parse_config(
+    b"schema_version: 1\n"
+    b"site: {title: Shop, description: Shop, language: en}\n"
+    b"profile: {name: Shop}\n",
+    source="draft.yaml",
+)
+```
+
+`load_config(path="enrama.yaml")` reads only the selected regular file, using the
+caller's cwd for relative paths. It does not change cwd or rebase asset strings;
+the containing directory remains the project root for future asset consumers.
+`parse_config(content: bytes, *, source="enrama.yaml")` performs the same decoding,
+parsing and validation without opening the source label. Both return
+`EnramaConfig` or raise `ConfigurationError` for expected input/read failures.
+Unexpected defects and `KeyboardInterrupt` propagate.
+
+`ConfigurationError.diagnostics` is a tuple of at most 20 immutable `Diagnostic`
+objects. `total_count` and `omitted_count` describe actionable diagnostics before
+and after truncation. Each diagnostic exposes `category`, `source` (`Path`),
+`location` (key/index tuple), `message`, `hint`, `position` (`SourcePosition` or
+`None`), `parent` (missing-field parent annotation), and `related` positions.
+The error's `category` is its first retained category. Category strings are
+`missing_file`, `read_error`, `invalid_encoding`, `yaml_syntax`, `yaml_structure`,
+`resource_limit`, and `model_validation`.
+
+`format_diagnostic(diagnostic)` and `str(error)` return escaped English text;
+neither prints. These helpers do not assign exit codes or constitute a CLI.
+PyYAML events are bounded before Enrama constructs its plain-data tree; no YAML
+resolver/constructor is used and no global SafeLoader table is modified.

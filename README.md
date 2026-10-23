@@ -6,8 +6,9 @@ An open-source, self-hosted link-in-bio site generator built with Python.
 One project per client. One YAML file. One command to generate a static site.
 Once published, the site runs independently of Enrama.
 
-> **Project status: configuration models on `develop`.** The importable
-> package `0.1.0.dev0`, strict YAML v1 data models, development tools, and tests are available.
+> **Project status: safe configuration loading on `develop`.** The importable
+> package `0.1.0.dev0`, strict YAML v1 models, bounded loader, structured diagnostics,
+> development tools, and tests are available.
 > The CLI, generator, themes, and editor are still planned. No package has been
 > published to PyPI; `0.1.0` remains the MVP target.
 
@@ -29,9 +30,9 @@ uv build --python 3.12 --build-constraint build-constraints.txt --require-build-
 See the [development setup](docs/development-setup.md) for installation,
 dependency updates, isolated artifact tests, and build constraints.
 The [configuration contract](docs/configuration.md) documents the implemented
-Python model API; YAML file loading is not implemented yet.
-The accepted [safe YAML loader design](docs/yaml-loader.md) specifies C02's future
-input restrictions, resource limits, and diagnostics.
+Python model API. The [safe YAML loader contract](docs/yaml-loader.md) documents
+`parse_config`, `load_config`, input restrictions, resource limits, and diagnostics.
+See [C02 verification](docs/verification/c02.md) for executed evidence.
 
 ## Why Enrama?
 

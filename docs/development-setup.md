@@ -20,10 +20,13 @@ F02 does not publish to PyPI or create a public release.
 C01 subsequently adds the [configuration models](configuration.md), using
 `pydantic>=2.14.1,<3` and `langcodes==3.5.1` at runtime. The lock resolves
 Pydantic 2.14.1; the exact langcodes pin fixes its bundled IANA registry snapshot.
-The source still has no YAML loader, CLI, or generator. F02-only statements
+C02 adds `pyyaml>=6.0.3,<7` (locked to 6.0.3), with
+`types-pyyaml==6.0.12.20260906` in the dev group for strict typing.
+The source still has no CLI or generator. F02-only statements
 below about the original initializer-only package describe that foundation
-snapshot; current inclusion and installation checks also cover C01's modules
-and `py.typed` marker. See [C01 verification](verification/c01.md).
+snapshot; current inclusion and installation checks cover C01/C02 modules
+and `py.typed`. See [C01 verification](verification/c01.md) and
+[C02 verification](verification/c02.md).
 
 ## Python versions
 
@@ -138,7 +141,10 @@ wheel and a source distribution. Their creation is separate from publishing them
 
 `uv.lock` freezes the development graph, not the isolated backend environment.
 `build-constraints.txt` pins Hatchling **1.32.4** and all five transitive build
-dependencies with SHA-256 hashes. The verified build invocation is:
+dependencies with SHA-256 hashes. C02 also pins setuptools **84.2.1** and
+Cython **3.3.0**, used to build PyYAML from source when a compatible wheel is
+unavailable (including Python 3.15). No unbounded build-tool upgrade is required.
+The verified build invocation is:
 
 ```console
 uv build --python 3.12 --build-constraint build-constraints.txt --require-build-hashes
@@ -156,6 +162,13 @@ pin in `pyproject.toml`:
 ```console
 uv pip compile - --python-version 3.12 --universal --generate-hashes --no-annotate --no-header --output-file build-constraints.txt <<'EOF'
 hatchling==1.32.4
+packaging==26.3
+pathspec==1.1.1
+pluggy==1.7.0
+tomlkit==0.15.2
+trove-classifiers==2026.9.21.13
+setuptools==84.2.1
+Cython==3.3.0
 EOF
 ```
 
@@ -203,11 +216,14 @@ uv run --locked pytest
 uv build --python 3.12 --build-constraint build-constraints.txt --require-build-hashes
 ```
 
-The tests create temporary builds and two consumer environments outside the
+The tests create temporary builds and three consumer environments outside the
 checkout. Each consumer uses isolated Python (`-I`) and verifies the installed
 import location, metadata, MIT license, declared runtime dependencies without
 developer tools, and absence of CLI entry points. C01 also validates models from
-each installed archive. Further tests compare archive hashes, reject synthetic private
+each installed archive. C02 validates byte/file loading and diagnostics from
+installed archives, and forces a cold PyYAML source installation in a third
+consumer with `--no-binary pyyaml --no-cache` and hashed build constraints.
+Further tests compare archive hashes, reject synthetic private
 files, and exercise missing/stale lock rejection without changing the inputs.
 uv must remain on PATH. Downloads from PyPI may be needed for pinned tools;
 no test uploads artifacts or requires publishing credentials.

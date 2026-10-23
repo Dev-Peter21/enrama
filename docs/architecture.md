@@ -45,7 +45,9 @@ and appropriate nonzero exit codes. The accepted
 implementation, independently of framework exception defaults.
 The accepted [C02 loader/diagnostics contract](yaml-loader.md) defines the safe
 YAML subset, bounded reading/parsing, source positions, and structured failures.
-Its implementation remains pending; the core does not print or exit.
+C02 implements this core on `develop` through `parse_config` and `load_config`.
+PyYAML events are bounded before plain-data construction and C01 validation;
+source marks feed safe structured diagnostics. The core does not print or exit.
 
 ## Selected technologies
 

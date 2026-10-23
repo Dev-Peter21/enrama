@@ -1,10 +1,12 @@
 """Load the controlled YAML subset and reuse C01's semantic field policy."""
 
+import os
+import stat
 from pathlib import Path
 
 from pydantic import ValidationError
 
-from ._yaml import ParsedYaml, parse_yaml
+from ._yaml import MAX_BYTES, ParsedYaml, parse_yaml
 from .diagnostics import ConfigurationError, Diagnostic, FieldLocation
 from .models import EnramaConfig
 
@@ -134,3 +136,50 @@ def parse_config(content: bytes, *, source: str | Path = "enrama.yaml") -> Enram
         raise ConfigurationError(
             _diagnostic(e["type"], e["loc"], parsed, selected) for e in primary
         ) from None
+
+
+def load_config(path: str | Path = "enrama.yaml") -> EnramaConfig:
+    """Read only the selected regular file; relative paths use the caller's cwd."""
+    selected = Path(path)
+    try:
+        # Nonblocking open lets us reject FIFOs without waiting for a writer.
+        flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NONBLOCK", 0)
+        descriptor = os.open(selected, flags)
+        try:
+            if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+                raise OSError("Configuration must be a regular file")
+            remaining = MAX_BYTES + 1
+            chunks: list[bytes] = []
+            while remaining:
+                chunk = os.read(descriptor, remaining)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+                remaining -= len(chunk)
+        finally:
+            os.close(descriptor)
+    except FileNotFoundError:
+        raise ConfigurationError(
+            [
+                Diagnostic(
+                    "missing_file",
+                    selected,
+                    (),
+                    "Configuration file was not found.",
+                    "Create enrama.yaml here or select the correct configuration file.",
+                )
+            ]
+        ) from None
+    except OSError:
+        raise ConfigurationError(
+            [
+                Diagnostic(
+                    "read_error",
+                    selected,
+                    (),
+                    "Configuration file could not be read.",
+                    "Select a readable regular file and check its access permissions.",
+                )
+            ]
+        ) from None
+    return parse_config(b"".join(chunks), source=selected)

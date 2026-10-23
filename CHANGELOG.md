@@ -7,11 +7,17 @@ repository; a roadmap target does not imply that a release exists.
 
 ### Added
 
+- C02 implementation on `develop`: bounded UTF-8/YAML parsing, isolated scalar
+  policy, duplicate/unsafe-construct rejection, C01 validation with source-aware
+  safe diagnostics capped at 20, and read-only file loading. Adds used PyYAML
+  and dev-only stubs, hashed source-build inputs, unit/installed-consumer tests,
+  and verification evidence. No CLI, generator, generated JSON Schema, or PyPI upload.
+
 - Accepted C02 safe YAML loader/diagnostics design: explicit plain-data subset,
   no anchors/aliases/merges, bounded 1 MiB/32-container/10,000-node processing,
   up to 20 diagnostics with honest source locations, safe English messages,
-  and future acceptance cases. Documentation only; no loader or dependencies
-  are implemented/added by this change.
+  and acceptance cases. This records the original design; implementation and
+  evidence are recorded above.
 
 - C01 implementation on `develop`: six strict Pydantic YAML v1 data models,
   URL/language/lexical-path validators, stable presentation catalogs, model tests,

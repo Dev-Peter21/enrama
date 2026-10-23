@@ -27,10 +27,10 @@ Assert behavior and observable failure modes rather than implementation details.
 ## Security regression cases
 
 C02's accepted [loader contract](yaml-loader.md#required-acceptance-cases) adds
-future loader tests for UTF-8/BOM, document shape, duplicate keys and related
+loader tests for UTF-8/BOM, document shape, duplicate keys and related
 locations, forbidden YAML constructs, explicit scalar resolution, exact parser
 limit boundaries, deterministic diagnostic ordering/truncation, and safe display.
-These requirements are not evidence of implemented/passing C02 tests. C01's
+Executed evidence is recorded in [C02 verification](verification/c02.md). C01's
 model evidence remains recorded separately in [C01 verification](verification/c01.md).
 
 - Reject dangerous URL protocols, including whitespace/case/encoding boundary
