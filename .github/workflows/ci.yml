@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
+      UV_MANAGED_PYTHON: 'true'
       UV_PYTHON: '3.12'
       EXPECTED_PYTHON: '3.12'
     steps:
@@ -30,6 +31,8 @@ jobs:
           version: '0.13.5'
           python-version: '3.12'
           enable-cache: false
+      - name: Install current managed Python patch
+        run: uv python install '3.12'
       - name: Sync locked development environment
         run: uv sync --locked
       - name: Assert interpreter and record environment
@@ -67,6 +70,7 @@ jobs:
           - {os: macos, runner: macos-15, python: '3.12'}
           - {os: windows, runner: windows-2025, python: '3.12'}
     env:
+      UV_MANAGED_PYTHON: 'true'
       UV_PYTHON: ${{ matrix.python }}
       EXPECTED_PYTHON: ${{ matrix.python }}
     steps:
@@ -78,6 +82,8 @@ jobs:
           version: '0.13.5'
           python-version: ${{ matrix.python }}
           enable-cache: false
+      - name: Install current managed Python patch
+        run: uv python install '${{ matrix.python }}'
       - name: Sync locked development environment
         run: uv sync --locked
       - name: Assert interpreter and record environment
