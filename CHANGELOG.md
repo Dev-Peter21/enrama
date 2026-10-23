@@ -7,6 +7,12 @@ repository; a roadmap target does not imply that a release exists.
 
 ### Added
 
+- Accepted C03 JSON Schema/VS Code design: model-derived validation-mode Draft
+  2020-12, structural editor assistance with C01/C02 authority, a local schema
+  copy per client, stable v1 naming/exact revision provenance, and manual
+  tool/schema updates in the same client commit. Documentation only; no schema
+  artifact, generation tooling, dependencies or editor settings are delivered.
+
 - C02 implementation on `develop`: bounded UTF-8/YAML parsing, isolated scalar
   policy, duplicate/unsafe-construct rejection, C01 validation with source-aware
   safe diagnostics capped at 20, and read-only file loading. Adds used PyYAML

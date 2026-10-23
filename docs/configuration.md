@@ -436,8 +436,10 @@ generator versions accept identifiers those versions do not know.
   field diagnostics under the accepted [loader contract](yaml-loader.md), with
   fixed resource limits and at most 20 returned diagnostics. Implemented on
   `develop`; see [C02 verification](verification/c02.md).
-- **C03:** generate JSON Schema from implemented models and document editor use;
-  do not hand-maintain a second schema or publish a nonexistent schema URL.
+- **C03:** generate JSON Schema from implemented models and document editor use
+  under the accepted [JSON Schema/VS Code contract](json-schema.md): structural
+  assistance, local client copy, exact revision matching, and manual updates.
+  No artifact exists yet; C01/C02 remain authoritative for complete validation.
 - **G01:** actual asset resolution, file-format/size checks, and copying.
 - **G02:** HTML escaping, metadata omission/base-path handling, and rendering.
 - **U03/U04:** bundled icons, licenses, themes, layout, and accessibility evidence.

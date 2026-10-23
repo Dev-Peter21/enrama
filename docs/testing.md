@@ -24,6 +24,15 @@ Use small unit tests for model and service behavior, then integration tests for
 the CLI and generated output. Keep fixtures synthetic and redistributable.
 Assert behavior and observable failure modes rather than implementation details.
 
+## JSON Schema and editor acceptance
+
+The accepted [C03 contract](json-schema.md#future-implementation-acceptance)
+defines future deterministic generation/staleness checks, schema validation of
+representative examples/structural failures, documented runtime-only rules,
+exact client provenance, and actual local/offline VS Code completion/diagnostic
+evidence. These are future requirements, not executed C03 tests. A schema check
+does not replace C01/C02 validation or demonstrate an editor session.
+
 ## Security regression cases
 
 C02's accepted [loader contract](yaml-loader.md#required-acceptance-cases) adds

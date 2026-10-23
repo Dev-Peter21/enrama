@@ -103,10 +103,17 @@ independent documentation/design work to happen sooner.
 ### C03 — Publish generated schema and editor instructions
 
 - **Scope:** Derive JSON Schema from the models and document VS Code use.
+- **Contract:** The accepted [C03 design](json-schema.md), agreed on 2026-10-23,
+  defines validation-mode Draft 2020-12 generation, structural editor assistance,
+  a local copy per client, stable v1 artifact naming, exact tool/source provenance,
+  and manual updates committed with the client tool reference. Documentation
+  only; future implementation targets `develop` after separate authorization.
 - **Dependencies:** C01, C02.
-- **Acceptance:** The checked/generated artifact agrees with the models,
-  validates the example, rejects representative invalid input, and can be used
-  with the documented editor configuration. No handwritten second contract.
+- **Acceptance:** The checked/generated artifact reflects model-expressed
+  structural constraints, accepts representative valid examples, rejects
+  representative structural errors, and works with the documented editor
+  configuration. Complete C01/C02 validation remains authoritative; document
+  schema gaps. No handwritten second contract.
 
 ## M2 — Static Generator
 

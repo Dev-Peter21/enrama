@@ -13,6 +13,7 @@ The CLI, generator, themes, and editor remain planned unless stated otherwise.
 | [Foundation CI design](continuous-integration.md) | F03 workflow contract, quality job, six verification environments, permissions, and evidence |
 | [Configuration](configuration.md) | Accepted YAML v1 fields, defaults, validation, catalogs, compatibility, and future acceptance cases |
 | [Safe YAML loader and diagnostics](yaml-loader.md) | Accepted C02 input subset, fixed limits, source positions, diagnostic cap, Python API, and acceptance cases |
+| [JSON Schema and VS Code](json-schema.md) | Accepted C03 generation, structural-assistance limits, artifact versioning, manual client updates, and local editor configuration |
 | [Themes](themes.md) | Built-in theme requirements and extension boundaries |
 | [Deployment](deployment.md) | Client repositories, static hosting, and Pages plan |
 | [Roadmap](roadmap.md) | Milestones, scoped tasks, dependencies, and completion evidence |
@@ -32,6 +33,6 @@ Community guidance lives at the repository root:
 
 The source of truth for product scope is [product.md](product.md). The YAML v1
 contract is implemented by C01 models and the C02 loader; generated schema
-remains future M1 work. The roadmap describes
+remains future M1 work under the accepted [C03 contract](json-schema.md). The roadmap describes
 planned work; the published backlog links the corresponding GitHub milestones
 and issues. Creating an issue does not mean its feature is implemented.

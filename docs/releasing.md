@@ -51,3 +51,10 @@ Document compatibility of both the package and the YAML schema. A package
 version change does not automatically change `schema_version`. Before an
 incompatible configuration release, define and test a migration strategy.
 Release cadence and supported-version duration remain maintainer decisions.
+
+The accepted [C03 schema/editor contract](json-schema.md) keeps the v1 artifact
+name stable while matching each client copy to the exact Enrama version/source
+revision. Development snapshots need a full commit reference. Manual client
+updates commit the schema, tool reference and provenance/settings changes
+together; there is no independent schema release counter or automatic updater.
+The artifact and its release integration are not implemented by this design.

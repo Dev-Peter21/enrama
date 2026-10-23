@@ -84,6 +84,7 @@ Start with the [documentation index](docs/README.md), or go directly to:
 - [Accepted CI and compatibility matrix design](docs/continuous-integration.md)
 - [Accepted YAML v1 contract](docs/configuration.md)
 - [Accepted safe YAML loader and diagnostics contract](docs/yaml-loader.md)
+- [Accepted JSON Schema and VS Code contract](docs/json-schema.md)
 - [Themes](docs/themes.md)
 - [Deployment](docs/deployment.md)
 - [Roadmap and implementation tasks](docs/roadmap.md)
