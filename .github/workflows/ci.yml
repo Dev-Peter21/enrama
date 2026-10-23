@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Quality (Linux, Python 3.12)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      UV_PYTHON: '3.12'
+      EXPECTED_PYTHON: '3.12'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: '0.13.5'
+          python-version: '3.12'
+          enable-cache: false
+      - name: Sync locked development environment
+        run: uv sync --locked
+      - name: Assert interpreter and record environment
+        run: uv run --locked python scripts/ci.py environment
+      - name: Lint
+        run: uv run --locked ruff check .
+      - name: Check formatting
+        run: uv run --locked ruff format --check .
+      - name: Strict typing
+        run: uv run --locked mypy src tests scripts
+      - name: Verify committed inputs remain unchanged
+        if: always()
+        run: git diff --exit-code -- pyproject.toml uv.lock .python-version build-constraints.txt
+      - name: Retain quality diagnostics
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: quality-linux-py3.12-reports
+          path: reports/
+          retention-days: 7
+          if-no-files-found: warn
+
+  verify:
+    name: Verify (${{ matrix.os }}, Python ${{ matrix.python }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: linux, runner: ubuntu-24.04, python: '3.12'}
+          - {os: linux, runner: ubuntu-24.04, python: '3.13'}
+          - {os: linux, runner: ubuntu-24.04, python: '3.14'}
+          - {os: linux, runner: ubuntu-24.04, python: '3.15'}
+          - {os: macos, runner: macos-15, python: '3.12'}
+          - {os: windows, runner: windows-2025, python: '3.12'}
+    env:
+      UV_PYTHON: ${{ matrix.python }}
+      EXPECTED_PYTHON: ${{ matrix.python }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: '0.13.5'
+          python-version: ${{ matrix.python }}
+          enable-cache: false
+      - name: Sync locked development environment
+        run: uv sync --locked
+      - name: Assert interpreter and record environment
+        run: uv run --locked python scripts/ci.py environment
+      - name: Test distributions and CI gates
+        run: uv run --locked pytest --junitxml=reports/pytest.xml
+      - name: Require positive successful test evidence
+        run: uv run --locked python scripts/ci.py report
+      - name: Build constrained distributions
+        run: uv build --build-constraint build-constraints.txt --require-build-hashes
+      - name: Require both archives and record hashes
+        run: uv run --locked python scripts/ci.py artifacts
+      - name: Verify committed inputs remain unchanged
+        if: always()
+        run: git diff --exit-code -- pyproject.toml uv.lock .python-version build-constraints.txt
+      - name: Retain test and environment reports
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: verify-${{ matrix.os }}-py${{ matrix.python }}-reports
+          path: reports/
+          retention-days: 7
+          if-no-files-found: warn
+      - name: Retain available distributions
+        if: always() && hashFiles('dist/*') != ''
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: verify-${{ matrix.os }}-py${{ matrix.python }}-distributions
+          path: |
+            dist/*.whl
+            dist/*.tar.gz
+          retention-days: 7
+          if-no-files-found: error

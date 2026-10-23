@@ -86,6 +86,7 @@ def test_install_outside_checkout(
         "import enrama, importlib.metadata as m, json; "
         "d=m.distribution('enrama'); "
         "print(json.dumps({'origin': enrama.__file__, 'prefix': __import__('sys').prefix, "
+        "'interpreter': list(__import__('sys').version_info[:2]), "
         "'name': d.metadata['Name'], 'version': d.version, "
         "'python': d.metadata['Requires-Python'], "
         "'license': d.metadata['License-Expression'], "
@@ -96,10 +97,12 @@ def test_install_outside_checkout(
         cwd=tmp_path,
     )
     assert probe.returncode == 0, probe.stderr
+    print(probe.stdout)
     metadata = json.loads(probe.stdout)
     assert Path(metadata["origin"]).is_relative_to(Path(metadata["prefix"]))
     assert not Path(metadata["origin"]).is_relative_to(ROOT)
     assert "site-packages" in Path(metadata["origin"]).parts
+    assert metadata.get("interpreter") == list(sys.version_info[:2])
     assert metadata["name"] == "enrama"
     assert metadata["version"] == "0.1.0.dev0"
     assert metadata["python"] == ">=3.12"
