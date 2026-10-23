@@ -17,7 +17,8 @@ def validate_asset_path(value: str) -> str:
         or portable.startswith("/")
         or re.match(r"[a-zA-Z][a-zA-Z0-9+.-]*:", value)
         or ".." in parts
-        or (parts and parts[0].casefold() == "dist")
+        # Windows directory normalization also maps a trailing dot to dist/.
+        or (parts and parts[0].removesuffix(".").casefold() == "dist")
     ):
         raise ValueError("Use a local relative asset path outside dist/, without '..'")
     return value

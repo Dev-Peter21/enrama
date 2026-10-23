@@ -426,3 +426,21 @@ def test_site_and_image_validators_are_wired_without_reading_client_files(
         )
     with pytest.raises(ValidationError):
         validate("SocialConfig", {**VALID["SocialConfig"], "url": "http://example.com"})
+
+
+@pytest.mark.parametrize(
+    ("model", "field"),
+    [
+        ("ProfileConfig", "avatar"),
+        ("SiteConfig", "favicon"),
+        ("SiteConfig", "og_image"),
+    ],
+)
+@pytest.mark.parametrize(
+    "value", ["dist./logo.png", "./DiSt./logo.png", "dist.\\logo.png"]
+)
+def test_windows_output_directory_alias_is_rejected_in_every_asset_field(
+    model: str, field: str, value: str
+) -> None:
+    with pytest.raises(ValidationError):
+        validate(model, {**VALID[model], field: value})

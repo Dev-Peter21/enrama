@@ -38,11 +38,13 @@ Import models from `enrama.config` and pass already-parsed Python data:
 ```python
 from enrama.config import EnramaConfig
 
-config = EnramaConfig.model_validate({
-    "schema_version": 1,
-    "site": {"title": "My page", "description": "My links", "language": "en"},
-    "profile": {"name": "My profile"},
-})
+config = EnramaConfig.model_validate(
+    {
+        "schema_version": 1,
+        "site": {"title": "My page", "description": "My links", "language": "en"},
+        "profile": {"name": "My profile"},
+    }
+)
 assert config.site.url is None
 ```
 
@@ -303,7 +305,8 @@ root, not the shell working directory. `./assets/logo.png` is an intended form.
 These fields are never remote URLs, embedded data, or requests to download files.
 
 C01 validates their lexical path shape: reject absolute/drive/UNC paths, parent
-traversal components, and references into the reserved project `dist/` tree.
+traversal components, and references into the reserved project `dist/` tree,
+including its case variants and Windows trailing-dot alias `dist.`.
 Do not expand environment variables or the user's home directory. G01 must check
 actual existence, supported file types, containment after symlink resolution,
 and safe copying. Asset formats, size limits, and naming collisions remain O04;
