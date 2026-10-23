@@ -44,7 +44,7 @@ Enrama account, production backend, or database will be required.
 
 - Python 3.12+, distributed through PyPI and GitHub.
 - `enrama init`, `validate`, `build`, and `preview` commands.
-- Typed, versioned YAML configuration for profile, links, theme, and assets.
+- Typed, versioned YAML configuration for profile, links, socials, theme, and assets.
 - Two responsive themes: `minimal` and `bold`.
 - Semantic HTML, accessible links, SEO metadata, Open Graph, and favicon support.
 - Static output in `dist/` and a documented GitHub Pages deployment recipe.
@@ -77,7 +77,7 @@ Start with the [documentation index](docs/README.md), or go directly to:
 - [CLI and filesystem contract](docs/cli-contract.md)
 - [Python development setup](docs/development-setup.md)
 - [Accepted CI and compatibility matrix design](docs/continuous-integration.md)
-- [Draft YAML contract](docs/configuration.md)
+- [Accepted YAML v1 contract](docs/configuration.md)
 - [Themes](docs/themes.md)
 - [Deployment](docs/deployment.md)
 - [Roadmap and implementation tasks](docs/roadmap.md)

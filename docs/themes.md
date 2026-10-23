@@ -10,8 +10,10 @@ Status: requirements only. Neither theme has been implemented.
 | `bold` | Stronger visual hierarchy and prominent link treatments |
 
 Both themes consume the same validated configuration and preserve the same
-content, link order, disabled-link behavior, metadata, and accessibility.
+content, link/social order, disabled-entry behavior, metadata, and accessibility.
 Choosing a theme changes presentation, not the meaning of the data.
+The accepted [YAML v1 contract](configuration.md) defines shared color defaults,
+the two collections, optional images, and metadata behavior without `site.url`.
 
 ## Requirements
 
@@ -29,9 +31,13 @@ must be decided before declaring the themes accessible under user customization.
 
 ## Assets and extension
 
-Use a controlled icon catalog with explicit names and licensed distributable
-assets. The names in the configuration example are design targets; the catalog
-and licensing must be confirmed in M1/M3.
+Use the accepted [platform and general-icon catalogs](configuration.md#controlled-catalogs).
+General icons come from Lucide; platform marks come from Bootstrap Icons.
+The platform selects its icon and default accessible label without restricting
+the URL's domain. Only the general catalog is valid for `links[].icon`.
+U03 must pin and bundle the selected SVGs, retain applicable upstream license
+notices, and test installed-package rendering without a remote icon service.
+No icon assets have been bundled yet.
 
 Package the built-in templates and styles with the Python distribution, and test
 rendering from an installed wheel. Client images are separate from package assets.

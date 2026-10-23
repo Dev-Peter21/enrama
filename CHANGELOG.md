@@ -7,6 +7,12 @@ repository; a roadmap target does not imply that a release exists.
 
 ### Added
 
+- Accepted C01 YAML v1 contract: strict models/field policy, defaults and limits,
+  separate links/socials with shared ID uniqueness, optional public site URL,
+  URL and language validation, local image references, platform/icon catalogs,
+  examples, and future acceptance cases. This is documentation only; no models,
+  loader, schema, assets, or CLI/generator behavior are implemented by this change.
+
 - F03 implementation on `develop`: SHA-pinned read-only CI, Linux/Python
   3.12–3.15 plus macOS and Windows/3.12 verification, explicit managed Python
   patches, quality checks, isolated distribution tests, seven-day reports and
