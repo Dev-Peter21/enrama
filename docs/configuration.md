@@ -439,7 +439,8 @@ generator versions accept identifiers those versions do not know.
 - **C03:** generate JSON Schema from implemented models and document editor use
   under the accepted [JSON Schema/VS Code contract](json-schema.md): structural
   assistance, local client copy, exact revision matching, and manual updates.
-  No artifact exists yet; C01/C02 remain authoritative for complete validation.
+  The artifact/helper are implemented on `develop`; see
+  [C03 verification](verification/c03.md). C01/C02 retain complete validation authority.
 - **G01:** actual asset resolution, file-format/size checks, and copying.
 - **G02:** HTML escaping, metadata omission/base-path handling, and rendering.
 - **U03/U04:** bundled icons, licenses, themes, layout, and accessibility evidence.

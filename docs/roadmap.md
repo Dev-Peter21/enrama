@@ -106,8 +106,9 @@ independent documentation/design work to happen sooner.
 - **Contract:** The accepted [C03 design](json-schema.md), agreed on 2026-10-23,
   defines validation-mode Draft 2020-12 generation, structural editor assistance,
   a local copy per client, stable v1 artifact naming, exact tool/source provenance,
-  and manual updates committed with the client tool reference. Documentation
-  only; future implementation targets `develop` after separate authorization.
+  and manual updates committed with the client tool reference. Implementation
+  and [verification evidence](verification/c03.md) are delivered on `develop`,
+  awaiting maintainer acceptance; issue #7 stays open.
 - **Dependencies:** C01, C02.
 - **Acceptance:** The checked/generated artifact reflects model-expressed
   structural constraints, accepts representative valid examples, rejects

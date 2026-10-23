@@ -30,7 +30,8 @@ The accepted [C03 contract](json-schema.md#implementation-acceptance)
 defines deterministic generation/staleness checks, schema validation of
 representative examples/structural failures, documented runtime-only rules,
 exact client provenance, and actual local/offline VS Code completion/diagnostic
-evidence. Execution is recorded separately in C03 verification. A schema check
+evidence. Execution is recorded in [C03 verification](verification/c03.md),
+including actual VS Code Extension Host provider results. A schema check
 does not replace C01/C02 validation or demonstrate an editor session.
 
 ## Security regression cases

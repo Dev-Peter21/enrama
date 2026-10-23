@@ -1,7 +1,8 @@
 # Documentation
 
 Enrama includes its F02 Python package/tooling foundation and F03 CI on `develop`.
-The C01 configuration models and C02 safe YAML loader/diagnostics are also implemented there.
+The C01 models, C02 safe YAML loader/diagnostics and C03 generated editor schema
+are also implemented there.
 The CLI, generator, themes, and editor remain planned unless stated otherwise.
 
 | Document | Purpose |
@@ -22,6 +23,7 @@ The CLI, generator, themes, and editor remain planned unless stated otherwise.
 | [F02 verification](verification/f02.md) | Executed Python 3.12 setup and artifact evidence |
 | [C01 verification](verification/c01.md) | Model/validator tests, dependency/data snapshot, and isolated artifact evidence |
 | [C02 verification](verification/c02.md) | Executed loader, diagnostics, file-boundary, dependency source-build, and installed-consumer evidence |
+| [C03 verification](verification/c03.md) | Executed schema/drift/packaging tests, actual VS Code provider and offline evidence, and scope limits |
 | [Testing](testing.md) | Validation strategy and security/packaging coverage |
 | [Releasing](releasing.md) | Intended release process and first-release gates |
 | [Decisions](decisions.md) | Accepted choices and decisions still requiring review |
@@ -32,7 +34,7 @@ Community guidance lives at the repository root:
 [security](../SECURITY.md). Changes are tracked in the [changelog](../CHANGELOG.md).
 
 The source of truth for product scope is [product.md](product.md). The YAML v1
-contract is implemented by C01 models and the C02 loader; generated schema
-remains future M1 work under the accepted [C03 contract](json-schema.md). The roadmap describes
+contract is implemented by C01 models and the C02 loader; C03 supplies the
+[generated structural schema](json-schema.md) for editor assistance. The roadmap describes
 planned work; the published backlog links the corresponding GitHub milestones
 and issues. Creating an issue does not mean its feature is implemented.

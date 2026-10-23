@@ -17,6 +17,8 @@ def main() -> int:
     try:
         if output.parent.is_symlink() or output.is_symlink():
             raise OSError("Schema directory and artifact must not be symbolic links")
+        if output.exists() and not output.is_file():
+            raise OSError("Schema artifact must be a regular file")
         expected = generate_schema()
         if args.check:
             if not output.exists() or output.read_bytes() != expected:

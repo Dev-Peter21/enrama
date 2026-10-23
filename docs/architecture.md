@@ -51,7 +51,9 @@ source marks feed safe structured diagnostics. The core does not print or exit.
 The accepted [C03 contract](json-schema.md) defines a model-derived structural
 schema for local VS Code assistance. It does not reproduce every Python
 validator or loader restriction; C01/C02 remain authoritative. Schema generation
-and the checked artifact are future implementation, separate from this design.
+and the checked artifact are implemented on `develop`; the internal helper
+checks the artifact in CI. Actual editor evidence is recorded in
+[C03 verification](verification/c03.md).
 
 ## Selected technologies
 

@@ -1,10 +1,12 @@
 # JSON Schema and VS Code contract
 
-Status: **accepted C03 design for the 0.1 MVP**, agreed on 2026-10-23 for
+Status: **C03 implemented on develop, awaiting maintainer acceptance**, following
+the contract agreed on 2026-10-23 for
 [issue #7](https://github.com/Dev-Peter21/enrama/issues/7).
 Implementation was authorized for **`develop`**. The checked artifact and
-generation/check helper are implemented; full delivery/editor evidence will be
-recorded in the verification record. Issue #7 remains open for acceptance.
+generation/check helper and focused tests are implemented. See
+[C03 verification](verification/c03.md) for actual editor/provider evidence and
+known runtime gaps. Issue #7 remains open for acceptance.
 
 ## Purpose and chosen approach
 
@@ -168,7 +170,7 @@ extension or running an Enrama server is not part of this contract.
 ## Implementation acceptance
 
 These are the acceptance requirements. Executed tests and editor evidence are
-recorded in the C03 verification record; this matrix alone is not test evidence.
+recorded in [C03 verification](verification/c03.md); this matrix alone is not test evidence.
 
 | Case | Required evidence |
 | --- | --- |
@@ -191,12 +193,13 @@ generation alone is not proof that VS Code was exercised. Do not report zero
 collected tests, skipped editor verification or an unavailable extension as
 passing editor evidence.
 
-## Builder choices and delivery boundary
+## Implementation choices and delivery boundary
 
-The later implementation plan may choose internal generator/check entry points,
-JSON formatting details, focused test libraries/development dependencies and
-exact tested editor versions. Those choices must preserve deterministic output,
-one model authority, the fixed artifact path and the approved client workflow.
+The implementation uses the pure generation API and internal helper documented
+below, deterministic two-space/sorted-key JSON, and dev-only jsonschema tests.
+Actual editor versions and execution evidence are recorded separately. These
+choices preserve one model authority, the fixed artifact path and the approved
+client workflow.
 No new public CLI command, runtime schema service, package publication workflow,
 or independent schema release policy is implied.
 

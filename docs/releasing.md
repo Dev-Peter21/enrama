@@ -57,4 +57,5 @@ name stable while matching each client copy to the exact Enrama version/source
 revision. Development snapshots need a full commit reference. Manual client
 updates commit the schema, tool reference and provenance/settings changes
 together; there is no independent schema release counter or automatic updater.
-The artifact and its release integration are not implemented by this design.
+C03 implements the checked artifact and developer helper on `develop`; public
+release integration remains future work. See [C03 verification](verification/c03.md).

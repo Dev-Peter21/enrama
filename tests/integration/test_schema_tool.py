@@ -1,5 +1,6 @@
 """The repository helper generates/checks only its own artifact from any cwd."""
 
+import os
 import shutil
 import subprocess
 import sys
@@ -122,3 +123,24 @@ def test_invalid_argument_is_usage_failure(helper: Path, tmp_path: Path) -> None
     result = invoke(helper, tmp_path, "--output", "other.json")
     assert result.returncode == 2
     assert not artifact(helper).exists()
+
+
+@pytest.mark.skipif(
+    not hasattr(os, "mkfifo"), reason="FIFOs are unavailable on Windows"
+)
+@pytest.mark.parametrize("check", [False, True])
+def test_fifo_artifact_fails_without_waiting_for_a_peer(
+    helper: Path, tmp_path: Path, check: bool
+) -> None:
+    output = artifact(helper)
+    output.parent.mkdir()
+    os.mkfifo(output)
+    result = subprocess.run(
+        [sys.executable, "-I", str(helper), *(["--check"] if check else [])],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        timeout=3,
+    )
+    assert result.returncode == 1
+    assert "Traceback" not in result.stderr

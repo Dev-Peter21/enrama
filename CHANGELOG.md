@@ -7,6 +7,13 @@ repository; a roadmap target does not imply that a release exists.
 
 ### Added
 
+- C03 implementation on `develop`: deterministic validation-mode Draft 2020-12
+  artifact, pure model-derived generation, an internal generation/check helper,
+  CI staleness gate and dev-only schema validation tests. Includes source-archive
+  artifact delivery, unchanged runtime dependencies, manual client/provenance
+  documentation and actual VS Code/Red Hat YAML provider/offline verification.
+  No product CLI, site generator, updater, package publication or deployment.
+
 - Accepted C03 JSON Schema/VS Code design: model-derived validation-mode Draft
   2020-12, structural editor assistance with C01/C02 authority, a local schema
   copy per client, stable v1 naming/exact revision provenance, and manual
