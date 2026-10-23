@@ -77,8 +77,8 @@ independent documentation/design work to happen sooner.
 - **Scope:** Define Pydantic v2 models for the configuration and resolve O03,
   including fields for the promised social, favicon, and Open Graph support.
 - **Contract:** The [YAML v1 field policy](configuration.md) was accepted on
-  2026-10-23 and resolves O03 at design level. Models and tests remain pending;
-  documentation acceptance does not complete this implementation task.
+  2026-10-23 and resolves O03. Models and tests were subsequently implemented on
+  `develop`; [verification evidence](verification/c01.md) awaits maintainer acceptance.
 - **Dependencies:** F02; maintainer review of the public contract.
 - **Acceptance:** Valid examples and invalid types/defaults/unknown fields have
   tests. Stable unique link IDs, list order, enabled flags, and schema-version

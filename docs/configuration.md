@@ -1,10 +1,11 @@
 # YAML v1 configuration contract
 
-Status: **accepted design for the 0.1 MVP**, agreed on 2026-10-23 for
+Status: **implemented C01 models on `develop`**, following the contract agreed on 2026-10-23 for
 [C01 / issue #5](https://github.com/Dev-Peter21/enrama/issues/5).
-This is the normative field contract for `schema_version: 1`, not evidence of
-implemented models. No configuration models, YAML loader, generated JSON Schema,
-CLI, renderer, or icon assets are delivered by this documentation change.
+This is the normative field contract for `schema_version: 1`. The six pure data
+models, validators, and presentation catalogs are implemented. YAML loading,
+generated JSON Schema, CLI, rendering, and icon assets remain separate tasks.
+See the [C01 verification record](verification/c01.md) for actual evidence.
 
 ## Purpose and approach
 
@@ -27,10 +28,27 @@ The reviewed choices are:
 
 ## Model boundaries
 
-The planned Pydantic v2 models are `EnramaConfig`, `SiteConfig`, `ProfileConfig`,
+The Pydantic v2 models are `EnramaConfig`, `SiteConfig`, `ProfileConfig`,
 `ThemeConfig`, `LinkConfig`, and `SocialConfig`. The models validate data without
-opening files, rendering templates, making network requests, or printing errors.
+opening client files, rendering templates, making network requests, or printing errors.
 Cross-collection ID uniqueness belongs to the root model.
+
+Import models from `enrama.config` and pass already-parsed Python data:
+
+```python
+from enrama.config import EnramaConfig
+
+config = EnramaConfig.model_validate({
+    "schema_version": 1,
+    "site": {"title": "My page", "description": "My links", "language": "en"},
+    "profile": {"name": "My profile"},
+})
+assert config.site.url is None
+```
+
+Invalid data raises Pydantic `ValidationError` with structured field locations.
+`SocialConfig.icon` is a derived read-only Python property, not an accepted input
+field or an extra serialized field. No YAML parsing is performed by these APIs.
 
 ### Root fields
 
@@ -214,9 +232,12 @@ and legacy grandfathered forms outside this shape are not supported by YAML v1.
 - Do not silently replace deprecated identifiers/aliases, repair typos, or
   convert underscores. A registered deprecated identifier is not automatically
   rewritten to its preferred replacement.
-- Pin the registry data with the eventual implementation so the same generator
-  version has the same validation results offline. Selecting a validator and
-  its compatible dependency/data version belongs to C01 implementation.
+- C01 uses the IANA registry snapshot dated **2021-08-06**, included in the
+  exactly pinned `langcodes==3.5.1` dependency. It reads the trusted installed
+  registry resource once at module import and validates from in-memory sets by
+  subtag type. It does not use langcodes' alias-repair or CLDR validity helpers.
+  The fixed snapshot means newer registrations are not automatically accepted;
+  a registry update is an intentional dependency/data change with tests.
 
 Accepted examples: `es`, `es-AR`, `es-419`, `zh-Hant-TW`, and `sl-rozaj`.
 Rejected examples: `es_AR`, `Español`, `es-AB` (unregistered region),
@@ -367,7 +388,9 @@ PNG filenames illustrate path fields, not a final supported-format decision.
 
 ## Required acceptance cases
 
-These are future test requirements, not passing-test claims.
+These cases define the model test requirements. Executed counts and the
+remaining downstream rendering/asset boundaries are recorded in
+[C01 verification](verification/c01.md).
 
 | Case | Expected result |
 | --- | --- |
@@ -403,9 +426,9 @@ change requires an explicit version/migration decision before implementation.
 Future additions to controlled catalogs must be documented; they do not make old
 generator versions accept identifiers those versions do not know.
 
-- **C01:** implement pure Pydantic models, local validation/catalog data, defaults,
-  and model tests against this contract. Source implementation targets `develop`
-  only after separate authorization.
+- **C01:** implements pure Pydantic models, local validation/catalog data,
+  defaults, and model tests against this contract on `develop`, following
+  implementation authorization on 2026-10-23.
 - **C02:** safe YAML parsing, rejection of unsafe constructors, and useful file/
   field diagnostics. No parser is delivered here.
 - **C03:** generate JSON Schema from implemented models and document editor use;
@@ -414,7 +437,7 @@ generator versions accept identifiers those versions do not know.
 - **G02:** HTML escaping, metadata omission/base-path handling, and rendering.
 - **U03/U04:** bundled icons, licenses, themes, layout, and accessibility evidence.
 
-The present change documents the accepted contract and resolves O03. Issue #5
-remains open until model implementation and its acceptance evidence are reviewed.
-It does not authorize CLI/generator work, dependency installation, PyPI
-publication, or deployment.
+The accepted contract resolves O03. Issue #5 remains open for maintainer
+acceptance of the implementation and evidence. C01 adds only its used runtime
+dependencies, Pydantic and the pinned registry-data provider. CLI/generator work,
+PyPI publication, and deployment are not delivered or authorized by this issue.

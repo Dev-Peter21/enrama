@@ -17,6 +17,14 @@ themes, preview, and the editor remain their existing roadmap tasks. Do not add
 placeholder commands that imply the accepted CLI contract is already implemented.
 F02 does not publish to PyPI or create a public release.
 
+C01 subsequently adds the [configuration models](configuration.md), using
+`pydantic>=2.14.1,<3` and `langcodes==3.5.1` at runtime. The lock resolves
+Pydantic 2.14.1; the exact langcodes pin fixes its bundled IANA registry snapshot.
+The source still has no YAML loader, CLI, or generator. F02-only statements
+below about the original initializer-only package describe that foundation
+snapshot; current inclusion and installation checks also cover C01's modules
+and `py.typed` marker. See [C01 verification](verification/c01.md).
+
 ## Python versions
 
 | Concern | Accepted choice |
@@ -156,9 +164,9 @@ Review every changed version/hash and rerun artifact installation and repeatable
 build tests. The development editable install from `uv sync` is not the evidence
 for archive installation: pytest builds and installs each archive separately.
 
-The wheel explicitly includes the package initializer and generated metadata;
-the sdist includes the initializer, `pyproject.toml`, README, license, and build
-constraints. Hatchling also includes `.gitignore` and `PKG-INFO`. Tests, client
+The wheel explicitly includes the initializer, C01 modules, `py.typed`, and generated
+metadata; the sdist includes these sources, `pyproject.toml`, README, license, and
+build constraints. Hatchling also includes `.gitignore` and `PKG-INFO`. Tests, client
 files, environments, caches, and credentials are not distributed. Extend the
 inclusion lists and content tests together when future tasks add package files.
 
@@ -197,8 +205,9 @@ uv build --python 3.12 --build-constraint build-constraints.txt --require-build-
 
 The tests create temporary builds and two consumer environments outside the
 checkout. Each consumer uses isolated Python (`-I`) and verifies the installed
-import location, metadata, MIT license, absence of runtime dependencies and CLI
-entry points. Further tests compare archive hashes, reject synthetic private
+import location, metadata, MIT license, declared runtime dependencies without
+developer tools, and absence of CLI entry points. C01 also validates models from
+each installed archive. Further tests compare archive hashes, reject synthetic private
 files, and exercise missing/stale lock rejection without changing the inputs.
 uv must remain on PATH. Downloads from PyPI may be needed for pinned tools;
 no test uploads artifacts or requires publishing credentials.

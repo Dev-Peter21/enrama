@@ -1,6 +1,7 @@
 # Documentation
 
 Enrama includes its F02 Python package/tooling foundation and F03 CI on `develop`.
+The C01 configuration models and local validators are also implemented there.
 The CLI, generator, themes, and editor remain planned unless stated otherwise.
 
 | Document | Purpose |
@@ -17,6 +18,7 @@ The CLI, generator, themes, and editor remain planned unless stated otherwise.
 | [Published backlog](backlog.md) | MVP issue index, Kanban workflow, and final acceptance gate |
 | [F03 verification](verification/f03.md) | Actual Actions runs, interpreter versions, artifacts, and failure/cancellation checks |
 | [F02 verification](verification/f02.md) | Executed Python 3.12 setup and artifact evidence |
+| [C01 verification](verification/c01.md) | Model/validator tests, dependency/data snapshot, and isolated artifact evidence |
 | [Testing](testing.md) | Validation strategy and security/packaging coverage |
 | [Releasing](releasing.md) | Intended release process and first-release gates |
 | [Decisions](decisions.md) | Accepted choices and decisions still requiring review |
@@ -27,7 +29,7 @@ Community guidance lives at the repository root:
 [security](../SECURITY.md). Changes are tracked in the [changelog](../CHANGELOG.md).
 
 The source of truth for product scope is [product.md](product.md). The YAML v1
-contract is accepted design; its models, loader, and generated schema remain
-unimplemented M1 work. The roadmap describes
+contract is implemented by the C01 models; its loader and generated schema
+remain unimplemented M1 work. The roadmap describes
 planned work; the published backlog links the corresponding GitHub milestones
 and issues. Creating an issue does not mean its feature is implemented.

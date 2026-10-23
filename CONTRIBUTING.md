@@ -1,7 +1,7 @@
 # Contributing to Enrama
 
 Thank you for helping make independently hosted link pages easier to maintain.
-The Python package foundation and developer tooling are implemented on
+The Python package foundation, configuration models, and developer tooling are implemented on
 `develop`. The product CLI and generator remain planned.
 
 ## Before you start

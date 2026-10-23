@@ -79,23 +79,52 @@ def test_install_outside_checkout(
         cwd=tmp_path,
     )
     assert installed.returncode == 0, installed.stderr
-    probe = run(
-        str(python),
-        "-I",
-        "-c",
-        "import enrama, importlib.metadata as m, json; "
-        "d=m.distribution('enrama'); "
-        "print(json.dumps({'origin': enrama.__file__, 'prefix': __import__('sys').prefix, "
-        "'interpreter': list(__import__('sys').version_info[:2]), "
-        "'name': d.metadata['Name'], 'version': d.version, "
-        "'python': d.metadata['Requires-Python'], "
-        "'license': d.metadata['License-Expression'], "
-        "'license_files': d.metadata.get_all('License-File'), "
-        "'requires': d.requires, 'entry_points': list(d.entry_points), "
-        "'installed': sorted(x.metadata['Name'] for x in m.distributions()), "
-        "'license_text': d.read_text('licenses/LICENSE')}))",
-        cwd=tmp_path,
-    )
+    probe_code = """
+import enrama
+import importlib.metadata as m
+import json
+import sys
+from enrama.config import EnramaConfig
+from enrama.config._language import REGISTRY_DATE
+from pydantic import ValidationError
+
+d = m.distribution("enrama")
+metadata = {
+    "origin": enrama.__file__, "prefix": sys.prefix,
+    "interpreter": list(sys.version_info[:2]),
+    "name": d.metadata["Name"], "version": d.version,
+    "python": d.metadata["Requires-Python"],
+    "license": d.metadata["License-Expression"],
+    "license_files": d.metadata.get_all("License-File"),
+    "requires": d.requires, "entry_points": list(d.entry_points),
+    "installed": sorted(x.metadata["Name"] for x in m.distributions()),
+    "license_text": d.read_text("licenses/LICENSE"),
+    "registry": REGISTRY_DATE,
+}
+
+def forbid_io(event, arguments):
+    if event == "open" or event.startswith("socket."):
+        raise AssertionError("Model validation attempted I/O: " + event)
+
+sys.addaudithook(forbid_io)
+config = EnramaConfig.model_validate({
+    "schema_version": 1,
+    "site": {"title": "Shop", "description": "Local shop", "language": "ES-ar"},
+    "profile": {"name": "Shop", "avatar": "./assets/not-present.png"},
+    "links": [{"id": "contact", "title": "Email", "url": "mailto:hi@example.com"}],
+    "socials": [{"id": "social", "platform": "github", "url": "https://unrelated.example"}],
+})
+metadata["config"] = config.model_dump()
+metadata["social_icon"] = config.socials[0].icon
+try:
+    EnramaConfig.model_validate({**config.model_dump(), "schema_version": True})
+except ValidationError as error:
+    metadata["invalid_version_location"] = list(error.errors()[0]["loc"])
+else:
+    raise AssertionError("Invalid version accepted")
+print(json.dumps(metadata))
+"""
+    probe = run(str(python), "-I", "-c", probe_code, cwd=tmp_path)
     assert probe.returncode == 0, probe.stderr
     print(probe.stdout)
     metadata = json.loads(probe.stdout)
@@ -109,9 +138,26 @@ def test_install_outside_checkout(
     assert metadata["license"] == "MIT"
     assert metadata["license_files"] == ["LICENSE"]
     assert "Permission is hereby granted" in metadata["license_text"]
-    assert not metadata["requires"]
+    assert set(metadata["requires"]) == {"langcodes==3.5.1", "pydantic<3,>=2.14.1"}
+    assert metadata["registry"] == "2021-08-06"
+    assert metadata["config"]["site"]["language"] == "es-AR"
+    assert metadata["config"]["site"]["url"] is None
+    assert metadata["config"]["socials"][0]["label"] == "GitHub"
+    assert metadata["social_icon"] == "github"
+    assert metadata["invalid_version_location"] == ["schema_version"]
     assert metadata["entry_points"] == []
-    assert metadata["installed"] == ["enrama"]
+    assert {"enrama", "pydantic", "langcodes"}.issubset(metadata["installed"])
+    assert not {
+        "pytest",
+        "ruff",
+        "mypy",
+        "hatchling",
+        "uv",
+        "PyYAML",
+        "typer",
+        "jinja2",
+        "fastapi",
+    }.intersection(metadata["installed"])
 
 
 def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
@@ -149,6 +195,13 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
     with zipfile.ZipFile(first[".whl"]) as wheel:
         assert set(wheel.namelist()) == {
             "enrama/__init__.py",
+            "enrama/config/__init__.py",
+            "enrama/config/_language.py",
+            "enrama/config/_paths.py",
+            "enrama/config/_urls.py",
+            "enrama/config/catalogs.py",
+            "enrama/config/models.py",
+            "enrama/py.typed",
             "enrama-0.1.0.dev0.dist-info/METADATA",
             "enrama-0.1.0.dev0.dist-info/WHEEL",
             "enrama-0.1.0.dev0.dist-info/RECORD",
@@ -158,6 +211,13 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
         files = {"/".join(item.name.split("/")[1:]) for item in sdist if item.isfile()}
         assert files == {
             "src/enrama/__init__.py",
+            "src/enrama/config/__init__.py",
+            "src/enrama/config/_language.py",
+            "src/enrama/config/_paths.py",
+            "src/enrama/config/_urls.py",
+            "src/enrama/config/catalogs.py",
+            "src/enrama/config/models.py",
+            "src/enrama/py.typed",
             "pyproject.toml",
             "README.md",
             "LICENSE",

@@ -1,6 +1,7 @@
 # Architecture
 
-Status: intended design. No application modules exist yet.
+Status: C01 configuration models are implemented on `develop`; the remaining
+application modules below are intended design.
 
 ## System boundary
 
@@ -45,8 +46,9 @@ implementation, independently of framework exception defaults.
 
 ## Selected technologies
 
-These choices come from the product brief. Dependencies are not installed or
-pinned yet; exact compatible versions belong in M0's metadata and lockfile.
+These choices come from the product brief. Tool/build versions are pinned by
+F02; C01 introduces Pydantic and exactly pinned langcodes registry data.
+Other runtime dependencies are introduced only when their modules use them.
 The accepted [F02 setup](development-setup.md) defines Python 3.12 local
 development, the target 3.12–3.15 matrix, version `0.1.0.dev0`, dependency groups,
 and separate control of isolated build requirements.

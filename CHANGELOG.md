@@ -7,6 +7,11 @@ repository; a roadmap target does not imply that a release exists.
 
 ### Added
 
+- C01 implementation on `develop`: six strict Pydantic YAML v1 data models,
+  URL/language/lexical-path validators, stable presentation catalogs, model tests,
+  and isolated wheel/sdist model validation. Adds used Pydantic and pinned
+  langcodes registry-data dependencies, without YAML loading or CLI/generation.
+
 - Accepted C01 YAML v1 contract: strict models/field policy, defaults and limits,
   separate links/socials with shared ID uniqueness, optional public site URL,
   URL and language validation, local image references, platform/icon catalogs,
