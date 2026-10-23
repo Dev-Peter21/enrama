@@ -93,7 +93,7 @@ jobs:
       - name: Require positive successful test evidence
         run: uv run --locked python scripts/ci.py report
       - name: Build constrained distributions
-        run: uv build --build-constraint build-constraints.txt --require-build-hashes
+        run: uv build --build-constraint intentional-missing-F03-probe.txt --require-build-hashes
       - name: Require both archives and record hashes
         run: uv run --locked python scripts/ci.py artifacts
       - name: Verify committed inputs remain unchanged
