@@ -1,0 +1,26 @@
+{
+  "minimal": {
+    "schema_version": 1,
+    "site": {"title": "Amapola Deco", "description": "Flores, plantas y regalos", "language": "es-AR"},
+    "profile": {"name": "Amapola Deco"}
+  },
+  "expanded": {
+    "schema_version": 1,
+    "site": {
+      "title": "Amapola Deco", "description": "Flores, plantas y regalos", "language": "es-AR",
+      "url": "https://example.com/amapola/", "favicon": "./assets/favicon.png", "og_image": "./assets/social-card.png"
+    },
+    "profile": {"name": "Amapola Deco", "bio": "Flores y detalles para cada ocasión", "avatar": "./assets/logo.png"},
+    "theme": {"name": "minimal", "primary_color": "#D97A98", "background_color": "#FFF8F7", "text_color": "#252525"},
+    "links": [
+      {"id": "contact-whatsapp", "title": "Escribinos por WhatsApp", "url": "https://wa.me/5491100000000", "icon": "message-circle", "enabled": true},
+      {"id": "catalog", "title": "Nuestro catálogo", "url": "https://example.com/catalogo", "icon": "shopping-bag"},
+      {"id": "contact-email", "title": "Escribinos por email", "url": "mailto:hello@example.com"},
+      {"id": "seasonal-offer", "title": "Promoción de temporada", "url": "https://example.com/promocion", "enabled": false}
+    ],
+    "socials": [
+      {"id": "social-instagram", "platform": "instagram", "url": "https://www.instagram.com/example/"},
+      {"id": "social-whatsapp", "platform": "whatsapp", "label": "WhatsApp de Amapola", "url": "https://wa.me/5491100000000"}
+    ]
+  }
+}
