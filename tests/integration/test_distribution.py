@@ -94,6 +94,7 @@ import sys
 from pathlib import Path
 from enrama.config import EnramaConfig, ConfigurationError, load_config, parse_config
 from enrama.config._language import REGISTRY_DATE
+from enrama.config.schema import generate_schema
 from pydantic import ValidationError
 
 d = m.distribution("enrama")
@@ -123,6 +124,10 @@ before = sorted(str(p) for p in Path.cwd().iterdir())
 metadata["loaded"] = load_config(selected).model_dump()
 assert selected.read_bytes() == yaml_bytes
 assert before == sorted(str(p) for p in Path.cwd().iterdir())
+
+generated_schema = json.loads(generate_schema())
+metadata["schema_dialect"] = generated_schema["$schema"]
+metadata["schema_required"] = generated_schema["required"]
 
 def forbid_io(event, arguments):
     if event == "open" or event.startswith("socket."):
@@ -185,6 +190,8 @@ print(json.dumps(metadata))
         "location": ["private"],
         "position": [6, 10],
     }
+    assert metadata["schema_dialect"] == "https://json-schema.org/draft/2020-12/schema"
+    assert set(metadata["schema_required"]) == {"schema_version", "site", "profile"}
     assert metadata["registry"] == "2021-08-06"
     assert metadata["config"]["site"]["language"] == "es-AR"
     assert metadata["config"]["site"]["url"] is None
@@ -200,6 +207,8 @@ print(json.dumps(metadata))
         "hatchling",
         "uv",
         "types-PyYAML",
+        "jsonschema",
+        "types-jsonschema",
         "typer",
         "jinja2",
         "fastapi",
@@ -250,6 +259,7 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
             "enrama/config/loader.py",
             "enrama/config/catalogs.py",
             "enrama/config/models.py",
+            "enrama/config/schema.py",
             "enrama/py.typed",
             "enrama-0.1.0.dev0.dist-info/METADATA",
             "enrama-0.1.0.dev0.dist-info/WHEEL",
@@ -269,6 +279,8 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
             "src/enrama/config/loader.py",
             "src/enrama/config/catalogs.py",
             "src/enrama/config/models.py",
+            "src/enrama/config/schema.py",
+            "schemas/enrama-v1.schema.json",
             "src/enrama/py.typed",
             "pyproject.toml",
             "README.md",

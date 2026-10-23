@@ -1,0 +1,289 @@
+{
+  "$defs": {
+    "LinkConfig": {
+      "additionalProperties": false,
+      "description": "Ordered call to action; disabled content remains fully validated.",
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "icon": {
+          "anyOf": [
+            {
+              "enum": [
+                "link",
+                "external-link",
+                "message-circle",
+                "mail",
+                "phone",
+                "shopping-bag",
+                "calendar",
+                "map-pin",
+                "file-text",
+                "download",
+                "globe",
+                "play"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Icon"
+        },
+        "id": {
+          "pattern": "^[a-z][a-z0-9-]{0,63}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "url"
+      ],
+      "title": "LinkConfig",
+      "type": "object"
+    },
+    "ProfileConfig": {
+      "additionalProperties": false,
+      "description": "Plain-text profile and optional client-local avatar.",
+      "properties": {
+        "avatar": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Avatar"
+        },
+        "bio": {
+          "default": "",
+          "maxLength": 300,
+          "title": "Bio",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "ProfileConfig",
+      "type": "object"
+    },
+    "SiteConfig": {
+      "additionalProperties": false,
+      "description": "Document metadata; a public base URL is optional for local work.",
+      "properties": {
+        "description": {
+          "maxLength": 300,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "favicon": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Favicon"
+        },
+        "language": {
+          "title": "Language",
+          "type": "string"
+        },
+        "og_image": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Og Image"
+        },
+        "title": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        }
+      },
+      "required": [
+        "title",
+        "description",
+        "language"
+      ],
+      "title": "SiteConfig",
+      "type": "object"
+    },
+    "SocialConfig": {
+      "additionalProperties": false,
+      "description": "Platform presentation is independent of the HTTPS destination domain.",
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "id": {
+          "pattern": "^[a-z][a-z0-9-]{0,63}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "platform": {
+          "enum": [
+            "instagram",
+            "facebook",
+            "whatsapp",
+            "youtube",
+            "tiktok",
+            "linkedin",
+            "github",
+            "x",
+            "telegram"
+          ],
+          "title": "Platform",
+          "type": "string"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "platform",
+        "url"
+      ],
+      "title": "SocialConfig",
+      "type": "object"
+    },
+    "ThemeConfig": {
+      "additionalProperties": false,
+      "description": "Both built-in themes share these color defaults.",
+      "properties": {
+        "background_color": {
+          "default": "#FFFFFF",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "title": "Background Color",
+          "type": "string"
+        },
+        "name": {
+          "default": "minimal",
+          "enum": [
+            "minimal",
+            "bold"
+          ],
+          "title": "Name",
+          "type": "string"
+        },
+        "primary_color": {
+          "default": "#2563EB",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "title": "Primary Color",
+          "type": "string"
+        },
+        "text_color": {
+          "default": "#252525",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "title": "Text Color",
+          "type": "string"
+        }
+      },
+      "title": "ThemeConfig",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Version-1 configuration with stable IDs shared by both collections.",
+  "properties": {
+    "links": {
+      "items": {
+        "$ref": "#/$defs/LinkConfig"
+      },
+      "maxItems": 100,
+      "title": "Links",
+      "type": "array"
+    },
+    "profile": {
+      "$ref": "#/$defs/ProfileConfig"
+    },
+    "schema_version": {
+      "maximum": 1,
+      "minimum": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "site": {
+      "$ref": "#/$defs/SiteConfig"
+    },
+    "socials": {
+      "items": {
+        "$ref": "#/$defs/SocialConfig"
+      },
+      "maxItems": 20,
+      "title": "Socials",
+      "type": "array"
+    },
+    "theme": {
+      "$ref": "#/$defs/ThemeConfig"
+    }
+  },
+  "required": [
+    "schema_version",
+    "site",
+    "profile"
+  ],
+  "title": "EnramaConfig",
+  "type": "object"
+}

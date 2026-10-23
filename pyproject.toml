@@ -38,6 +38,8 @@ dev = [
     "ruff==0.17.2",
     "mypy==2.4.0",
     "types-pyyaml==6.0.12.20260906",
+    "jsonschema==4.26.0",
+    "types-jsonschema==4.26.0.20261006",
 ]
 
 [tool.uv]
@@ -55,12 +57,14 @@ only-include = [
     "src/enrama/config/loader.py",
     "src/enrama/config/catalogs.py",
     "src/enrama/config/models.py",
+    "src/enrama/config/schema.py",
     "src/enrama/py.typed",
 ]
 sources = ["src"]
 
 [tool.hatch.build.targets.sdist]
 only-include = [
+    "schemas/enrama-v1.schema.json",
     "src/enrama/__init__.py",
     "src/enrama/config/__init__.py",
     "src/enrama/config/_language.py",
@@ -71,6 +75,7 @@ only-include = [
     "src/enrama/config/loader.py",
     "src/enrama/config/catalogs.py",
     "src/enrama/config/models.py",
+    "src/enrama/config/schema.py",
     "src/enrama/py.typed",
     "pyproject.toml",
     "README.md",
