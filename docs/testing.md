@@ -34,6 +34,16 @@ evidence. Execution is recorded in [C03 verification](verification/c03.md),
 including actual VS Code Extension Host provider results. A schema check
 does not replace C01/C02 validation or demonstrate an editor session.
 
+## Local asset acceptance
+
+The agreed [G01 contract](assets.md#future-implementation-acceptance) defines
+future tests for real image decoding, role-specific byte/pixel/container limits,
+animation rejection, all internal symlinks, special files, exact snapshot copying,
+content-path deduplication/collisions, staging protections and safe structured
+errors. No executable asset tests or Pillow dependency are introduced by that
+documentation task. Future implementation must also exercise installed wheel/sdist
+consumers and the existing six CI verification environments.
+
 ## Security regression cases
 
 C02's accepted [loader contract](yaml-loader.md#required-acceptance-cases) adds

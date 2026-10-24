@@ -7,6 +7,13 @@ repository; a roadmap target does not imply that a release exists.
 
 ### Added
 
+- Agreed G01 local asset contract: per-role PNG/JPEG/WebP/ICO support, fixed
+  byte/pixel/container limits, Pillow decoding, rejection of all internal
+  symlinks, unchanged validated snapshots, full-SHA-256 paths, deduplication and
+  protected collision/staging rules, structured English errors and future
+  acceptance cases. Documentation only; implementation later on `develop`.
+  No Pillow installation, source, fixtures, tests or build/lock changes.
+
 - C03 implementation on `develop`: deterministic validation-mode Draft 2020-12
   artifact, pure model-derived generation, an internal generation/check helper,
   CI staleness gate and dev-only schema validation tests. Includes source-archive

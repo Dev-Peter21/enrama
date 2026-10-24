@@ -33,7 +33,7 @@ CLI (0.1)                         Local editor (0.2)
 | Configuration | Safely load YAML, validate typed data and schema version | No rendering or terminal output |
 | Core/build | Coordinate validated configuration, renderer, and asset processing | Usable without Typer or FastAPI |
 | Rendering | Render trusted theme templates with validated data | Escape content; no arbitrary HTML from YAML |
-| Assets | Resolve, validate, and copy local files | Enforce client-project containment, including symlinks |
+| Assets | Resolve, validate, and copy local files | Enforce client-root containment; reject all internal symlinks |
 | Themes | Supply templates, CSS, and controlled presentation | Keep business rules in models/core |
 | Preview | Serve generated files locally | Default interface `127.0.0.1`; no required production service |
 | Editor (later) | Edit YAML and invoke existing services | Local by default; preserve YAML comments on save |
@@ -54,6 +54,12 @@ validator or loader restriction; C01/C02 remain authoritative. Schema generation
 and the checked artifact are implemented on `develop`; the internal helper
 checks the artifact in CI. Actual editor evidence is recorded in
 [C03 verification](verification/c03.md).
+
+The agreed [G01 asset contract](assets.md) defines local image formats and fixed
+byte/pixel limits, Pillow validation, byte-preserving staging copies, content-hash
+public paths and structured failures. G01 remains documentation only: Pillow
+and the asset module are not installed/implemented by this contract. G03 retains
+publication, output ownership, staging lifecycle, cleanup and concurrency.
 
 ## Selected technologies
 

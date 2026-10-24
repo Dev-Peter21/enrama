@@ -108,7 +108,8 @@ independent documentation/design work to happen sooner.
   a local copy per client, stable v1 artifact naming, exact tool/source provenance,
   and manual updates committed with the client tool reference. Implementation
   and [verification evidence](verification/c03.md) are delivered on `develop`,
-  awaiting maintainer acceptance; issue #7 stays open.
+  accepted by the maintainer on 2026-10-24; issue #7 is closed/completed and
+  its existing Kanban card is Done.
 - **Dependencies:** C01, C02.
 - **Acceptance:** The checked/generated artifact reflects model-expressed
   structural constraints, accepts representative valid examples, rejects
@@ -121,11 +122,15 @@ independent documentation/design work to happen sooner.
 ### G01 — Implement safe asset resolution and copying
 
 - **Scope:** Resolve client-owned files inside the client root and copy only
-  supported assets. Settle O04's asset and collision policies.
+  supported assets. O04 is resolved by the agreed [G01 contract](assets.md),
+  documented on 2026-10-24. No asset code/dependency/tests are delivered yet;
+  future implementation requires authorization on `develop`.
 - **Dependencies:** C02; relevant F01 filesystem rules.
 - **Acceptance:** Valid images copy correctly. Tests reject traversal, absolute
-  external paths, symlink escapes, unsupported assets, and collisions according
-  to the agreed policy. Original client files remain intact.
+  external paths, every internal symlink, special files, unsupported/invalid or
+  animated images, fixed resource limits, and content-path collisions under the
+  contract. Verify byte-preserving snapshots, deterministic paths and protected
+  staging writes. Original client files remain intact.
 
 ### G02 — Implement template rendering and metadata
 

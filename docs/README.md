@@ -15,6 +15,7 @@ The CLI, generator, themes, and editor remain planned unless stated otherwise.
 | [Configuration](configuration.md) | Accepted YAML v1 fields, defaults, validation, catalogs, compatibility, and future acceptance cases |
 | [Safe YAML loader and diagnostics](yaml-loader.md) | Accepted C02 input subset, fixed limits, source positions, diagnostic cap, Python API, and acceptance cases |
 | [JSON Schema and VS Code](json-schema.md) | Accepted C03 generation, structural-assistance limits, artifact versioning, manual client updates, and local editor configuration |
+| [Local assets](assets.md) | Agreed G01 formats, bounded Pillow validation, symlink rejection, content paths, collision/copy rules, diagnostics, and future acceptance |
 | [Themes](themes.md) | Built-in theme requirements and extension boundaries |
 | [Deployment](deployment.md) | Client repositories, static hosting, and Pages plan |
 | [Roadmap](roadmap.md) | Milestones, scoped tasks, dependencies, and completion evidence |
