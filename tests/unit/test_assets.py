@@ -381,3 +381,38 @@ def test_os_symlink_loop_is_also_invalid_input(
         module.prepare_assets(client_config("loop.png"), source=root / "enrama.yaml")
     assert error.value.diagnostics[0].category == "unsafe_path"
     assert error.value.kind == "invalid_input"
+
+
+@pytest.mark.parametrize("alias", ["uppercase", "unicode"])
+def test_filesystem_alias_cannot_bypass_reserved_root(root: Path, alias: str) -> None:
+    import unicodedata
+
+    module = api()
+    name = "work" if alias == "uppercase" else "caf\u00e9"
+    other = "WORK" if alias == "uppercase" else unicodedata.normalize("NFD", name)
+    reserved = root / name
+    reserved.mkdir()
+    (reserved / "pic.png").write_bytes(image_bytes())
+    if not (root / other / "pic.png").exists():
+        pytest.skip("filesystem does not alias these names")
+    with pytest.raises(module.AssetError) as error:
+        module.prepare_assets(
+            client_config(f"{other}/pic.png"),
+            source=root / "enrama.yaml",
+            reserved_paths=(reserved,),
+        )
+    assert error.value.diagnostics[0].category == "unsafe_path"
+
+
+def test_digest_collision_across_formats_is_explicit(
+    root: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    module = api()
+    (root / "a.png").write_bytes(image_bytes())
+    (root / "b.jpg").write_bytes(image_bytes("JPEG"))
+    monkeypatch.setattr(module, "_digest", lambda data: "0" * 64)
+    with pytest.raises(module.AssetError) as error:
+        module.prepare_assets(
+            client_config("a.png", og="b.jpg"), source=root / "enrama.yaml"
+        )
+    assert error.value.diagnostics[-1].category == "collision"

@@ -83,6 +83,28 @@ def _working_paths(root: Path, reserved: tuple[Path, ...]) -> tuple[Path, ...]:
     return tuple(result)
 
 
+def _reserved_source(root: Path, candidate: Path, reserved: tuple[Path, ...]) -> bool:
+    for working in reserved:
+        if candidate.is_relative_to(working):
+            return True
+        try:
+            info = working.stat()
+        except FileNotFoundError:
+            continue
+        # Existing filesystem identities cover case/normalization aliases on
+        # volumes that alias them, without folding distinct Linux names.
+        for ancestor in (candidate, *candidate.parents):
+            if ancestor == root:
+                break
+            try:
+                current = ancestor.stat()
+            except FileNotFoundError:
+                continue
+            if (current.st_dev, current.st_ino) == (info.st_dev, info.st_ino):
+                return True
+    return False
+
+
 def _relative(root: Path, reference: str, reserved: tuple[Path, ...]) -> Path:
     try:
         validate_asset_path(reference)
@@ -100,8 +122,8 @@ def _relative(root: Path, reference: str, reserved: tuple[Path, ...]) -> Path:
     if not candidate.is_relative_to(root) or candidate == root:
         raise files.UnsafePathError("Source escapes the client root")
     actual_parts = candidate.relative_to(root).parts
-    if actual_parts[0].rstrip(". ").casefold() == "dist" or any(
-        candidate.is_relative_to(path) for path in reserved
+    if actual_parts[0].rstrip(". ").casefold() == "dist" or _reserved_source(
+        root, candidate, reserved
     ):
         raise files.UnsafePathError("Source is a reserved location")
     return relative
@@ -133,6 +155,7 @@ def prepare_assets(
         ) from None
     diagnostics: list[AssetDiagnostic] = []
     assets: dict[str, PreparedAsset] = {}
+    digests: dict[str, bytes] = {}
     bindings = []
     collisions = []
     references = [
@@ -147,9 +170,10 @@ def prepare_assets(
             relative = _relative(root, reference, reserved)
             data = files.read_source(root, relative, 1048576 if favicon else 5242880)
             extension = validate_image(data, reference, favicon=favicon)
-            public_path = f"assets/client/{_digest(data)}.{extension}"
-            existing = assets.get(public_path)
-            if existing is not None and existing.data != data:
+            digest = _digest(data)
+            public_path = f"assets/client/{digest}.{extension}"
+            existing = digests.get(digest)
+            if existing is not None and existing != data:
                 collisions.append(
                     AssetDiagnostic(
                         "collision",
@@ -161,6 +185,7 @@ def prepare_assets(
                     )
                 )
                 continue
+            digests[digest] = data
             assets[public_path] = PreparedAsset(data, public_path)
             bindings.append(AssetBinding(location, reference, public_path))
         except files.UnsafePathError:
@@ -286,7 +311,7 @@ def copy_assets(prepared: PreparedAssets, staging: str | Path) -> None:
     for asset in prepared.assets:
         try:
             relative = stage.relative_to(prepared.root) / Path(asset.public_path)
-            files.write_snapshot(prepared.root, relative, asset.data)
+            files.write_snapshot(prepared.root, relative, asset.data, staging=stage)
         except files.UnsafePathError:
             raise AssetError(
                 [

@@ -197,7 +197,7 @@ def test_operational_copy_failure_is_safe(
     module = api()
     files = importlib.import_module("enrama.core._asset_files")
 
-    def denied(*args: object) -> None:
+    def denied(*args: object, **kwargs: object) -> None:
         raise PermissionError("PRIVATE raw OS payload")
 
     monkeypatch.setattr(files, "write_snapshot", denied)
@@ -219,3 +219,21 @@ def test_empty_preparation_creates_no_namespace(prepared: tuple[Any, Path]) -> N
     )
     module.copy_assets(empty, stage)
     assert list(stage.iterdir()) == []
+
+
+def test_removed_staging_is_not_recreated(
+    prepared: tuple[Any, Path], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    value, stage = prepared
+    module = api()
+    files = importlib.import_module("enrama.core._asset_files")
+    original = files.write_snapshot
+
+    def removed(root: Path, relative: Path, data: bytes, **kwargs: object) -> None:
+        stage.rmdir()
+        original(root, relative, data, **kwargs)
+
+    monkeypatch.setattr(files, "write_snapshot", removed)
+    with pytest.raises(module.AssetError) as error:
+        module.copy_assets(value, stage)
+    assert error.value.kind == "operational" and not stage.exists()

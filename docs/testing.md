@@ -1,7 +1,8 @@
 # Testing strategy
 
-Status: F02 packaging/locking tests are executable on `develop`. Product CLI,
-generation, themes, and security behavior below remain planned coverage.
+Status: packaging/locking, configuration/schema and G01 asset tests are
+executable on `develop`. Product CLI, rendering/building, preview and themes
+remain planned coverage.
 
 The accepted [CLI/filesystem scenarios](cli-contract.md#acceptance-examples)
 define future command and path-safety acceptance checks. Their documented

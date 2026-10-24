@@ -68,13 +68,17 @@ def _png_header(data: bytes, side: int, pixels: int) -> tuple[int, int]:
     raise _invalid()
 
 
-def _webp_container(data: bytes) -> None:
+def _webp_container(data: bytes, side: int, pixels: int) -> None:
+    # Pillow creates WebP's native canvas in Image.open, not only Image.load.
+    # Bound both extended canvas and actual static bitstream before either call.
     if len(data) < 12 or data[:4] != b"RIFF" or data[8:12] != b"WEBP":
         raise _invalid()
     end = struct.unpack_from("<I", data, 4)[0] + 8
     if end > len(data):
         raise _invalid()
     offset = 12
+    canvas: tuple[int, int] | None = None
+    sizes: list[tuple[int, int]] = []
     while offset < end:
         if offset + 8 > end:
             raise _invalid()
@@ -83,11 +87,32 @@ def _webp_container(data: bytes) -> None:
         next_offset = offset + 8 + length + (length % 2)
         if next_offset > end:
             raise _invalid()
-        if tag in {b"ANIM", b"ANMF"} or (
-            tag == b"VP8X" and length and data[offset + 8] & 2
-        ):
+        payload = data[offset + 8 : offset + 8 + length]
+        if tag in {b"ANIM", b"ANMF"} or (tag == b"VP8X" and payload and payload[0] & 2):
             raise _animation()
+        if tag == b"VP8X":
+            if length != 10 or canvas is not None:
+                raise _invalid()
+            canvas = (
+                int.from_bytes(payload[4:7], "little") + 1,
+                int.from_bytes(payload[7:10], "little") + 1,
+            )
+            _dimensions(*canvas, side, pixels)
+        elif tag == b"VP8 ":
+            if length < 10 or payload[3:6] != b"\x9d\x01\x2a":
+                raise _invalid()
+            width, height = struct.unpack_from("<HH", payload, 6)
+            sizes.append((width & 0x3FFF, height & 0x3FFF))
+            _dimensions(*sizes[-1], side, pixels)
+        elif tag == b"VP8L":
+            if length < 5 or payload[0] != 0x2F:
+                raise _invalid()
+            bits = struct.unpack_from("<I", payload, 1)[0]
+            sizes.append(((bits & 0x3FFF) + 1, ((bits >> 14) & 0x3FFF) + 1))
+            _dimensions(*sizes[-1], side, pixels)
         offset = next_offset
+    if len(sizes) != 1 or (canvas is not None and canvas != sizes[0]):
+        raise _invalid()
 
 
 def _decode(data: bytes, expected: str, side: int, pixels: int) -> None:
@@ -191,7 +216,13 @@ def validate_image(data: bytes, reference: str, *, favicon: bool) -> str:
         actual = (
             "ICO"
             if data[:4] == b"\x00\x00\x01\x00"
-            else ("PNG" if data.startswith(_PNG) else None)
+            else (
+                "PNG"
+                if data.startswith(_PNG)
+                else "WEBP"
+                if data[:4] == b"RIFF" and data[8:12] == b"WEBP"
+                else None
+            )
         )
         if actual is None:
             with warnings.catch_warnings():
@@ -215,7 +246,7 @@ def validate_image(data: bytes, reference: str, *, favicon: bool) -> str:
                 if expected == "PNG":
                     _png_header(data, side, pixels)
                 elif expected == "WEBP":
-                    _webp_container(data)
+                    _webp_container(data, side, pixels)
                 _decode(data, expected, side, pixels)
     except (Image.DecompressionBombError, Image.DecompressionBombWarning):
         raise InvalidImage(

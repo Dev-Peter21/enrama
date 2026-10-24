@@ -1,7 +1,7 @@
 # Architecture
 
-Status: C01 configuration models are implemented on `develop`; the remaining
-application modules below are intended design.
+Status: C01/C02/C03 configuration and G01 asset services are implemented on
+`develop`; rendering, builder, CLI, preview and themes remain intended design.
 
 ## System boundary
 

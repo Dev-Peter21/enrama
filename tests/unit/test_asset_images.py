@@ -220,3 +220,44 @@ def test_missing_required_codec_is_environment_failure(
     monkeypatch.setattr(features, "check_module", lambda name: False)
     with pytest.raises(module.AssetEnvironmentError):
         module.validate_image(image_bytes(), "a.png", favicon=False)
+
+
+@pytest.mark.parametrize("container", ["animated", "extended", "lossy", "lossless"])
+def test_webp_limits_precede_native_canvas_allocation(
+    container: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from asset_helpers import riff_chunk
+    from PIL import _webp
+
+    if container == "animated":
+        data = bytearray(animated_webp())
+        pos = data.index(b"VP8X") + 12
+        data[pos : pos + 6] = (9999).to_bytes(3, "little") * 2
+    elif container == "extended":
+        body = (
+            b"WEBP"
+            + riff_chunk(b"VP8X", b"\x00" * 4 + (9999).to_bytes(3, "little") * 2)
+            + image_bytes("WEBP")[12:]
+        )
+        data = bytearray(b"RIFF" + struct.pack("<I", len(body)) + body)
+    elif container == "lossy":
+        data = bytearray(image_bytes("WEBP"))
+        pos = data.index(b"\x9d\x01\x2a")
+        struct.pack_into("<HH", data, pos + 3, 10000, 10000)
+    else:
+        stream = io.BytesIO()
+        with Image.new("RGB", (16, 16), "red") as image:
+            image.save(stream, format="WEBP", lossless=True)
+        data = bytearray(stream.getvalue())
+        pos = data.index(b"VP8L") + 9
+        original = struct.unpack_from("<I", data, pos)[0]
+        struct.pack_into("<I", data, pos, (original & 0xF0000000) | 9999 | (9999 << 14))
+
+    def forbidden(*args: object) -> None:
+        raise AssertionError("Native WebP canvas reached before policy checks")
+
+    monkeypatch.setattr(_webp, "WebPAnimDecoder", forbidden)
+    module = api()
+    with pytest.raises(module.InvalidImage) as error:
+        module.validate_image(bytes(data), "a.webp", favicon=False)
+    assert error.value.category in {"resource_limit", "animation"}

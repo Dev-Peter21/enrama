@@ -43,7 +43,11 @@ def _stat(parent: int | None, path: Path) -> os.stat_result:
 
 @contextmanager
 def parent_directory(
-    root: Path, relative: Path, *, create: bool = False
+    root: Path,
+    relative: Path,
+    *,
+    create: bool = False,
+    create_below: Path | None = None,
 ) -> Iterator[tuple[int | None, Path]]:
     """Walk each internal component; anchor POSIX operations to directory fds."""
     if relative.is_absolute() or not relative.parts or ".." in relative.parts:
@@ -67,7 +71,12 @@ def parent_directory(
             try:
                 info = _stat(descriptor, current)
             except FileNotFoundError:
-                if not create:
+                if (
+                    not create
+                    or create_below is None
+                    or current == create_below
+                    or not current.is_relative_to(create_below)
+                ):
                     raise
                 try:
                     if descriptor is None:
@@ -140,10 +149,13 @@ class DestinationConflictError(UnsafePathError):
     """An existing staging object cannot be replaced or safely reused."""
 
 
-def write_snapshot(root: Path, relative: Path, data: bytes) -> None:
+def write_snapshot(root: Path, relative: Path, data: bytes, *, staging: Path) -> None:
     """Create exclusively or verify identical bytes; never truncate a target."""
     try:
-        with parent_directory(root, relative, create=True) as (parent, path):
+        with parent_directory(root, relative, create=True, create_below=staging) as (
+            parent,
+            path,
+        ):
             try:
                 info = _stat(parent, path)
             except FileNotFoundError:
