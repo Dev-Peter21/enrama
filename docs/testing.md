@@ -48,6 +48,13 @@ remaining boundaries.
 
 ## Security regression cases
 
+G02's agreed [implementation acceptance](rendering.md#implementation-acceptance)
+adds future checks for parsed HTML semantics, body/attribute escaping, separate
+enabled collections, metadata omission, directory URL derivation, same-context
+destinations, root/subpath static resource requests, deterministic in-memory
+output, safe failure classification and installed packaged templates. These
+checks are not implemented or executed by the G02 documentation change.
+
 C02's accepted [loader contract](yaml-loader.md#required-acceptance-cases) adds
 loader tests for UTF-8/BOM, document shape, duplicate keys and related
 locations, forbidden YAML constructs, explicit scalar resolution, exact parser

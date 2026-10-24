@@ -124,8 +124,9 @@ independent documentation/design work to happen sooner.
 - **Scope:** Resolve client-owned files inside the client root and copy only
   supported assets. O04 is resolved by the agreed [G01 contract](assets.md),
   documented on 2026-10-24. Implementation was subsequently authorized and
-  delivered on `develop`; [verification evidence](verification/g01.md) awaits
-  maintainer acceptance. Issue #8 remains open.
+  delivered on `develop`; [verification evidence](verification/g01.md) and
+  implementation were accepted by the maintainer on 2026-10-24. Issue #8 is
+  closed/completed and its existing Kanban card is Done.
 - **Dependencies:** C02; relevant F01 filesystem rules.
 - **Acceptance:** Valid images copy correctly. Tests reject traversal, absolute
   external paths, every internal symlink, special files, unsupported/invalid or
@@ -137,10 +138,20 @@ independent documentation/design work to happen sooner.
 
 - **Scope:** Trusted Jinja2 rendering with autoescaping, ordered enabled links,
   semantic HTML, SEO, canonical/Open Graph data, favicon, and local asset paths.
+- **Contract:** The agreed [G02 design](rendering.md), documented on 2026-10-24,
+  defines in-memory rendering with matching G01 prepared assets, a shared HTML
+  base, explicit escaping/StrictUndefined, directory-form public URLs, optional
+  metadata, same-context anchors and structured failures. Theme presentation
+  remains U03/U04; filesystem coordination remains G03. Documentation only;
+  implementation must later target `develop`. Issue #9 remains open.
 - **Dependencies:** C01, G01.
 - **Acceptance:** Rendering tests verify escaping of malicious text, disabled-link
   omission, order, language/metadata, and paths suitable for domain-root and
-  repository-subpath hosting. No remote theme loader or client editor.
+  repository-subpath hosting. Also verify both collections, HTML semantics,
+  metadata omission, directory URLs, same-context navigation, repeatable output,
+  error classification and installed templates under the
+  [required G02 checks](rendering.md#implementation-acceptance).
+  No remote theme loader or client editor.
 
 ### G03 — Coordinate safe, repeatable builds
 

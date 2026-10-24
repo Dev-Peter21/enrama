@@ -7,6 +7,13 @@ repository; a roadmap target does not imply that a release exists.
 
 ### Added
 
+- Agreed G02 rendering/metadata contract: shared semantic HTML in memory,
+  explicit Jinja2 autoescaping/StrictUndefined, matching prepared asset bindings,
+  directory-form public URLs, conditional metadata, relative local resources,
+  same-context destinations and structured failures (including internal code 70
+  for configuration/asset mismatches). Documentation only; future implementation
+  targets `develop`, with theme presentation in U03/U04 and filesystem work in G03.
+
 - G01 implementation on `develop`: bounded Pillow 13.0.0 image validation,
   read-only immutable preparation, internal-symlink/special-file/reserved-path
   rejection, deterministic full-SHA-256 names, exact-byte deduplication and

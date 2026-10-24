@@ -2,6 +2,11 @@
 
 Status: requirements only. Neither theme has been implemented.
 
+The agreed [G02 rendering contract](rendering.md) separates a shared semantic
+HTML base from U03/U04 presentation. G02 will support both accepted theme names
+through the base without delivering distinct layouts, CSS or icon assets.
+Metadata, same-context anchors and accessible labels remain shared behavior.
+
 ## Built-in themes for 0.1
 
 | Theme | Intended character |

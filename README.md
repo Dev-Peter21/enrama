@@ -41,6 +41,8 @@ records schema tests and actual editor-provider evidence.
 The [asset contract](docs/assets.md) documents G01's `prepare_assets`/`copy_assets`
 API; [G01 verification](docs/verification/g01.md) records image, filesystem and
 installed-distribution evidence.
+The [rendering contract](docs/rendering.md) defines G02's shared HTML base,
+metadata, public directory URLs and failures; it is documentation only.
 
 ## Why Enrama?
 
@@ -94,6 +96,7 @@ Start with the [documentation index](docs/README.md), or go directly to:
 - [Accepted safe YAML loader and diagnostics contract](docs/yaml-loader.md)
 - [Accepted JSON Schema and VS Code contract](docs/json-schema.md)
 - [Accepted local asset contract](docs/assets.md)
+- [Agreed HTML rendering and metadata contract](docs/rendering.md)
 - [Themes](docs/themes.md)
 - [Deployment](docs/deployment.md)
 - [Roadmap and implementation tasks](docs/roadmap.md)

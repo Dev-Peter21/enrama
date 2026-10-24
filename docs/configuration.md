@@ -73,7 +73,7 @@ there is no combined ordering field or inferred reordering.
 | `title` | String | Required; 1–100 characters; page and metadata title |
 | `description` | String | Required; 1–300 characters; metadata description |
 | `language` | String | Required; supported language tag; no automatic detection/default |
-| `url` | String or null | Default `null`; intended public HTTPS page address |
+| `url` | String or null | Default `null`; intended public HTTPS directory containing the generated page |
 | `favicon` | String or null | Default `null`; local asset reference |
 | `og_image` | String or null | Default `null`; local Open Graph image reference |
 
@@ -87,6 +87,10 @@ language, and local favicon support do not depend on `site.url`.
 `https://example.com/clients/amapola/`. Query and fragment components are not
 allowed. Rendering/asset tasks must preserve that deployment prefix when
 constructing public asset URLs; it is not a configurable output directory.
+The agreed [G02 rendering contract](rendering.md#public-url-and-local-path-rules)
+treats this address as a directory and derives a final `/` when absent, without
+rewriting the YAML/model or changing C01 validation. Canonical and `og:url` use
+that directory form; visible local images and favicon keep relative public paths.
 
 ### Profile fields
 

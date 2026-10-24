@@ -23,6 +23,11 @@ asset paths must work when the site is hosted under a repository subpath as
 well as a custom domain. Hosted assets and metadata must be verified at the
 actual destination before declaring deployment complete.
 
+The agreed [G02 URL contract](rendering.md#public-url-and-local-path-rules)
+interprets `site.url` as the public directory containing `index.html`, deriving
+a trailing slash when needed. Local image/favicon paths remain relative; the
+public base supplies canonical/OG URLs without redirecting local preview assets.
+
 The operator manages hosting, DNS, TLS, and any external service linked from
 the page. Site content and distributed assets are public; do not include secrets
 or private source files in the output.

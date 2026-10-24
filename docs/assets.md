@@ -1,11 +1,12 @@
 # Local asset resolution and copying contract
 
-Status: **G01 implemented on develop, awaiting maintainer acceptance**, following
+Status: **G01 implemented on develop and accepted by the maintainer on 2026-10-24**, following
 the design agreed and implementation authorized on 2026-10-24 for
 [issue #8](https://github.com/Dev-Peter21/enrama/issues/8).
 The asset preparation/copy API, Pillow dependency and focused tests are
 implemented on **`develop`**. See [verification evidence](verification/g01.md).
-Package version remains `0.1.0.dev0`; issue #8 stays open for acceptance.
+Package version remains `0.1.0.dev0`; issue #8 is closed/completed and its existing
+Kanban card is Done.
 
 ## Intent, approaches, and boundaries
 

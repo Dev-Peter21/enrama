@@ -16,6 +16,7 @@ The CLI, generator, themes, and editor remain planned unless stated otherwise.
 | [Safe YAML loader and diagnostics](yaml-loader.md) | Accepted C02 input subset, fixed limits, source positions, diagnostic cap, Python API, and acceptance cases |
 | [JSON Schema and VS Code](json-schema.md) | Accepted C03 generation, structural-assistance limits, artifact versioning, manual client updates, and local editor configuration |
 | [Local assets](assets.md) | Implemented G01 formats, bounded Pillow validation, snapshots, protected staging copying, diagnostics, API and acceptance |
+| [HTML rendering and metadata](rendering.md) | Agreed G02 shared HTML base, metadata, directory public URLs, destination behavior, asset integration, failures and future acceptance checks |
 | [Themes](themes.md) | Built-in theme requirements and extension boundaries |
 | [Deployment](deployment.md) | Client repositories, static hosting, and Pages plan |
 | [Roadmap](roadmap.md) | Milestones, scoped tasks, dependencies, and completion evidence |

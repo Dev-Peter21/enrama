@@ -62,6 +62,13 @@ public paths and structured failures. G01 is implemented through `prepare_assets
 [G01 verification](verification/g01.md). G03 retains
 publication, output ownership, staging lifecycle, cleanup and concurrency.
 
+The agreed [G02 rendering contract](rendering.md) defines an in-memory HTML
+service consuming C01 configuration and matching G01 prepared assets. Trusted
+packaged Jinja2 resources use explicit HTML autoescaping and StrictUndefined.
+G02 owns the shared semantic base, metadata, directory-form public URLs and
+structured failures; U03/U04 own theme presentation and G03 writes output.
+G02 remains documentation only, with future implementation on `develop`.
+
 ## Selected technologies
 
 These choices come from the product brief. Tool/build versions are pinned by
