@@ -21,6 +21,7 @@ classifiers = [
 ]
 dependencies = [
     "langcodes==3.5.1",
+    "pillow==13.0.0",
     "pydantic>=2.14.1,<3",
     "pyyaml>=6.0.3,<7",
 ]
@@ -58,6 +59,9 @@ only-include = [
     "src/enrama/config/catalogs.py",
     "src/enrama/config/models.py",
     "src/enrama/config/schema.py",
+    "src/enrama/core/__init__.py",
+    "src/enrama/core/_asset_images.py",
+    "src/enrama/core/_asset_errors.py",
     "src/enrama/py.typed",
 ]
 sources = ["src"]
@@ -76,6 +80,9 @@ only-include = [
     "src/enrama/config/catalogs.py",
     "src/enrama/config/models.py",
     "src/enrama/config/schema.py",
+    "src/enrama/core/__init__.py",
+    "src/enrama/core/_asset_images.py",
+    "src/enrama/core/_asset_errors.py",
     "src/enrama/py.typed",
     "pyproject.toml",
     "README.md",

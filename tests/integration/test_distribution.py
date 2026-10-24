@@ -181,6 +181,7 @@ print(json.dumps(metadata))
         "langcodes==3.5.1",
         "pydantic<3,>=2.14.1",
         "pyyaml<7,>=6.0.3",
+        "pillow==13.0.0",
     }
     assert metadata["pyyaml"] == "6.0.3"
     assert metadata["loaded"] == metadata["config"]
@@ -260,6 +261,9 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
             "enrama/config/catalogs.py",
             "enrama/config/models.py",
             "enrama/config/schema.py",
+            "enrama/core/__init__.py",
+            "enrama/core/_asset_images.py",
+            "enrama/core/_asset_errors.py",
             "enrama/py.typed",
             "enrama-0.1.0.dev0.dist-info/METADATA",
             "enrama-0.1.0.dev0.dist-info/WHEEL",
@@ -281,6 +285,9 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
             "src/enrama/config/models.py",
             "src/enrama/config/schema.py",
             "schemas/enrama-v1.schema.json",
+            "src/enrama/core/__init__.py",
+            "src/enrama/core/_asset_images.py",
+            "src/enrama/core/_asset_errors.py",
             "src/enrama/py.typed",
             "pyproject.toml",
             "README.md",
