@@ -76,7 +76,9 @@ def render_html(config: EnramaConfig, prepared: PreparedAssets) -> str:
             lstrip_blocks=True,
             auto_reload=False,
         )
-        return environment.get_template(_BASE_TEMPLATE).render(context)
+        html = environment.get_template(_BASE_TEMPLATE).render(context)
+        # Jinja normalizes template source, not newlines interpolated from text.
+        return html.replace("\r\n", "\n").replace("\r", "\n")
     except RenderError:
         raise
     except (TemplateError, UnicodeError):

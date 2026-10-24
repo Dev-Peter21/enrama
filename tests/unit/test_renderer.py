@@ -316,3 +316,25 @@ def test_interrupt_is_not_wrapped(
     monkeypatch.setattr(resources, "files", interrupt)
     with pytest.raises(KeyboardInterrupt):
         render_html(config, assets)
+
+
+@pytest.mark.parametrize("escaped_break", [r"\r\n", r"\r"])
+def test_output_normalizes_newlines_in_validated_yaml_text(
+    escaped_break: str, tmp_path: Path
+) -> None:
+    from enrama.config import parse_config
+    from enrama.core import prepare_assets, render_html
+
+    config = parse_config(
+        (
+            "schema_version: 1\n"
+            "site: {title: Shop, description: Shop, language: en}\n"
+            'profile: {name: Shop, bio: "first' + escaped_break + 'second"}\n'
+        ).encode("utf-8")
+    )
+    assert "\r" in config.profile.bio
+    prepared = prepare_assets(config, source=tmp_path / "enrama.yaml")
+    html = render_html(config, prepared)
+    assert "\r" not in html
+    assert "<p>first\nsecond</p>" in html
+    assert "\r" in config.profile.bio  # Rendering does not normalize the input model.
