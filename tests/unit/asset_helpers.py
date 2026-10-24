@@ -3,6 +3,10 @@
 import io
 import struct
 import zlib
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from enrama.config import EnramaConfig
 
 from PIL import Image
 
@@ -76,3 +80,23 @@ def animated_webp() -> bytes:
     body = b"WEBP" + riff_chunk(b"VP8X", b"\x02\x00\x00\x00" + b"\x0f\x00\x00" * 2)
     body += riff_chunk(b"ANIM", b"\x00" * 6) + riff_chunk(b"ANMF", frame)
     return b"RIFF" + struct.pack("<I", len(body)) + body
+
+
+def client_config(
+    avatar: str | None = None, favicon: str | None = None, og: str | None = None
+) -> "EnramaConfig":
+    from enrama.config import EnramaConfig
+
+    return EnramaConfig.model_validate(
+        {
+            "schema_version": 1,
+            "site": {
+                "title": "Shop",
+                "description": "Shop",
+                "language": "en",
+                "favicon": favicon,
+                "og_image": og,
+            },
+            "profile": {"name": "Shop", "avatar": avatar},
+        }
+    )

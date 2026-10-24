@@ -1,0 +1,231 @@
+"""Prepare immutable client-image snapshots, without rendering or publication."""
+
+import hashlib
+import os
+from dataclasses import dataclass
+from pathlib import Path, PurePosixPath
+
+from enrama.config import EnramaConfig
+from enrama.config._paths import validate_asset_path
+from enrama.config.diagnostics import FieldLocation
+
+from . import _asset_files as files
+from ._asset_errors import (
+    AssetDiagnostic,
+    AssetEnvironmentError,
+    AssetError,
+    InvalidImage,
+)
+from ._asset_images import validate_image
+
+__all__ = [
+    "AssetBinding",
+    "AssetDiagnostic",
+    "AssetEnvironmentError",
+    "AssetError",
+    "PreparedAsset",
+    "PreparedAssets",
+    "prepare_assets",
+]
+
+
+@dataclass(frozen=True)
+class PreparedAsset:
+    data: bytes
+    public_path: str
+
+
+@dataclass(frozen=True)
+class AssetBinding:
+    location: FieldLocation
+    reference: str
+    public_path: str
+
+
+@dataclass(frozen=True)
+class PreparedAssets:
+    root: Path
+    source: Path
+    reserved_paths: tuple[Path, ...]
+    assets: tuple[PreparedAsset, ...]
+    bindings: tuple[AssetBinding, ...]
+
+    @property
+    def mapping(self) -> dict[str, str]:
+        """Return a fresh field-to-public-path mapping; snapshots stay immutable."""
+        return {
+            ".".join(map(str, binding.location)): binding.public_path
+            for binding in self.bindings
+        }
+
+
+def _digest(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def _working_paths(root: Path, reserved: tuple[Path, ...]) -> tuple[Path, ...]:
+    result = []
+    for path in reserved:
+        candidate = Path(os.path.abspath(root / path))
+        if (
+            candidate == root
+            or not candidate.is_relative_to(root)
+            or candidate.parts[len(root.parts)].rstrip(". ").casefold() == "dist"
+        ):
+            raise files.UnsafePathError(
+                "Working location must be inside the project outside dist"
+            )
+        if candidate.resolve() != candidate:
+            raise files.UnsafePathError("Working location contains a link")
+        result.append(candidate)
+    return tuple(result)
+
+
+def _relative(root: Path, reference: str, reserved: tuple[Path, ...]) -> Path:
+    try:
+        validate_asset_path(reference)
+    except ValueError:
+        raise files.UnsafePathError("Invalid lexical reference") from None
+    relative = Path(*PurePosixPath(reference.replace("\\", "/")).parts)
+    try:
+        candidate = (root / relative).resolve()
+    except RuntimeError:
+        raise files.UnsafePathError("Source contains a symlink loop") from None
+    if not candidate.is_relative_to(root) or candidate == root:
+        raise files.UnsafePathError("Source escapes the client root")
+    actual_parts = candidate.relative_to(root).parts
+    if actual_parts[0].rstrip(". ").casefold() == "dist" or any(
+        candidate.is_relative_to(path) for path in reserved
+    ):
+        raise files.UnsafePathError("Source is a reserved location")
+    return relative
+
+
+def prepare_assets(
+    config: EnramaConfig,
+    *,
+    source: str | Path = "enrama.yaml",
+    reserved_paths: tuple[Path, ...] = (),
+) -> PreparedAssets:
+    """Validate all referenced images locally, returning no partial success."""
+    source_path = Path(os.path.abspath(source))
+    try:
+        root = source_path.parent.resolve(strict=True)
+        reserved = _working_paths(root, reserved_paths)
+    except (OSError, RuntimeError):
+        raise AssetError(
+            [
+                AssetDiagnostic(
+                    "read_error",
+                    source_path,
+                    (),
+                    None,
+                    "The client root or reserved working locations are unavailable or unsafe.",
+                    "Select an accessible client directory and safe project-local working paths.",
+                )
+            ]
+        ) from None
+    diagnostics: list[AssetDiagnostic] = []
+    assets: dict[str, PreparedAsset] = {}
+    bindings = []
+    collisions = []
+    references = [
+        (("profile", "avatar"), config.profile.avatar, False),
+        (("site", "favicon"), config.site.favicon, True),
+        (("site", "og_image"), config.site.og_image, False),
+    ]
+    for location, reference, favicon in references:
+        if reference is None:
+            continue
+        try:
+            relative = _relative(root, reference, reserved)
+            data = files.read_source(root, relative, 1048576 if favicon else 5242880)
+            extension = validate_image(data, reference, favicon=favicon)
+            public_path = f"assets/client/{_digest(data)}.{extension}"
+            existing = assets.get(public_path)
+            if existing is not None and existing.data != data:
+                collisions.append(
+                    AssetDiagnostic(
+                        "collision",
+                        source_path,
+                        (),
+                        None,
+                        "Different images claim the same content path.",
+                        "Preserve the inputs and report the conflicting content digests.",
+                    )
+                )
+                continue
+            assets[public_path] = PreparedAsset(data, public_path)
+            bindings.append(AssetBinding(location, reference, public_path))
+        except files.UnsafePathError:
+            diagnostics.append(
+                AssetDiagnostic(
+                    "unsafe_path",
+                    source_path,
+                    location,
+                    reference,
+                    "The source path is unsafe or is not a regular project file.",
+                    "Use a regular file inside the client root, without symlinks or reserved paths.",
+                )
+            )
+        except FileNotFoundError:
+            diagnostics.append(
+                AssetDiagnostic(
+                    "missing_asset",
+                    source_path,
+                    location,
+                    reference,
+                    "The referenced image is missing.",
+                    "Create the image or correct its relative reference.",
+                )
+            )
+        except files.FileLimitError:
+            diagnostics.append(
+                AssetDiagnostic(
+                    "resource_limit",
+                    source_path,
+                    location,
+                    reference,
+                    "The image exceeds this field's byte limit.",
+                    "Export a smaller image and update the reference.",
+                )
+            )
+        except InvalidImage as error:
+            diagnostics.append(
+                AssetDiagnostic(
+                    error.category,
+                    source_path,
+                    location,
+                    reference,
+                    error.message,
+                    error.hint,
+                )
+            )
+        except OSError:
+            diagnostics.append(
+                AssetDiagnostic(
+                    "read_error",
+                    source_path,
+                    location,
+                    reference,
+                    "The referenced image could not be read.",
+                    "Check file and directory access permissions and retry.",
+                )
+            )
+    diagnostics.extend(collisions)
+    if not diagnostics and sum(len(asset.data) for asset in assets.values()) > 10485760:
+        diagnostics.append(
+            AssetDiagnostic(
+                "resource_limit",
+                source_path,
+                (),
+                None,
+                "Unique referenced images exceed 10,485,760 bytes.",
+                "Reduce the combined size of the referenced images.",
+            )
+        )
+    if diagnostics:
+        raise AssetError(diagnostics)
+    return PreparedAssets(
+        root, source_path, reserved, tuple(assets.values()), tuple(bindings)
+    )
