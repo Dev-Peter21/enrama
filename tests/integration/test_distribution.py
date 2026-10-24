@@ -129,6 +129,48 @@ generated_schema = json.loads(generate_schema())
 metadata["schema_dialect"] = generated_schema["$schema"]
 metadata["schema_required"] = generated_schema["required"]
 
+
+# Real image preparation/copy from the installed distribution, not the checkout.
+import io
+from PIL import Image, features
+from enrama.core import prepare_assets, copy_assets
+metadata["pillow"] = m.version("Pillow")
+metadata["asset_codecs"] = {
+    "jpeg": features.check_codec("jpg"), "png": features.check_codec("zlib"),
+    "webp": features.check_module("webp"),
+}
+assert all(metadata["asset_codecs"].values())
+client = Path("asset-client")
+client.mkdir()
+stage = client / "work"
+stage.mkdir()
+metadata["asset_formats"] = {}
+for fmt, suffix in [("PNG", "png"), ("JPEG", "jpg"), ("WEBP", "webp"), ("ICO", "ico")]:
+    stream = io.BytesIO()
+    with Image.new("RGB", (16, 16), "red") as im:
+        im.save(stream, format=fmt)
+    original = stream.getvalue()
+    image_file = client / ("image." + suffix)
+    image_file.write_bytes(original)
+    config_data = {
+        "schema_version": 1,
+        "site": {"title": "Assets", "description": "Assets", "language": "en"},
+        "profile": {"name": "Assets"},
+    }
+    field = "favicon" if fmt == "ICO" else "avatar"
+    section = "site" if fmt == "ICO" else "profile"
+    config_data[section][field] = image_file.name
+    asset_config = EnramaConfig.model_validate(config_data)
+    before_assets = sorted(stage.rglob("*"))
+    snapshots = prepare_assets(asset_config, source=client / "selected.yaml", reserved_paths=(Path("work"),))
+    assert sorted(stage.rglob("*")) == before_assets
+    copy_assets(snapshots, stage.resolve())
+    public_path = snapshots.mapping[section + "." + field]
+    assert (stage / public_path).read_bytes() == original
+    assert image_file.read_bytes() == original
+    assert not (client / "dist").exists()
+    metadata["asset_formats"][fmt] = public_path.rsplit(".", 1)[1]
+
 def forbid_io(event, arguments):
     if event == "open" or event.startswith("socket."):
         raise AssertionError("Model validation attempted I/O: " + event)
@@ -182,6 +224,14 @@ print(json.dumps(metadata))
         "pydantic<3,>=2.14.1",
         "pyyaml<7,>=6.0.3",
         "pillow==13.0.0",
+    }
+    assert metadata["pillow"] == "13.0.0"
+    assert metadata["asset_codecs"] == {"jpeg": True, "png": True, "webp": True}
+    assert metadata["asset_formats"] == {
+        "PNG": "png",
+        "JPEG": "jpg",
+        "WEBP": "webp",
+        "ICO": "ico",
     }
     assert metadata["pyyaml"] == "6.0.3"
     assert metadata["loaded"] == metadata["config"]

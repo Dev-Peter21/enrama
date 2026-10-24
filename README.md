@@ -8,7 +8,8 @@ Once published, the site runs independently of Enrama.
 
 > **Project status: safe configuration loading and JSON Schema on `develop`.** The importable
 > package `0.1.0.dev0`, strict YAML v1 models, bounded loader, structured diagnostics,
-> generated editor schema, development tools, and tests are available.
+> generated editor schema, safe asset preparation/staging copying, development tools,
+> and tests are available.
 > The CLI, generator, themes, and editor are still planned. No package has been
 > published to PyPI; `0.1.0` remains the MVP target.
 
@@ -37,6 +38,9 @@ See [C02 verification](docs/verification/c02.md) for loader evidence.
 The [JSON Schema/VS Code contract](docs/json-schema.md) documents the checked
 artifact and manual local client setup; [C03 verification](docs/verification/c03.md)
 records schema tests and actual editor-provider evidence.
+The [asset contract](docs/assets.md) documents G01's `prepare_assets`/`copy_assets`
+API; [G01 verification](docs/verification/g01.md) records image, filesystem and
+installed-distribution evidence.
 
 ## Why Enrama?
 

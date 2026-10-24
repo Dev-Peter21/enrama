@@ -1,5 +1,6 @@
 """Prepare immutable client-image snapshots, without rendering or publication."""
 
+import errno
 import hashlib
 import os
 from dataclasses import dataclass
@@ -26,6 +27,7 @@ __all__ = [
     "PreparedAsset",
     "PreparedAssets",
     "prepare_assets",
+    "copy_assets",
 ]
 
 
@@ -91,6 +93,10 @@ def _relative(root: Path, reference: str, reserved: tuple[Path, ...]) -> Path:
         candidate = (root / relative).resolve()
     except RuntimeError:
         raise files.UnsafePathError("Source contains a symlink loop") from None
+    except OSError as error:
+        if error.errno == errno.ELOOP:
+            raise files.UnsafePathError("Source contains a symlink loop") from None
+        raise
     if not candidate.is_relative_to(root) or candidate == root:
         raise files.UnsafePathError("Source escapes the client root")
     actual_parts = candidate.relative_to(root).parts
@@ -229,3 +235,81 @@ def prepare_assets(
     return PreparedAssets(
         root, source_path, reserved, tuple(assets.values()), tuple(bindings)
     )
+
+
+def _check_prepared(prepared: PreparedAssets) -> None:
+    """Catch programming mistakes before a path from a prepared record is used."""
+    import re
+
+    paths = set()
+    for asset in prepared.assets:
+        if not re.fullmatch(
+            r"assets/client/[0-9a-f]{64}\.(png|jpg|webp|ico)", asset.public_path
+        ):
+            raise ValueError("PreparedAssets contains an invalid content path")
+        digest = asset.public_path.rsplit("/", 1)[1].split(".")[0]
+        if (
+            hashlib.sha256(asset.data).hexdigest() != digest
+            or asset.public_path in paths
+        ):
+            raise ValueError("PreparedAssets content integrity is invalid")
+        paths.add(asset.public_path)
+    if paths != {binding.public_path for binding in prepared.bindings}:
+        raise ValueError("PreparedAssets bindings do not match the snapshots")
+
+
+def copy_assets(prepared: PreparedAssets, staging: str | Path) -> None:
+    """Copy prepared bytes only to the caller's existing, reserved staging root."""
+    _check_prepared(prepared)
+    stage = Path(os.path.abspath(prepared.root / staging))
+    try:
+        working = _working_paths(prepared.root, prepared.reserved_paths)
+        if stage not in working:
+            raise files.UnsafePathError("Staging was not explicitly reserved")
+        # Resolve/check all stage components again; caller must create this root.
+        if stage.resolve(strict=True) != stage:
+            raise files.UnsafePathError("Staging contains a link")
+        files._directory(stage.lstat())
+    except (OSError, RuntimeError):
+        raise AssetError(
+            [
+                AssetDiagnostic(
+                    "destination_conflict",
+                    prepared.source,
+                    (),
+                    None,
+                    "The staging directory is unavailable, unsafe or not explicitly reserved.",
+                    "Provide the existing project-local working directory reserved during preparation.",
+                )
+            ]
+        ) from None
+    for asset in prepared.assets:
+        try:
+            relative = stage.relative_to(prepared.root) / Path(asset.public_path)
+            files.write_snapshot(prepared.root, relative, asset.data)
+        except files.UnsafePathError:
+            raise AssetError(
+                [
+                    AssetDiagnostic(
+                        "destination_conflict",
+                        prepared.source,
+                        (),
+                        asset.public_path,
+                        "The staging target is unsafe or contains conflicting content.",
+                        "Inspect the caller-owned staging directory; do not overwrite the conflicting target.",
+                    )
+                ]
+            ) from None
+        except OSError:
+            raise AssetError(
+                [
+                    AssetDiagnostic(
+                        "write_error",
+                        prepared.source,
+                        (),
+                        asset.public_path,
+                        "The prepared image could not be copied into staging.",
+                        "Check staging access and available storage; preserve partial data for safe caller cleanup.",
+                    )
+                ]
+            ) from None

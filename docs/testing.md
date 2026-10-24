@@ -36,13 +36,14 @@ does not replace C01/C02 validation or demonstrate an editor session.
 
 ## Local asset acceptance
 
-The agreed [G01 contract](assets.md#future-implementation-acceptance) defines
-future tests for real image decoding, role-specific byte/pixel/container limits,
+The agreed [G01 contract](assets.md#implementation-acceptance) defines
+tests for real image decoding, role-specific byte/pixel/container limits,
 animation rejection, all internal symlinks, special files, exact snapshot copying,
 content-path deduplication/collisions, staging protections and safe structured
-errors. No executable asset tests or Pillow dependency are introduced by that
-documentation task. Future implementation must also exercise installed wheel/sdist
-consumers and the existing six CI verification environments.
+errors. The asset API and Pillow dependency are implemented on `develop`;
+installed wheel/sdist probes exercise each format outside the checkout. See
+[G01 verification](verification/g01.md) for executed counts, environments and
+remaining boundaries.
 
 ## Security regression cases
 

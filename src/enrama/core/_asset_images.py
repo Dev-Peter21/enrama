@@ -194,10 +194,12 @@ def validate_image(data: bytes, reference: str, *, favicon: bool) -> str:
             else ("PNG" if data.startswith(_PNG) else None)
         )
         if actual is None:
-            with Image.open(
-                io.BytesIO(data), formats=["PNG", "JPEG", "WEBP", "GIF"]
-            ) as image:
-                actual = image.format
+            with warnings.catch_warnings():
+                warnings.simplefilter("error", Image.DecompressionBombWarning)
+                with Image.open(
+                    io.BytesIO(data), formats=["PNG", "JPEG", "WEBP", "GIF"]
+                ) as image:
+                    actual = image.format
         if actual != expected:
             raise InvalidImage(
                 "unsupported_format",

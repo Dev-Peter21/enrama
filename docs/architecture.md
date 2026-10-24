@@ -57,8 +57,9 @@ checks the artifact in CI. Actual editor evidence is recorded in
 
 The agreed [G01 asset contract](assets.md) defines local image formats and fixed
 byte/pixel limits, Pillow validation, byte-preserving staging copies, content-hash
-public paths and structured failures. G01 remains documentation only: Pillow
-and the asset module are not installed/implemented by this contract. G03 retains
+public paths and structured failures. G01 is implemented through `prepare_assets` and
+`copy_assets`, with immutable validated byte snapshots and Pillow 13.0.0; see
+[G01 verification](verification/g01.md). G03 retains
 publication, output ownership, staging lifecycle, cleanup and concurrency.
 
 ## Selected technologies

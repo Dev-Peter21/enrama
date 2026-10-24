@@ -311,8 +311,9 @@ Do not expand environment variables or the user's home directory. G01 must check
 actual existence, supported file types, containment, internal-symlink rejection
 and safe copying. The agreed [G01 asset contract](assets.md) resolves O04 with
 role-specific formats/limits, Pillow decoding, unchanged snapshots, deterministic
-content paths and collision/error policy. Those checks are not implemented yet;
-CLI `validate` will eventually include them, as required by F01.
+content paths and collision/error policy. G01 implements those checks on
+`develop`, separately from C01/C02; CLI `validate` will eventually include them,
+as required by F01.
 
 Missing optional references mean no corresponding configured image. There is
 no implicit avatar-to-Open-Graph fallback or remote default image in YAML v1.

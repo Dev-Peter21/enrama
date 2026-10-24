@@ -7,6 +7,7 @@ from .assets import (
     AssetError,
     PreparedAsset,
     PreparedAssets,
+    copy_assets,
     prepare_assets,
 )
 
@@ -18,4 +19,5 @@ __all__ = [
     "PreparedAsset",
     "PreparedAssets",
     "prepare_assets",
+    "copy_assets",
 ]

@@ -1,10 +1,11 @@
 # Local asset resolution and copying contract
 
-Status: **G01 design agreed on 2026-10-24; documentation only** for
+Status: **G01 implemented on develop, awaiting maintainer acceptance**, following
+the design agreed and implementation authorized on 2026-10-24 for
 [issue #8](https://github.com/Dev-Peter21/enrama/issues/8).
-No asset module, Pillow dependency, image fixture, or executable G01 test is
-introduced by this document. Future implementation must target **`develop`**
-after explicit authorization. Package version remains `0.1.0.dev0`.
+The asset preparation/copy API, Pillow dependency and focused tests are
+implemented on **`develop`**. See [verification evidence](verification/g01.md).
+Package version remains `0.1.0.dev0`; issue #8 stays open for acceptance.
 
 ## Intent, approaches, and boundaries
 
@@ -101,11 +102,12 @@ No configurable flag, YAML field or environment variable raises these MVP limits
 
 ## Image validation and unchanged copying
 
-Pillow will be a required runtime dependency **when G01 is implemented**, since
-asset validation must work from installed distributions. Pin/review its actual
-version, necessary typing/build inputs and supported codecs against the existing
-Python 3.12–3.15/Linux/macOS/Windows matrix then; do not install it in this task.
-Never silently disable an accepted format on an environment missing its codec.
+Pillow **13.0.0** is the pinned runtime dependency. PNG/JPEG/WebP capabilities
+are required; missing codecs produce an environment failure rather than silently
+disabling a supported format. Installed wheel/sdist consumer probes decode and
+copy every supported format. The package includes typing; no Pillow stubs or new
+build constraints are required for the tested wheel installations. Actual
+environments and matrix evidence are recorded in [G01 verification](verification/g01.md).
 
 For each snapshot:
 
@@ -229,9 +231,10 @@ The image exceeds the 16,000,000-pixel limit.
 Hint: Export a smaller image and update the referenced file.
 ```
 
-## Future implementation acceptance
+## Implementation acceptance
 
-These are required scenarios, **not passing tests or implemented behavior**:
+These are acceptance requirements; executed checks and remaining limits are
+recorded in [G01 verification](verification/g01.md):
 
 | Case | Required result |
 | --- | --- |
@@ -276,17 +279,66 @@ and separates input digest collisions from protected staging conflicts. These
 are author clarifications supporting the approved policies, not additional
 features or an implementation authorization.
 
-## Delivery and remaining builder choices
+## Python API
 
-This task delivers this English contract, documentation links and the update to
-issue #8 only. No Pillow installation/pinning, dependency/lock/build-constraint
-change, product source, fixture, executable test, CLI, renderer, builder, icon,
-theme, editor, release, PyPI upload or client deployment is authorized here.
+```python
+from pathlib import Path
+from enrama.config import load_config
+from enrama.core import AssetError, prepare_assets, copy_assets
 
-The implementation planner chooses small core interfaces, concrete safe-open
-mechanisms, diagnostic types, deterministic internal data structures, the exact
-Pillow version/build inputs and focused test organization. Those choices must
-satisfy this contract and preserve the established matrix; they cannot silently
-change formats, limits, copying, symlink policy, paths or exit classifications.
-The maintainer must explicitly authorize implementation on `develop` before
-those implementation activities begin. Issue #8 remains open.
+source = Path("clients/shop/enrama.yaml")
+config = load_config(source)  # YAML only; this does not open images.
+prepared = prepare_assets(config, source=source, reserved_paths=(Path("work"),))
+# Validation above writes nothing and returns original immutable byte snapshots.
+paths = prepared.mapping  # e.g. {"profile.avatar": "assets/client/<sha256>.png"}
+# Only an authorized caller owns/creates its staging directory; this example
+# deliberately does not create a builder or publish anything.
+# Once clients/shop/work already exists as that caller's real staging directory:
+copy_assets(prepared, "work")
+```
+
+`prepare_assets(config, *, source="enrama.yaml", reserved_paths=())` returns
+`PreparedAssets` or raises `AssetError` for expected input/operational failures.
+It does not load YAML again. `source` supplies the selected configuration path
+and root, not a request to read that file. Relative reserved working paths resolve
+against the canonical client root; exclude all of them from source selection.
+
+`PreparedAssets` contains `root`, `source`, canonical `reserved_paths`, immutable
+`assets` (original `data` bytes and `public_path`) and immutable `bindings`
+(structured `location`, original `reference`, `public_path`). `mapping` returns
+a fresh dictionary keyed by dotted field name; modifying it cannot mutate the
+snapshots. These are in-memory records from preparation, not a serialized input
+format or authorization token for arbitrary Python callers.
+
+`copy_assets(prepared, staging)` requires an **existing real directory exactly
+listed among prepared.reserved_paths**, inside the client root and outside dist.
+Relative staging paths resolve against that root. Only namespace subdirectories
+are created. It checks prepared path/content integrity before writes, uses
+exclusive file creation, and reads/compares existing targets without truncation.
+Changed/deleted sources after preparation do not change the bytes copied.
+Caller-owned staging and partial residue remain the caller's responsibility.
+
+`AssetError.diagnostics` retains at most twenty immutable `AssetDiagnostic`
+records, with `total_count`, `omitted_count` and `kind` (`invalid_input` or
+`operational`). Each record carries `category`, selected YAML `source`, structured
+`location`, optional `reference`, English `message` and `hint`. Coordinates are
+not invented. `str(error)` safely formats these diagnostics without printing.
+`AssetEnvironmentError`, unexpected defects and `KeyboardInterrupt` propagate;
+the future CLI maps those outcomes to F01 codes. G01 assigns no process exit.
+
+The implementation uses anchored no-follow directory descriptors where supported
+(POSIX). The Windows fallback checks internal reparse points, regular-file types
+and file/directory identities around full-path operations. These checks cover
+ordinary path substitution and static unsafe paths; this API is not an OS sandbox
+against an adversary concurrently rewriting the filesystem. G03 must provide
+its own output-operation coordination. Image decoders/settings and trusted
+Python callers remain explicit boundaries.
+
+## Delivery boundary
+
+G01 delivers asset validation/preparation, snapshots, protected staging copying,
+Pillow runtime packaging and focused unit/installed-consumer tests. C01/C02 and
+the checked schema remain unchanged. No renderer, builder lifecycle/manifest/
+cleanup/locking/publication, CLI, image transformation, theme/icon/editor, package
+release, PyPI upload or client deployment is delivered. Source implementation
+is on `develop`; closure/Done requires maintainer acceptance of the evidence.

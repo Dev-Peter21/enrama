@@ -196,3 +196,27 @@ def test_unexpected_and_interrupts_propagate(monkeypatch: pytest.MonkeyPatch) ->
     monkeypatch.setattr(Image, "open", broken)
     with pytest.raises(RuntimeError, match="injected defect"):
         module.validate_image(image_bytes(), "a.png", favicon=False)
+
+
+def test_large_jpeg_header_does_not_emit_warning(
+    recwarn: pytest.WarningsRecorder,
+) -> None:
+    data = bytearray(image_bytes("JPEG"))
+    offset = data.index(b"\xff\xc0")
+    struct.pack_into(">HH", data, offset + 5, 10000, 10000)
+    module = api()
+    with pytest.raises(module.InvalidImage) as error:
+        module.validate_image(bytes(data), "a.jpg", favicon=False)
+    assert error.value.category == "resource_limit"
+    assert not recwarn.list
+
+
+def test_missing_required_codec_is_environment_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from PIL import features
+
+    module = api()
+    monkeypatch.setattr(features, "check_module", lambda name: False)
+    with pytest.raises(module.AssetEnvironmentError):
+        module.validate_image(image_bytes(), "a.png", favicon=False)

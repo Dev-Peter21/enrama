@@ -2,7 +2,7 @@
 
 Enrama includes its F02 Python package/tooling foundation and F03 CI on `develop`.
 The C01 models, C02 safe YAML loader/diagnostics and C03 generated editor schema
-are also implemented there.
+are also implemented there, along with G01 asset preparation and staging copying.
 The CLI, generator, themes, and editor remain planned unless stated otherwise.
 
 | Document | Purpose |
@@ -15,7 +15,7 @@ The CLI, generator, themes, and editor remain planned unless stated otherwise.
 | [Configuration](configuration.md) | Accepted YAML v1 fields, defaults, validation, catalogs, compatibility, and future acceptance cases |
 | [Safe YAML loader and diagnostics](yaml-loader.md) | Accepted C02 input subset, fixed limits, source positions, diagnostic cap, Python API, and acceptance cases |
 | [JSON Schema and VS Code](json-schema.md) | Accepted C03 generation, structural-assistance limits, artifact versioning, manual client updates, and local editor configuration |
-| [Local assets](assets.md) | Agreed G01 formats, bounded Pillow validation, symlink rejection, content paths, collision/copy rules, diagnostics, and future acceptance |
+| [Local assets](assets.md) | Implemented G01 formats, bounded Pillow validation, snapshots, protected staging copying, diagnostics, API and acceptance |
 | [Themes](themes.md) | Built-in theme requirements and extension boundaries |
 | [Deployment](deployment.md) | Client repositories, static hosting, and Pages plan |
 | [Roadmap](roadmap.md) | Milestones, scoped tasks, dependencies, and completion evidence |
@@ -25,6 +25,7 @@ The CLI, generator, themes, and editor remain planned unless stated otherwise.
 | [C01 verification](verification/c01.md) | Model/validator tests, dependency/data snapshot, and isolated artifact evidence |
 | [C02 verification](verification/c02.md) | Executed loader, diagnostics, file-boundary, dependency source-build, and installed-consumer evidence |
 | [C03 verification](verification/c03.md) | Executed schema/drift/packaging tests, actual VS Code provider and offline evidence, and scope limits |
+| [G01 verification](verification/g01.md) | Actual image/filesystem/snapshot/copy tests, Pillow codecs, installed distributions and scope boundaries |
 | [Testing](testing.md) | Validation strategy and security/packaging coverage |
 | [Releasing](releasing.md) | Intended release process and first-release gates |
 | [Decisions](decisions.md) | Accepted choices and decisions still requiring review |

@@ -123,8 +123,9 @@ independent documentation/design work to happen sooner.
 
 - **Scope:** Resolve client-owned files inside the client root and copy only
   supported assets. O04 is resolved by the agreed [G01 contract](assets.md),
-  documented on 2026-10-24. No asset code/dependency/tests are delivered yet;
-  future implementation requires authorization on `develop`.
+  documented on 2026-10-24. Implementation was subsequently authorized and
+  delivered on `develop`; [verification evidence](verification/g01.md) awaits
+  maintainer acceptance. Issue #8 remains open.
 - **Dependencies:** C02; relevant F01 filesystem rules.
 - **Acceptance:** Valid images copy correctly. Tests reject traversal, absolute
   external paths, every internal symlink, special files, unsupported/invalid or

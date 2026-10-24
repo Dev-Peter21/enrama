@@ -7,6 +7,13 @@ repository; a roadmap target does not imply that a release exists.
 
 ### Added
 
+- G01 implementation on `develop`: bounded Pillow 13.0.0 image validation,
+  read-only immutable preparation, internal-symlink/special-file/reserved-path
+  rejection, deterministic full-SHA-256 names, exact-byte deduplication and
+  protected caller-owned staging copies. Includes structured English diagnostics,
+  real format/container/limit/filesystem tests and installed wheel/sdist probes.
+  No renderer, builder lifecycle, CLI, transformations, PyPI upload or deployment.
+
 - Agreed G01 local asset contract: per-role PNG/JPEG/WebP/ICO support, fixed
   byte/pixel/container limits, Pillow decoding, rejection of all internal
   symlinks, unchanged validated snapshots, full-SHA-256 paths, deduplication and

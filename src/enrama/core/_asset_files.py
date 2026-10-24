@@ -134,3 +134,57 @@ def read_source(root: Path, relative: Path, limit: int) -> bytes:
         if error.errno in {errno.ELOOP, errno.ENOTDIR}:
             raise UnsafePathError("Unsafe path component") from None
         raise
+
+
+class DestinationConflictError(UnsafePathError):
+    """An existing staging object cannot be replaced or safely reused."""
+
+
+def write_snapshot(root: Path, relative: Path, data: bytes) -> None:
+    """Create exclusively or verify identical bytes; never truncate a target."""
+    try:
+        with parent_directory(root, relative, create=True) as (parent, path):
+            try:
+                info = _stat(parent, path)
+            except FileNotFoundError:
+                info = None
+            if info is not None:
+                _regular(info)
+                try:
+                    current = read_source(root, relative, len(data))
+                except FileLimitError:
+                    raise DestinationConflictError("Existing content differs") from None
+                if current != data:
+                    raise DestinationConflictError("Existing content differs")
+                return
+            flags = (
+                os.O_WRONLY
+                | os.O_CREAT
+                | os.O_EXCL
+                | getattr(os, "O_NOFOLLOW", 0)
+                | getattr(os, "O_NONBLOCK", 0)
+                | getattr(os, "O_BINARY", 0)
+            )
+            descriptor = os.open(
+                path if parent is None else path.name, flags, 0o644, dir_fd=parent
+            )
+            try:
+                opened = os.fstat(descriptor)
+                _regular(opened)
+                remaining = memoryview(data)
+                while remaining:
+                    written = os.write(descriptor, remaining)
+                    if written <= 0:
+                        raise OSError("Image write made no progress")
+                    remaining = remaining[written:]
+                after = _stat(parent, path)
+                _regular(after)
+                _same(opened, after)
+            finally:
+                os.close(descriptor)
+    except FileExistsError:
+        raise DestinationConflictError("Staging target appeared concurrently") from None
+    except OSError as error:
+        if error.errno in {errno.ELOOP, errno.ENOTDIR}:
+            raise DestinationConflictError("Unsafe staging component") from None
+        raise

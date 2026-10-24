@@ -361,3 +361,23 @@ def test_parent_replaced_after_inspection(
         )
     assert error.value.diagnostics[0].category == "unsafe_path"
     assert (outside / "pic.png").read_bytes() == image_bytes(color="blue")
+
+
+def test_os_symlink_loop_is_also_invalid_input(
+    root: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import errno
+
+    module = api()
+    original = Path.resolve
+
+    def resolve(path: Path, strict: bool = False) -> Path:
+        if path.name == "loop.png":
+            raise OSError(errno.ELOOP, "loop")
+        return original(path, strict=strict)
+
+    monkeypatch.setattr(Path, "resolve", resolve)
+    with pytest.raises(module.AssetError) as error:
+        module.prepare_assets(client_config("loop.png"), source=root / "enrama.yaml")
+    assert error.value.diagnostics[0].category == "unsafe_path"
+    assert error.value.kind == "invalid_input"
