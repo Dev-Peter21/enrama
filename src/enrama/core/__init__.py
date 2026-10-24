@@ -1,5 +1,6 @@
-"""Reusable local asset services, independent of application interfaces."""
+"""Reusable asset and HTML services, independent of application interfaces."""
 
+from ._render_errors import RenderError
 from .assets import (
     AssetBinding,
     AssetDiagnostic,
@@ -10,6 +11,7 @@ from .assets import (
     copy_assets,
     prepare_assets,
 )
+from .renderer import render_html
 
 __all__ = [
     "AssetBinding",
@@ -20,4 +22,6 @@ __all__ = [
     "PreparedAssets",
     "prepare_assets",
     "copy_assets",
+    "RenderError",
+    "render_html",
 ]

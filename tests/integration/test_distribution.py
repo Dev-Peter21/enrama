@@ -224,6 +224,7 @@ print(json.dumps(metadata))
         "pydantic<3,>=2.14.1",
         "pyyaml<7,>=6.0.3",
         "pillow==13.0.0",
+        "jinja2<4,>=3.1.6",
     }
     assert metadata["pillow"] == "13.0.0"
     assert metadata["asset_codecs"] == {"jpeg": True, "png": True, "webp": True}
@@ -261,7 +262,6 @@ print(json.dumps(metadata))
         "jsonschema",
         "types-jsonschema",
         "typer",
-        "jinja2",
         "fastapi",
     }.intersection(metadata["installed"])
 
@@ -318,6 +318,8 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
             "enrama/core/_asset_errors.py",
             "enrama/core/_render_context.py",
             "enrama/core/_render_errors.py",
+            "enrama/core/renderer.py",
+            "enrama/_templates/base.html",
             "enrama/py.typed",
             "enrama-0.1.0.dev0.dist-info/METADATA",
             "enrama-0.1.0.dev0.dist-info/WHEEL",
@@ -346,6 +348,8 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
             "src/enrama/core/_asset_errors.py",
             "src/enrama/core/_render_context.py",
             "src/enrama/core/_render_errors.py",
+            "src/enrama/core/renderer.py",
+            "src/enrama/_templates/base.html",
             "src/enrama/py.typed",
             "pyproject.toml",
             "README.md",
