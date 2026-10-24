@@ -64,6 +64,8 @@ only-include = [
     "src/enrama/core/_asset_files.py",
     "src/enrama/core/_asset_images.py",
     "src/enrama/core/_asset_errors.py",
+    "src/enrama/core/_render_context.py",
+    "src/enrama/core/_render_errors.py",
     "src/enrama/py.typed",
 ]
 sources = ["src"]
@@ -87,6 +89,8 @@ only-include = [
     "src/enrama/core/_asset_files.py",
     "src/enrama/core/_asset_images.py",
     "src/enrama/core/_asset_errors.py",
+    "src/enrama/core/_render_context.py",
+    "src/enrama/core/_render_errors.py",
     "src/enrama/py.typed",
     "pyproject.toml",
     "README.md",
