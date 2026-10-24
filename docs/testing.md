@@ -1,8 +1,8 @@
 # Testing strategy
 
-Status: packaging/locking, configuration/schema and G01 asset tests are
-executable on `develop`. Product CLI, rendering/building, preview and themes
-remain planned coverage.
+Status: packaging/locking, configuration/schema, G01 assets and G02 rendering
+tests are executable on `develop`. Product CLI, coordinated building, preview
+and final theme presentation remain planned coverage.
 
 The accepted [CLI/filesystem scenarios](cli-contract.md#acceptance-examples)
 define future command and path-safety acceptance checks. Their documented
@@ -49,11 +49,12 @@ remaining boundaries.
 ## Security regression cases
 
 G02's agreed [implementation acceptance](rendering.md#implementation-acceptance)
-adds future checks for parsed HTML semantics, body/attribute escaping, separate
+defines checks for parsed HTML semantics, body/attribute escaping, separate
 enabled collections, metadata omission, directory URL derivation, same-context
 destinations, root/subpath static resource requests, deterministic in-memory
 output, safe failure classification and installed packaged templates. These
-checks are not implemented or executed by the G02 documentation change.
+checks are implemented on `develop`; see [G02 verification](verification/g02.md)
+for actual counts, installed consumers and static-server evidence.
 
 C02's accepted [loader contract](yaml-loader.md#required-acceptance-cases) adds
 loader tests for UTF-8/BOM, document shape, duplicate keys and related

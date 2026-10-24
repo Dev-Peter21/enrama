@@ -142,8 +142,9 @@ independent documentation/design work to happen sooner.
   defines in-memory rendering with matching G01 prepared assets, a shared HTML
   base, explicit escaping/StrictUndefined, directory-form public URLs, optional
   metadata, same-context anchors and structured failures. Theme presentation
-  remains U03/U04; filesystem coordination remains G03. Documentation only;
-  implementation must later target `develop`. Issue #9 remains open.
+  remains U03/U04; filesystem coordination remains G03. Implementation was
+  authorized and delivered on `develop`; [verification evidence](verification/g02.md)
+  awaits maintainer acceptance. Issue #9 remains open.
 - **Dependencies:** C01, G01.
 - **Acceptance:** Rendering tests verify escaping of malicious text, disabled-link
   omission, order, language/metadata, and paths suitable for domain-root and

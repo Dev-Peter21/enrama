@@ -1,7 +1,8 @@
 # Architecture
 
-Status: C01/C02/C03 configuration and G01 asset services are implemented on
-`develop`; rendering, builder, CLI, preview and themes remain intended design.
+Status: C01/C02/C03 configuration, G01 assets and G02 shared HTML rendering are
+implemented on `develop`; builder, CLI, preview and theme presentation remain
+intended design.
 
 ## System boundary
 
@@ -67,7 +68,8 @@ service consuming C01 configuration and matching G01 prepared assets. Trusted
 packaged Jinja2 resources use explicit HTML autoescaping and StrictUndefined.
 G02 owns the shared semantic base, metadata, directory-form public URLs and
 structured failures; U03/U04 own theme presentation and G03 writes output.
-G02 remains documentation only, with future implementation on `develop`.
+G02 is implemented on `develop` through `render_html` / `RenderError`, using
+Jinja2 3.1.6 and the packaged shared base; see [G02 verification](verification/g02.md).
 
 ## Selected technologies
 
@@ -102,6 +104,8 @@ This is a target layout, not a list of existing files.
 ```text
 src/enrama/
   __init__.py
+  _templates/
+    base.html
   cli.py
   config/
     loader.py

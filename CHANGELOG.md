@@ -7,6 +7,14 @@ repository; a roadmap target does not imply that a release exists.
 
 ### Added
 
+- G02 implementation on `develop`: in-memory `render_html` and structured
+  `RenderError`, checked G01 bindings, trusted packaged Jinja2 shared HTML base,
+  explicit autoescaping/StrictUndefined, conditional metadata, directory public
+  URLs and relative local resources. Includes parsed escaping/semantics/failure
+  tests, isolated installed rendering and root/subpath static-server probes.
+  Jinja2 3.1.6 and MarkupSafe 3.0.4 are locked; no builder, CLI, theme presentation,
+  schema change, PyPI upload or deployment.
+
 - Agreed G02 rendering/metadata contract: shared semantic HTML in memory,
   explicit Jinja2 autoescaping/StrictUndefined, matching prepared asset bindings,
   directory-form public URLs, conditional metadata, relative local resources,

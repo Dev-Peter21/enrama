@@ -6,11 +6,11 @@ An open-source, self-hosted link-in-bio site generator built with Python.
 One project per client. One YAML file. One command to generate a static site.
 Once published, the site runs independently of Enrama.
 
-> **Project status: safe configuration loading and JSON Schema on `develop`.** The importable
+> **Project status: configuration, assets and shared HTML rendering on `develop`.** The importable
 > package `0.1.0.dev0`, strict YAML v1 models, bounded loader, structured diagnostics,
 > generated editor schema, safe asset preparation/staging copying, development tools,
-> and tests are available.
-> The CLI, generator, themes, and editor are still planned. No package has been
+> shared HTML renderer, and tests are available.
+> The coordinated builder, CLI, theme presentation, and editor are still planned. No package has been
 > published to PyPI; `0.1.0` remains the MVP target.
 
 ## Developer setup
@@ -42,7 +42,8 @@ The [asset contract](docs/assets.md) documents G01's `prepare_assets`/`copy_asse
 API; [G01 verification](docs/verification/g01.md) records image, filesystem and
 installed-distribution evidence.
 The [rendering contract](docs/rendering.md) defines G02's shared HTML base,
-metadata, public directory URLs and failures; it is documentation only.
+metadata, public directory URLs, failures and the implemented Python API;
+[G02 verification](docs/verification/g02.md) records actual checks.
 
 ## Why Enrama?
 

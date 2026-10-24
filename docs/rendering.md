@@ -1,10 +1,11 @@
 # HTML rendering and metadata contract
 
-Status: **G02 design agreed on 2026-10-24; documentation only**, for
-[issue #9](https://github.com/Dev-Peter21/enrama/issues/9). The maintainer
-requested this English contract and issue update. The renderer, templates,
-Jinja2 dependency and rendering tests are **not implemented** by this change.
-Future implementation must target **`develop`** after explicit authorization.
+Status: **G02 implemented on develop, awaiting maintainer acceptance**, following
+approval and implementation authorization on 2026-10-24 for
+[issue #9](https://github.com/Dev-Peter21/enrama/issues/9). The shared renderer,
+packaged base, Jinja2 dependency and rendering tests are implemented. See
+[verification evidence](verification/g02.md). Issue #9 remains open;
+package version is still `0.1.0.dev0`.
 
 ## Intent and chosen approach
 
@@ -186,7 +187,8 @@ unexpected defects or interrupts under an invalid-input classification.
 
 ## Implementation acceptance
 
-These are **future required checks**, not tests executed by this documentation:
+The implementation checks the following behaviors; actual executed counts,
+environments and limitations are recorded in [G02 verification](verification/g02.md):
 
 1. Parse generated HTML and verify doctype, language, charset, viewport, one main,
    one profile h1, optional profile elements, separate lists and label semantics.
@@ -212,13 +214,37 @@ These are **future required checks**, not tests executed by this documentation:
    checkout and render the shared base from both distributions, with escaping and
    metadata intact. Run the existing F03 quality and six-environment matrix.
 
-## Remaining builder choices and scope boundary
+## Python API and implementation choices
 
-Implementation may choose public function/error names, internal view/context
-types, trusted template filenames/blocks, whitespace layout and nonsemantic HTML
-identifiers. Introduce Jinja2 and its compatible locked dependency resolution only
-with the authorized implementation, following [F02](development-setup.md).
-Those details must preserve this behavior and avoid creating a second YAML model.
+The public API is available from `enrama.core`:
+
+```python
+from enrama.config import load_config
+from enrama.core import RenderError, prepare_assets, render_html
+
+source = "client/enrama.yaml"
+config = load_config(source)
+prepared = prepare_assets(config, source=source)
+html = render_html(config, prepared)  # str, no filesystem output
+```
+
+`render_html(config: EnramaConfig, prepared: PreparedAssets) -> str` uses a
+primitive presentation context and the fixed `enrama/_templates/base.html`
+resource. It accepts no template path or environment override. Jinja2 is a used
+runtime dependency (`>=3.1.6,<4`), locked at 3.1.6 with MarkupSafe 3.0.4.
+A fixed FunctionLoader/importlib.resources read keeps genuine resource I/O errors
+distinct from missing packaged templates, while preventing client/cwd discovery.
+
+`RenderError` exposes `kind` (`internal` or `operational`), `category`
+(`asset_mismatch`, `template_error`, `resource_error`, `internal_error`), English
+`message`/`hint` and optional known `field` / `template`. Its string contains only
+safe static renderer context. It has no YAML positions, retained partial HTML or
+process exit side effect. The F01 mapping above remains the caller's responsibility.
+
+Internal filenames, context representation and whitespace are implementation
+choices; no second YAML model or visual theme contract is introduced.
+
+## Scope boundary
 
 G02 does not implement the G03 builder, filesystem lifecycle/manifest/cleanup,
 CLI/preview commands, final theme CSS/icons, JSON Schema changes, editor,

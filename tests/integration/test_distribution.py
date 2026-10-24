@@ -171,6 +171,60 @@ for fmt, suffix in [("PNG", "png"), ("JPEG", "jpg"), ("WEBP", "webp"), ("ICO", "
     assert not (client / "dist").exists()
     metadata["asset_formats"][fmt] = public_path.rsplit(".", 1)[1]
 
+# Shared template must load from the installed package, independent of cwd.
+from html.parser import HTMLParser
+from importlib.resources import files
+from enrama.core import render_html
+class RenderedDocument(HTMLParser):
+    def __init__(self, html):
+        super().__init__()
+        self.elements = []
+        self.feed(html)
+    def handle_starttag(self, tag, attrs):
+        self.elements.append((tag, dict(attrs)))
+
+plain = '<script>alert(1)</script> & "quoted" {{7*7}}'
+render_data = {
+    "schema_version": 1,
+    "site": {"title": plain, "description": plain, "language": "en", "url": "https://example.com/client", "favicon": "image.ico", "og_image": "image.png"},
+    "profile": {"name": plain, "avatar": "image.png"},
+    "links": [{"id": "go", "title": plain, "url": "https://other.example/?a=1&b=2"}],
+}
+metadata["jinja2"] = m.version("Jinja2")
+metadata["markupsafe"] = m.version("MarkupSafe")
+resource = files("enrama").joinpath("_templates", "base.html")
+assert "site-packages" in str(resource)
+metadata["rendered_themes"] = []
+for theme in ("minimal", "bold"):
+    render_config = EnramaConfig.model_validate({**render_data, "theme": {"name": theme}})
+    render_assets = prepare_assets(render_config, source=client / "selected.yaml")
+    html = render_html(render_config, render_assets)
+    document = RenderedDocument(html)
+    assert not any(tag in ("script", "style", "base", "svg") for tag, attrs in document.elements)
+    assert sum(tag == "main" for tag, attrs in document.elements) == 1
+    assert "&lt;script&gt;" in html and "{{7*7}}" in html
+    anchors = [attrs for tag, attrs in document.elements if tag == "a"]
+    assert anchors == [{"href": "https://other.example/?a=1&b=2"}]
+    metas = {attrs.get("property", attrs.get("name")): attrs.get("content") for tag, attrs in document.elements if tag == "meta"}
+    assert metas["og:title"] == plain
+    assert metas["og:url"] == "https://example.com/client/"
+    assert metas["og:image"] == "https://example.com/client/" + render_assets.mapping["site.og_image"]
+    metadata["rendered_themes"].append(theme)
+
+# Rendering may read only its fixed installed template, never client files/network.
+original_config = render_config.model_dump()
+original_assets = render_assets
+expected_html = render_html(render_config, render_assets)
+def restrict_render_io(event, arguments):
+    if event == "open" and arguments[0] != str(resource):
+        raise AssertionError("Renderer opened an unexpected resource")
+    if event.startswith("socket."):
+        raise AssertionError("Renderer attempted network I/O")
+sys.addaudithook(restrict_render_io)
+assert render_html(render_config, render_assets) == expected_html
+assert render_config.model_dump() == original_config and render_assets == original_assets
+metadata["render_io_restricted"] = True
+
 def forbid_io(event, arguments):
     if event == "open" or event.startswith("socket."):
         raise AssertionError("Model validation attempted I/O: " + event)
@@ -226,6 +280,10 @@ print(json.dumps(metadata))
         "pillow==13.0.0",
         "jinja2<4,>=3.1.6",
     }
+    assert metadata["jinja2"]
+    assert metadata["markupsafe"]
+    assert metadata["rendered_themes"] == ["minimal", "bold"]
+    assert metadata["render_io_restricted"] is True
     assert metadata["pillow"] == "13.0.0"
     assert metadata["asset_codecs"] == {"jpeg": True, "png": True, "webp": True}
     assert metadata["asset_formats"] == {
