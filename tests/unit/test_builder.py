@@ -28,11 +28,13 @@ def client(root: Path, avatar: bool = True) -> Path:
     return source
 
 
-def snapshot(root: Path) -> dict[str, bytes]:
+def snapshot(root: Path, *, active_guard: bool = False) -> dict[str, bytes]:
     return {
-        str(p.relative_to(root)): p.read_bytes()
+        p.relative_to(root).as_posix(): p.read_bytes()
         for p in root.rglob("*")
-        if p.is_file() and not p.is_symlink()
+        if p.is_file()
+        and not p.is_symlink()
+        and not (active_guard and p.relative_to(root).as_posix() == ".enrama/guard")
     }
 
 
@@ -167,9 +169,17 @@ def test_validate_no_writes_even_with_active_session(tmp_path: Path) -> None:
     validate_project(source)
     assert snapshot(tmp_path) == before and not (tmp_path / ".enrama").exists()
     with ProjectSession(source):
-        before = snapshot(tmp_path)
+        pass
+    before = snapshot(tmp_path)
+    with ProjectSession(source):
+        # Windows denies reads of the byte range held by msvcrt.locking.
+        active_before = snapshot(tmp_path, active_guard=True)
+        guard_before = (tmp_path / ".enrama/guard").stat()
         validate_project(source)
-        assert snapshot(tmp_path) == before
+        assert snapshot(tmp_path, active_guard=True) == active_before
+        assert (tmp_path / ".enrama/guard").stat() == guard_before
+    # Include guard contents again after releasing the OS lock.
+    assert snapshot(tmp_path) == before
 
 
 def test_nonblocking_cross_process_guard(tmp_path: Path) -> None:

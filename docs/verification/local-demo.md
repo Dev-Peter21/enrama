@@ -10,9 +10,14 @@ develop were subsequently authorized; final remote evidence is recorded below.
 G03 guarded build, U01 CLI, U02 foreground preview, U03/U04 packaged themes/icons,
 and a synthetic client example. Existing C01/C02/C03/G01/G02 remain the foundations.
 CPython 3.12.15/macOS arm64, uv 0.13.5, Typer 0.27.3, Jinja2 3.1.6 / MarkupSafe 3.0.4.
-The existing Python 3.12–3.15/Linux plus macOS/Windows CI target is unchanged, but
-no remote run was triggered for this unpublished branch; local evidence is not a
-claim that the new code has passed every remote environment.
+The existing Python 3.12–3.15/Linux plus macOS/Windows CI target is unchanged.
+The first develop run [40364334298](https://github.com/Dev-Peter21/enrama/actions/runs/40364334298)
+verified Linux but exposed two Windows-only test assumptions: native backslashes
+were used as manifest lookup keys, and a snapshot tried reading the actively
+locked guard byte. The snapshot now uses POSIX inventory keys, checks guard
+metadata while locked, and compares its bytes again after release. Product code
+and the OS lock semantics are unchanged. Final remote evidence is retained with
+the exact pushed revision and workflow run; a pending job is not passing evidence.
 
 ## Executed behavior and test-first record
 
