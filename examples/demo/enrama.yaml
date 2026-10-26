@@ -1,0 +1,43 @@
+# Synthetic local demo. Replace example.com destinations before real use.
+schema_version: 1
+site:
+  title: "Amapola Estudio — Flores & objetos"
+  description: "Flores, objetos y pequeños gestos para hacer especial lo cotidiano."
+  language: "es-AR"
+  url: "https://example.com/amapola/"
+  favicon: "assets/flower.png"
+  og_image: "assets/social.png"
+profile:
+  name: "Amapola Estudio"
+  bio: "Flores, objetos y pequeños gestos.
+Hecho con calma, para regalar y regalarte."
+  avatar: "assets/flower.png"
+theme:
+  name: "minimal"
+  primary_color: "#294D3C"
+  background_color: "#F7F4EB"
+  text_color: "#23362E"
+links:
+  - id: catalogo
+    title: "Explorá el catálogo"
+    url: "https://example.com/catalogo"
+    icon: "shopping-bag"
+  - id: regalos
+    title: "Hagamos algo especial"
+    url: "mailto:hello@example.com"
+    icon: "mail"
+  - id: taller
+    title: "Conocé nuestro taller"
+    url: "https://example.com/taller"
+    icon: "map-pin"
+  - id: ideas
+    title: "Ideas que florecen"
+    url: "https://example.com/ideas"
+    icon: "external-link"
+socials:
+  - id: instagram
+    platform: "instagram"
+    url: "https://example.com/instagram"
+  - id: whatsapp
+    platform: "whatsapp"
+    url: "https://example.com/contacto"

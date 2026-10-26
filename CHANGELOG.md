@@ -7,6 +7,13 @@ repository; a roadmap target does not imply that a release exists.
 
 ### Added
 
+- Local-demo branch: guarded G03 builds with deterministic output manifests,
+  nonblocking project ownership, conservative rollback/cleanup and manual recovery
+  after abrupt termination. Adds init/validate/build/foreground preview, packaged
+  minimal/bold CSS, 21 pinned licensed icons, contrast-derived colors/warnings and
+  synthetic demo assets. No push/merge, issue acceptance, release, PyPI upload,
+  visual editor or public deployment is implied.
+
 - G02 implementation on `develop`: in-memory `render_html` and structured
   `RenderError`, checked G01 bindings, trusted packaged Jinja2 shared HTML base,
   explicit autoescaping/StrictUndefined, conditional metadata, directory public

@@ -1,8 +1,8 @@
 # Testing strategy
 
 Status: packaging/locking, configuration/schema, G01 assets and G02 rendering
-tests are executable on `develop`. Product CLI, coordinated building, preview
-and final theme presentation remain planned coverage.
+tests are executable on `develop`. The local-demo branch adds executable builder/CLI/preview/theme coverage; see
+[local demo verification](verification/local-demo.md) for current local evidence.
 
 The accepted [CLI/filesystem scenarios](cli-contract.md#acceptance-examples)
 define future command and path-safety acceptance checks. Their documented

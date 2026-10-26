@@ -57,3 +57,16 @@ than silently choosing a public contract.
 | O02 | Accepted on 2026-10-22: current-directory YAML discovery or explicit `--config`; output only in project-local `dist/`; no init overwrite or destructive bypass; ownership/integrity checks and staged replacement; manual preview at `127.0.0.1:8000` with optional port; exclusive output ownership; exit codes `0`, `1`, `2`, `3`, `70`, and `130` | [CLI/filesystem contract](cli-contract.md) and [F01 #2](https://github.com/Dev-Peter21/enrama/issues/2) |
 | O03 | Accepted on 2026-10-23: required/default fields and null policy; strict types/unknown keys; text/list limits; cross-collection IDs/order/enabled rules; per-field URL schemes and restricted mailto/tel forms; registry-backed language subset; six-digit colors; social, favicon, and OG image fields; nine platforms and twelve general icons. Platform controls presentation only and never restricts destination domains. Lucide/Bootstrap Icons sources accepted; C01 models implement this policy. | [YAML v1 contract](configuration.md), [C01 verification](verification/c01.md), and [C01 #5](https://github.com/Dev-Peter21/enrama/issues/5) |
 | O04 | Agreed on 2026-10-24: per-role PNG/JPEG/static WebP and PNG/ICO; 5 MiB image/1 MiB favicon/10 MiB unique total; fixed pixel/ICO limits; Pillow structure/decode validation; reject every internal symlink; preserve validated bytes; full SHA-256 canonical paths, exact-byte reuse and explicit collisions; English structured errors with F01 exit mapping. Output replacement, stale cleanup and publication remain F01/G03. | [G01 contract](assets.md) and [G01 #8](https://github.com/Dev-Peter21/enrama/issues/8); implementation accepted and issue completed on 2026-10-24, see [G01 verification](verification/g01.md) |
+
+
+## Local demo implementation assumptions, 2026-10-26
+
+The instruction to continue autonomously to a local demo permits these reversible
+choices, without inventing formal issue acceptance: reserve .enrama/ and
+.enrama-manifest.json per [G03](builder.md); retain the approved manual recovery;
+use stdlib local advisory ownership and guarded staging/backup; choose system
+font stacks and pinned licensed Lucide/Bootstrap SVGs; derive accessible foreground
+and focus tokens with warnings for inadequate body contrast. These choices are
+implemented only in the isolated local-demo branch pending review/integration.
+A subsequent instruction authorizes safe integration and push of this delivery to
+develop. Release/PyPI/public deployment remain excluded.

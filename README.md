@@ -6,12 +6,11 @@ An open-source, self-hosted link-in-bio site generator built with Python.
 One project per client. One YAML file. One command to generate a static site.
 Once published, the site runs independently of Enrama.
 
-> **Project status: configuration, assets and shared HTML rendering on `develop`.** The importable
-> package `0.1.0.dev0`, strict YAML v1 models, bounded loader, structured diagnostics,
-> generated editor schema, safe asset preparation/staging copying, development tools,
-> shared HTML renderer, and tests are available.
-> The coordinated builder, CLI, theme presentation, and editor are still planned. No package has been
-> published to PyPI; `0.1.0` remains the MVP target.
+> **Functional local demo.** Configuration, safe assets,
+> the shared renderer, guarded builder, CLI and two local themes are implemented.
+> Try [the example](examples/demo/README.md) or [the local demo workflow](docs/local-demo.md). The development version stays
+> `0.1.0.dev0`; no PyPI release or public deployment is included. GitHub issue
+> acceptance remains separate from this implementation.
 
 ## Developer setup
 
@@ -68,21 +67,21 @@ Enrama account, production backend, or database will be required.
 The local visual editor is planned for `0.2`. Login, managed hosting, click
 analytics, subscriptions, and URL shortening are outside the MVP.
 
-## Intended workflow
-
-These commands describe the future interface. They are **not available from
-this repository yet**; no PyPI package is published by this initialization.
+## Local workflow
 
 ```console
-uvx enrama init my-client
-cd my-client
-uvx enrama validate
-uvx enrama preview
-uvx enrama build
+uv sync --locked
+uv run --locked enrama init my-client
+uv run --locked enrama validate --config my-client/enrama.yaml
+uv run --locked enrama build --config my-client/enrama.yaml
+uv run --locked enrama preview --config my-client/enrama.yaml --port 8000
 ```
 
-Publish the generated `dist/` directory to a static host. Client YAML and images
-belong in a separate client repository, not in Enrama's source repository.
+Open the printed loopback URL. Stop/restart to rebuild after edits. Publish only
+`dist/` when deployment is explicitly authorized; production needs no Python or
+Enrama service. See [safe build/recovery](docs/builder.md) and
+[local demo instructions](docs/local-demo.md). `uvx enrama` is not available from
+an unpublished local package.
 
 ## Documentation
 
@@ -90,6 +89,8 @@ Start with the [documentation index](docs/README.md), or go directly to:
 
 - [Product definition](docs/product.md)
 - [Architecture](docs/architecture.md)
+- [Local demo](docs/local-demo.md)
+- [Safe builder contract](docs/builder.md)
 - [CLI and filesystem contract](docs/cli-contract.md)
 - [Python development setup](docs/development-setup.md)
 - [Accepted CI and compatibility matrix design](docs/continuous-integration.md)

@@ -7,6 +7,10 @@ packaged base, Jinja2 dependency and rendering tests are implemented. See
 [verification evidence](verification/g02.md). Issue #9 remains open;
 package version is still `0.1.0.dev0`.
 
+The local-demo branch adds U03/U04 packaged styles and decorative controlled
+icons to this shared base; metadata, enabled order, same-context destinations
+and escaping remain unchanged. See [themes](themes.md).
+
 ## Intent and chosen approach
 
 Turn validated client content and prepared local asset references into one

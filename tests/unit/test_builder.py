@@ -402,3 +402,75 @@ def test_unowned_empty_backup_never_replaced(
         builder.build_site(source)
     assert (tmp_path / ".enrama/backup").is_dir()
     assert (tmp_path / "dist/index.html").exists()
+
+
+def test_abrupt_process_death_releases_lock_but_keeps_manual_recovery_data(
+    tmp_path: Path,
+) -> None:
+    import time
+
+    from enrama.core import BuildError, build_site
+
+    source = client(tmp_path)
+    build_site(source)
+    old = snapshot(tmp_path / "dist")
+    code = 'from enrama.core import ProjectSession\nfrom pathlib import Path\nimport sys,time\nwith ProjectSession(sys.argv[1]) as s:\n (s.work/"transaction.json").write_text("{}")\n (s.work/"staging").mkdir()\n (s.work/"staging"/"recover.txt").write_text("RECOVERABLE")\n time.sleep(60)'
+    process = subprocess.Popen(
+        [sys.executable, "-c", code, str(source)],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    try:
+        deadline = time.monotonic() + 5
+        while not (tmp_path / ".enrama/staging/recover.txt").exists():
+            if process.poll() is not None:
+                pytest.fail(str(process.communicate()))
+            if time.monotonic() > deadline:
+                pytest.fail("Recovery fixture startup timed out")
+            time.sleep(0.02)
+        process.kill()
+        process.communicate(timeout=5)
+        with pytest.raises(BuildError) as error:
+            build_site(source)
+        assert error.value.category == "incomplete_operation"
+        assert snapshot(tmp_path / "dist") == old
+        assert (tmp_path / ".enrama/staging/recover.txt").read_text() == "RECOVERABLE"
+    finally:
+        if process.poll() is None:
+            process.kill()
+            process.communicate(timeout=5)
+
+
+def test_excessive_owned_output_inventory_is_rejected_before_replacement(
+    tmp_path: Path,
+) -> None:
+    from enrama.core import BuildError, build_site
+
+    source = client(tmp_path, False)
+    output = tmp_path / "dist"
+    (output / "assets/client").mkdir(parents=True)
+    content = {"index.html": b"Old page"}
+    for byte in (b"a", b"b"):
+        data = byte * (9 * 1024 * 1024)
+        name = "assets/client/" + hashlib.sha256(data).hexdigest() + ".png"
+        content[name] = data
+    entries = []
+    for name, data in content.items():
+        (output / name).write_bytes(data)
+        entries.append(
+            {
+                "path": name,
+                "size": len(data),
+                "sha256": hashlib.sha256(data).hexdigest(),
+            }
+        )
+    manifest = {
+        "format_version": 1,
+        "generator": {"name": "enrama", "version": "0.1.0.dev0"},
+        "schema_version": 1,
+        "files": entries,
+    }
+    (output / ".enrama-manifest.json").write_text(json.dumps(manifest))
+    with pytest.raises(BuildError):
+        build_site(source)
+    assert (output / "index.html").read_bytes() == b"Old page"

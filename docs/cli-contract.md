@@ -5,6 +5,10 @@ Status: **accepted design for the 0.1 MVP**, agreed on 2026-10-22 for
 This document specifies future behavior. No CLI, generator, preview server,
 ownership manifest, or locking implementation is delivered by F01.
 
+The local-demo branch implements this command surface and guarded build flow;
+see [local demo verification](verification/local-demo.md). This does not change
+F01 acceptance or imply public package availability.
+
 ## Command surface
 
 ```text

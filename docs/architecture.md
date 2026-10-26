@@ -1,8 +1,8 @@
 # Architecture
 
-Status: C01/C02/C03 configuration, G01 assets and G02 shared HTML rendering are
-implemented on `develop`; builder, CLI, preview and theme presentation remain
-intended design.
+Status: configuration/schema, assets, shared rendering, guarded building,
+CLI/preview and both theme presentations are implemented for the local demo.
+Integration targets `develop`; the editor remains planned.
 
 ## System boundary
 
@@ -70,6 +70,9 @@ G02 owns the shared semantic base, metadata, directory-form public URLs and
 structured failures; U03/U04 own theme presentation and G03 writes output.
 G02 is implemented on `develop` through `render_html` / `RenderError`, using
 Jinja2 3.1.6 and the packaged shared base; see [G02 verification](verification/g02.md).
+
+The [G03 contract](builder.md) and [local demo guide](local-demo.md) describe
+the implemented transaction/coordination boundaries and CLI consumer flow.
 
 ## Selected technologies
 

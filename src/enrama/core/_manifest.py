@@ -87,6 +87,13 @@ def make_manifest(content: dict[str, bytes], schema: int = 1) -> bytes:
             "The generated inventory is invalid",
             "Report the internal build defect",
         )
+    if sum(len(data) for data in content.values()) > MAX_FILE:
+        raise BuildError(
+            "internal",
+            "output_limit",
+            "Generated output exceeds the supported build limit",
+            "Report the oversized internal output",
+        )
     return canonical(
         {
             "format_version": 1,
@@ -136,6 +143,7 @@ def verify_output(root: Path) -> tuple[bytes, tuple[str, ...]]:
         if not isinstance(entries, list) or not 1 <= len(entries) <= 255:
             raise conflict()
         names: set[str] = set()
+        total = 0
         for item in entries:
             if not isinstance(item, dict) or set(item) != {"path", "size", "sha256"}:
                 raise conflict()
@@ -154,6 +162,9 @@ def verify_output(root: Path) -> tuple[bytes, tuple[str, ...]]:
                 or not isinstance(digest, str)
                 or not re.fullmatch("[0-9a-f]{64}", digest)
             ):
+                raise conflict()
+            total += size
+            if total > MAX_FILE:
                 raise conflict()
             names.add(name)
             content = files.read_source(root, Path(name), MAX_FILE)

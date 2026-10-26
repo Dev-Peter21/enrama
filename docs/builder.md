@@ -48,8 +48,8 @@ generator version may be replaced if the manifest format and entire tree verify.
 Require index.html; only regular files under the fixed generated namespaces are
 allowed. Paths are canonical POSIX paths, no traversal/absolute paths/duplicates,
 case aliases, symlinks or special files; expected directories derive from files.
-Unexpected empty directories also block replacement. Bound manifest reads and
-inventories. Invalid/missing/edited/extra output or an existing empty dist fails
+Unexpected empty directories also block replacement. Bound manifest reads to 1 MiB, inventories to 255 generated files/256
+directories and combined generated payload to 16 MiB (plus the manifest). Invalid/missing/edited/extra output or an existing empty dist fails
 operationally without modifying that output. Integrity is not a cryptographic
 signature or authority to delete arbitrary user-selected directories.
 

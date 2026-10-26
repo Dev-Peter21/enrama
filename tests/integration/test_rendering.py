@@ -14,6 +14,7 @@ from PIL import Image
 
 from enrama.config import EnramaConfig
 from enrama.core import copy_assets, prepare_assets, render_html
+from enrama.themes import theme_view
 
 
 class ResourceReferences(HTMLParser):
@@ -27,7 +28,11 @@ class ResourceReferences(HTMLParser):
         values = dict(attrs)
         if tag == "base":
             self.base_elements += 1
-        if tag == "img" or tag == "link" and values.get("rel") == "icon":
+        if (
+            tag == "img"
+            or tag == "link"
+            and values.get("rel") in {"icon", "stylesheet"}
+        ):
             path = values.get("src") if tag == "img" else values.get("href")
             assert path
             self.paths.append(path)
@@ -72,6 +77,11 @@ def test_relative_images_resolve_under_static_root_or_prefix(
         reserved_paths=(stage.relative_to(client),),
     )
     copy_assets(prepared, stage)
+    theme = theme_view(config.theme)
+    for name, data in theme.assets.items():
+        path = stage / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(data)
     html = render_html(config, prepared)
     (stage / "index.html").write_text(html, encoding="utf-8", newline="\n")
     server = ThreadingHTTPServer(
@@ -88,12 +98,12 @@ def test_relative_images_resolve_under_static_root_or_prefix(
             page = response.read().decode("utf-8")
         refs = ResourceReferences(page)
         assert refs.base_elements == 0
-        assert len(refs.paths) == 2
-        assert all(path.startswith("assets/client/") for path in refs.paths)
+        assert len(refs.paths) == 3
+        assert all(path.startswith("assets/") for path in refs.paths)
         for reference in refs.paths:
             with urlopen(urljoin(page_url, reference), timeout=5) as response:
                 assert response.status == 200
-                assert response.read() == original
+                assert response.read() == theme.assets.get(reference, original)
     finally:
         server.shutdown()
         server.server_close()

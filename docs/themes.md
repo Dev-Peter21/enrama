@@ -1,10 +1,11 @@
 # Themes
 
-Status: requirements only. Neither theme has been implemented.
+Status: both themes implemented on the local-demo branch, pending review; see
+[local demo](local-demo.md). Formal GitHub acceptance is not inferred.
 
 The agreed [G02 rendering contract](rendering.md) separates a shared semantic
 HTML base from U03/U04 presentation. G02 supports both accepted theme names
-through the implemented base without delivering distinct layouts, CSS or icon assets.
+through the shared base; U03/U04 now add distinct packaged CSS and controlled icons.
 Metadata, same-context anchors and accessible labels remain shared behavior.
 
 ## Built-in themes for 0.1
@@ -32,7 +33,9 @@ the two collections, optional images, and metadata behavior without `site.url`.
 - Plain-text content escaped by the renderer.
 
 Custom colors can reduce contrast. The validation/warning policy for that case
-must be decided before declaring the themes accessible under user customization.
+is implemented for the local demo: derive accessible text/button/focus colors
+and warn for inadequate body contrast without mutating YAML. Full visual evidence
+and remaining limits are recorded in [local demo verification](verification/local-demo.md).
 
 ## Assets and extension
 
@@ -42,7 +45,10 @@ The platform selects its icon and default accessible label without restricting
 the URL's domain. Only the general catalog is valid for `links[].icon`.
 U03 must pin and bundle the selected SVGs, retain applicable upstream license
 notices, and test installed-package rendering without a remote icon service.
-No icon assets have been bundled yet.
+The 21 catalog assets are bundled at pinned Lucide 1.61.0 / Bootstrap Icons
+v1.13.2 commits, with hashes in `_icons/provenance.json`. Full upstream ISC/MIT
+terms are retained and copied to generated output. System font stacks require no
+font downloads or redistributed font files.
 
 Package the built-in templates and styles with the Python distribution, and test
 rendering from an installed wheel. Client images are separate from package assets.

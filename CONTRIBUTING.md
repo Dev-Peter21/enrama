@@ -2,7 +2,8 @@
 
 Thank you for helping make independently hosted link pages easier to maintain.
 The Python package foundation, configuration models, and developer tooling are implemented on
-`develop`. The product CLI and generator remain planned.
+`develop`. The local-demo branch adds the builder, CLI/preview and two themes; see
+[local demo scope](docs/local-demo.md). Formal issue acceptance is separate.
 
 ## Before you start
 

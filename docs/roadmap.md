@@ -267,3 +267,14 @@ For every task, record the commit/PR, criteria verified, actual commands/checks,
 positive test counts where applicable, and any remaining limitations. A blocked
 external operation is pending work, not successful completion. Publishing,
 releasing, or deploying is a separate action from local implementation.
+
+
+## Local demo execution, 2026-10-26
+
+An isolated branch from develop implements G03, U01/U02, U03/U04 and a synthetic
+R01 example for a local functional demo. See [builder contract](builder.md),
+[local workflow](local-demo.md) and [verification](verification/local-demo.md).
+Concrete reversible choices were recorded under the delegated continue-to-demo
+instruction. This is not formal acceptance/closure of G02 or other GitHub issues,
+not a public release, and not completion of R02–R04/MVP01's public-install/deploy
+gates. No remote GitHub state was mutated by this local implementation.

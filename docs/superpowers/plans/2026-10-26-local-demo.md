@@ -54,3 +54,14 @@
 - [ ] Verify from built wheel/sdist outside checkout: init/edit/validate/build/preview; real HTTP pages/CSS/images and invalid input/incomplete operation preservation. Run lint/format/types/schema/full suite/constrained archives.
 - [ ] Perform one independent whole-change review, fix important findings with RED→GREEN and green suite. No new external publication.
 - [ ] Start demo preview on loopback, record URL/repro commands/screenshots/commits and real remaining limits. Preserve worktree and original checkout.
+
+
+## Authorized scope update
+
+On2026-10-26, Peter additionally authorized integration of this delivery and the
+single examples/demo into develop, push to origin, required checks/review and a
+PR only if repository protections require it. No force push, overwriting user
+work, additional implementer/worktree, release, PyPI or public deployment.
+The parent owns reminders; do not create duplicate automations. This supersedes
+only the earlier no-merge/push boundary for this delivery. Verify the exact final
+remote revision and CI; keep the same worktree and preserve unrelated work.

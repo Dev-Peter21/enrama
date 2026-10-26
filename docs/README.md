@@ -3,8 +3,7 @@
 Enrama includes its F02 Python package/tooling foundation and F03 CI on `develop`.
 The C01 models, C02 safe YAML loader/diagnostics and C03 generated editor schema
 are also implemented there, along with G01 asset preparation and staging copying.
-G02 shared HTML rendering is implemented too; the coordinated builder, CLI,
-theme presentation and editor remain planned.
+The guarded builder, CLI/preview and both themes are also implemented. The editor remains planned; issue acceptance is separate.
 
 | Document | Purpose |
 | --- | --- |
@@ -18,6 +17,8 @@ theme presentation and editor remain planned.
 | [JSON Schema and VS Code](json-schema.md) | Accepted C03 generation, structural-assistance limits, artifact versioning, manual client updates, and local editor configuration |
 | [Local assets](assets.md) | Implemented G01 formats, bounded Pillow validation, snapshots, protected staging copying, diagnostics, API and acceptance |
 | [HTML rendering and metadata](rendering.md) | Implemented G02 shared HTML base, metadata, directory public URLs, destination behavior, asset integration, failures, Python API and acceptance checks |
+| [Safe builder](builder.md) | Guarded output, deterministic manifests and manual interrupted-operation recovery |
+| [Local demo](local-demo.md) | Reproducible CLI/preview/theme workflow and limits |
 | [Themes](themes.md) | Built-in theme requirements and extension boundaries |
 | [Deployment](deployment.md) | Client repositories, static hosting, and Pages plan |
 | [Roadmap](roadmap.md) | Milestones, scoped tasks, dependencies, and completion evidence |
@@ -29,6 +30,7 @@ theme presentation and editor remain planned.
 | [C03 verification](verification/c03.md) | Executed schema/drift/packaging tests, actual VS Code provider and offline evidence, and scope limits |
 | [G01 verification](verification/g01.md) | Actual image/filesystem/snapshot/copy tests, Pillow codecs, installed distributions and scope boundaries |
 | [G02 verification](verification/g02.md) | Actual renderer/escaping/metadata, installed resources, static hosting and matrix evidence |
+| [Local demo verification](verification/local-demo.md) | Local CLI/build/theme/preview/installed and visual evidence, with real limits |
 | [Testing](testing.md) | Validation strategy and security/packaging coverage |
 | [Releasing](releasing.md) | Intended release process and first-release gates |
 | [Decisions](decisions.md) | Accepted choices and decisions still requiring review |

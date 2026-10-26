@@ -1,7 +1,8 @@
 # Deployment
 
-Status: planned workflow. There is no generator, deployable demo, or Pages workflow
-in this initialization.
+Status: public deployment/Pages workflow remains planned. A static generator and
+synthetic local demo are implemented on the local-demo branch; see
+[local demo](local-demo.md). No public deployment is included.
 
 ## Separate generator and client projects
 

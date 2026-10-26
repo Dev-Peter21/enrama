@@ -213,6 +213,67 @@ for theme in ("minimal", "bold"):
     assert metas["og:image"] == "https://example.com/client/" + render_assets.mapping["site.og_image"]
     metadata["rendered_themes"].append(theme)
 
+# Exercise the actual installed entry point, not an editable/source import.
+import os
+import subprocess
+import socket
+import signal
+import time
+from urllib.request import urlopen
+from urllib.error import URLError
+command = Path(sys.executable).parent / ("enrama.exe" if os.name == "nt" else "enrama")
+def cli(*args):
+    completed = subprocess.run([str(command), *args], capture_output=True, text=True, timeout=15)
+    return completed
+assert cli("--version").returncode == 0
+assert cli("--help").returncode == 0
+assert cli("init", "cli-client").returncode == 0
+cli_source = "cli-client/enrama.yaml"
+assert cli("validate", "--config", cli_source).returncode == 0
+assert not Path("cli-client/.enrama").exists()
+assert cli("build", "--config", cli_source).returncode == 0
+built = Path("cli-client/dist/index.html").read_bytes()
+assert b"Your name" in built and b"assets/theme/" in built
+assert cli("build", "--config", cli_source).returncode == 0
+assert Path("cli-client/dist/index.html").read_bytes() == built
+Path("cli-client/dist/manual.txt").write_text("KEEP THIS")
+assert cli("build", "--config", cli_source).returncode == 3
+assert Path("cli-client/dist/manual.txt").read_text() == "KEEP THIS"
+Path("cli-client/dist/manual.txt").unlink()
+original_yaml = Path(cli_source).read_bytes()
+Path(cli_source).write_text("schema_version: broken")
+assert cli("build", "--config", cli_source).returncode == 1
+assert Path("cli-client/dist/index.html").read_bytes() == built
+Path(cli_source).write_bytes(original_yaml)
+metadata["installed_cli"] = {"init":True,"validate":True,"build":True,"repeatable":True,"preservation":True}
+if os.name != "nt":
+    with socket.socket() as probe:
+        probe.bind(("127.0.0.1", 0))
+        port = probe.getsockname()[1]
+    preview = subprocess.Popen([str(command), "preview", "--config", cli_source, "--port", str(port)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    try:
+        deadline = time.monotonic()+10
+        while True:
+            try:
+                with urlopen("http://127.0.0.1:"+str(port)+"/", timeout=.5) as response:
+                    page = response.read().decode("utf-8")
+                break
+            except (URLError, TimeoutError):
+                if preview.poll() is not None: raise AssertionError(str(preview.communicate()))
+                if time.monotonic()>deadline: raise AssertionError("Installed preview startup timed out")
+                time.sleep(.05)
+        parsed = RenderedDocument(page)
+        css = next(attrs["href"] for tag, attrs in parsed.elements if tag == "link" and attrs.get("rel")=="stylesheet")
+        with urlopen("http://127.0.0.1:"+str(port)+"/"+css, timeout=2) as response:
+            assert response.status==200 and b":focus-visible" in response.read()
+        assert cli("build", "--config", cli_source).returncode==3
+        preview.send_signal(signal.SIGINT)
+        stdout, stderr = preview.communicate(timeout=5)
+        assert preview.returncode==0, (stdout,stderr)
+        metadata["installed_cli"]["preview"] = True
+    finally:
+        if preview.poll() is None: preview.kill(); preview.communicate(timeout=5)
+
 # Rendering may read only its fixed installed template, never client files/network.
 original_config = render_config.model_dump()
 original_assets = render_assets
@@ -284,6 +345,9 @@ print(json.dumps(metadata))
         "jinja2<4,>=3.1.6",
         "typer<1,>=0.20",
     }
+    assert all(metadata["installed_cli"].values())
+    if os.name != "nt":
+        assert metadata["installed_cli"]["preview"] is True
     assert metadata["jinja2"]
     assert metadata["markupsafe"]
     assert metadata["rendered_themes"] == ["minimal", "bold"]
