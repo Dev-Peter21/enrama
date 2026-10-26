@@ -3,7 +3,7 @@
 Status: implemented on isolated local branch `codex/enrama-local-demo` from
 `c377dab` develop, 2026-10-26. Original checkout preserved during implementation. No formal issue acceptance,
 release, PyPI upload or public deployment is inferred. Integration and push to
-develop were subsequently authorized; final remote evidence is recorded below.
+develop were subsequently authorized; remote code-verification evidence is recorded below.
 
 ## Scope and environment
 
@@ -121,3 +121,37 @@ not real client accounts. System font stacks distribute no font files. Lucide
 1.61.0 commit c29c276f16590cf017126671535ad8c792be64d8 and Bootstrap Icons v1.13.2
 commit afbfcbcb9bea79ea9923fa9ef82ea03d7ee6c01f are vendored with exact hashes and
 complete license terms. No editor0.2 or release/deployment work is implied.
+
+## Published code verification
+
+Original checkout develop was fast-forwarded after its clean state was checked.
+The integrated source passed a separate 761-test local run and quality/schema/
+constrained-build checks before publication. Final executable code revision:
+`e65cb9dd7c072b45e472b9780f49255cc020db02`.
+
+[CI run 40365460388, attempt 2](https://github.com/Dev-Peter21/enrama/actions/runs/40365460388)
+completed successfully for this exact revision. The first attempt's macOS job
+never acquired a hosted runner because of reported arm64 capacity constraints;
+retrying only that job succeeded without any code or workflow change.
+
+| Environment | Python | Passed | Skipped |
+| --- | --- | ---: | ---: |
+| Linux | 3.12.15 | 759 | 2 |
+| Linux | 3.13.17 | 759 | 2 |
+| Linux | 3.14.9 | 759 | 2 |
+| Linux | 3.15.1 | 759 | 2 |
+| macOS | 3.12.15 | 761 | 0 |
+| Windows | 3.12.15 | 753 | 8 |
+
+Quality also passed. All six JUnit/environment/count reports were checked against
+this SHA: **4,550 passed, 16 platform skips, zero failures/errors**. Verified ZIP
+SHA-256 digests, the 12 wheel/sdist archive hashes and packaged source/resources,
+all 21 icon provenance hashes, and **18 installed consumers** (wheel, sdist and
+PyYAML-source variant per environment). POSIX installed-preview lifecycle probes
+passed; Windows console SIGINT remains outside that POSIX-only probe.
+
+Live minimal/bold HTTP smoke also checked all referenced CSS/images, successful
+read-only validation while serving, rejection of a concurrent writer with code3,
+and unchanged page bytes. This documentation closure changes no executable code,
+lock, workflow, configuration schema or example content. No release, PyPI upload,
+public deployment or formal issue/Project acceptance was performed.

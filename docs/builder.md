@@ -99,5 +99,7 @@ report a warning rather than reject C01-valid YAML or silently claim all arbitra
 colors are accessible. Do not mutate YAML. No analytics or remote runtime assets.
 
 A synthetic redistributable Amapola-inspired example exercises both themes and
-all CLI commands. The demo stays local; no PyPI, release, public deployment,
-push, merge, credentials or formal issue acceptance is authorized by this work.
+all CLI commands. The served demo stays local; no PyPI, release, public deployment, credentials or
+formal issue acceptance is included. Integration and push to develop were
+subsequently authorized and completed; see the
+[verification record](verification/local-demo.md).
