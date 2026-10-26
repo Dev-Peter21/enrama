@@ -53,8 +53,9 @@ def test_busy_port_preserves_output(tmp_path: Path) -> None:
 
 @pytest.mark.skipif(os.name == "nt", reason="POSIX SIGINT process lifecycle probe")
 @pytest.mark.parametrize("low_contrast", [False, True])
+@pytest.mark.parametrize("host", ["127.0.0.1", "0.0.0.0"])
 def test_foreground_preview_guard_http_safety_and_shutdown(
-    tmp_path: Path, low_contrast: bool
+    tmp_path: Path, low_contrast: bool, host: str
 ) -> None:
     selected = source(tmp_path)
     if low_contrast:
@@ -74,6 +75,8 @@ def test_foreground_preview_guard_http_safety_and_shutdown(
             str(selected),
             "--port",
             str(port),
+            "--host",
+            host,
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -127,7 +130,7 @@ def test_foreground_preview_guard_http_safety_and_shutdown(
         process.send_signal(signal.SIGINT)
         stdout, stderr = process.communicate(timeout=5)
         assert process.returncode == 0, (stdout, stderr)
-        assert "http://127.0.0.1:" in stdout
+        assert f"http://{host}:" in stdout
         if low_contrast:
             assert "contrast" in stderr.lower()
         assert secret.read_text() == "DO NOT SERVE"
@@ -135,3 +138,12 @@ def test_foreground_preview_guard_http_safety_and_shutdown(
         if process.poll() is None:
             process.kill()
             process.communicate(timeout=5)
+
+
+def test_explicit_preview_bind_keeps_loopback_default(tmp_path: Path) -> None:
+    from enrama.preview import PreviewServer
+
+    with PreviewServer(tmp_path, 0) as default:
+        assert default.server_address[0] == "127.0.0.1"
+    with PreviewServer(tmp_path, 0, host="0.0.0.0") as container:
+        assert container.server_address[0] == "0.0.0.0"

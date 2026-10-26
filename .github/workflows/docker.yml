@@ -1,0 +1,27 @@
+name: Docker
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]
+permissions:
+  contents: read
+jobs:
+  smoke:
+    name: Docker (${{ matrix.arch }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {arch: amd64, runner: ubuntu-24.04}
+          - {arch: arm64, runner: ubuntu-24.04-arm}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: docker build --target cli --build-arg REVISION=${{ github.sha }} -t enrama-cli:local .
+      - run: docker build --target static --build-arg REVISION=${{ github.sha }} -t enrama-static:local .
+      - run: ./scripts/docker-build-constraints.sh
+      - run: ./scripts/docker-smoke.sh

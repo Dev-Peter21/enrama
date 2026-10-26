@@ -1,6 +1,7 @@
 """Human-facing Typer commands over reusable configuration/build/preview APIs."""
 
 from collections.abc import Callable
+from enum import StrEnum
 from importlib.metadata import version
 from pathlib import Path
 from typing import Annotated
@@ -121,10 +122,21 @@ def build(
     _run(generate)
 
 
+class PreviewHost(StrEnum):
+    loopback = "127.0.0.1"
+    all_interfaces = "0.0.0.0"
+
+
 @app.command()
 def preview(
     config: Annotated[Path, typer.Option("--config")] = Path("enrama.yaml"),
     port: Annotated[int, typer.Option("--port", min=1, max=65535)] = 8000,
+    host: Annotated[
+        PreviewHost,
+        typer.Option(
+            "--host", help="Bind address; 0.0.0.0 exposes preview to the network."
+        ),
+    ] = PreviewHost.loopback,
 ) -> None:
     _run(
         lambda: run_preview(
@@ -134,5 +146,6 @@ def preview(
                 "Preview: " + url + " (Ctrl+C to stop; restart to rebuild)"
             ),
             on_warning=lambda warning: typer.echo("Warning: " + warning, err=True),
+            host=host.value,
         )
     )
