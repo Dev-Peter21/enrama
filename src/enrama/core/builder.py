@@ -9,7 +9,14 @@ from enrama.themes import theme_view
 
 from . import _asset_files as files
 from ._build_errors import BuildError
-from ._manifest import MANIFEST, canonical, make_manifest, remove_owned, verify_output
+from ._manifest import (
+    MANIFEST,
+    MAX_FILE,
+    canonical,
+    make_manifest,
+    remove_owned,
+    verify_output,
+)
 from ._project import ProjectSession, source_path
 from .assets import copy_assets, prepare_assets
 from .renderer import render_html
@@ -63,10 +70,11 @@ def _build(session: ProjectSession) -> BuildResult:
     content.update(view.assets)
     content["index.html"] = html
     manifest = make_manifest(content, config.schema_version)
-    expected = set(content) | {MANIFEST}
+    owned_paths: set[str] = set()
     published = False
     started = False
     stage_created = False
+    stage_identity: tuple[int, int] | None = None
     try:
         session.check()
         with transaction.open("xb") as f:
@@ -83,7 +91,10 @@ def _build(session: ProjectSession) -> BuildResult:
             )
         stage.mkdir()
         stage_created = True
+        info = stage.lstat()
+        stage_identity = (info.st_dev, info.st_ino)
         copy_assets(prepared, stage)
+        owned_paths.update(asset.public_path for asset in prepared.assets)
         for name, data in content.items():
             if name not in prepared.mapping.values():
                 files.write_snapshot(
@@ -92,9 +103,18 @@ def _build(session: ProjectSession) -> BuildResult:
                     data,
                     staging=stage,
                 )
+                owned_paths.add(name)
         with (stage / MANIFEST).open("xb") as f:
+            owned_paths.add(MANIFEST)
             f.write(manifest)
-        verify_output(stage)
+        _check_stage(stage, stage_identity)
+        if verify_output(stage) != (manifest, tuple(sorted(content))):
+            raise BuildError(
+                "operational",
+                "staging_changed",
+                "Staging changed during generation",
+                "Preserve the transaction and inspect its staging data",
+            )
         session.check()
         if old is not None:
             if verify_output(output) != old:
@@ -139,12 +159,24 @@ def _build(session: ProjectSession) -> BuildResult:
                 if stage.exists() or stage.is_symlink():
                     if not stage_created:
                         raise OSError("Staging was not created by this invocation")
-                    remove_owned(stage, expected)
+                    _check_stage(stage, stage_identity)
+                    for name in owned_paths:
+                        path = stage / name
+                        if path.exists() or path.is_symlink():
+                            expected_data = (
+                                manifest if name == MANIFEST else content[name]
+                            )
+                            if (
+                                files.read_source(stage, Path(name), MAX_FILE)
+                                != expected_data
+                            ):
+                                raise OSError("Owned staging content changed")
+                    remove_owned(stage, owned_paths)
                 if published and (backup.exists() or backup.is_symlink()):
                     raise OSError("Preserve remaining backup after commit")
                 if transaction.exists():
                     transaction.unlink()
-            except (OSError, BuildError):
+            except (OSError, BuildError, files.FileLimitError):
                 raise BuildError(
                     "operational",
                     "recovery_required",
@@ -159,3 +191,10 @@ def _build(session: ProjectSession) -> BuildResult:
                 "Check filesystem access and storage; previous output was preserved or restored",
             ) from None
         raise
+
+
+def _check_stage(stage: Path, identity: tuple[int, int] | None) -> None:
+    info = stage.lstat()
+    files._directory(info)
+    if identity != (info.st_dev, info.st_ino):
+        raise OSError("Staging identity changed")

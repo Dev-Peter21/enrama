@@ -474,3 +474,65 @@ def test_excessive_owned_output_inventory_is_rejected_before_replacement(
     with pytest.raises(BuildError):
         build_site(source)
     assert (output / "index.html").read_bytes() == b"Old page"
+
+
+@pytest.mark.parametrize("collision", ["index", "asset"])
+def test_foreign_data_at_planned_generated_path_is_preserved(
+    collision: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from enrama.core import BuildError, PreparedAssets, builder, copy_assets
+
+    source = client(tmp_path)
+    builder.build_site(source)
+    old = snapshot(tmp_path / "dist")
+    foreign: Path | None = None
+
+    def collide(prepared: PreparedAssets, stage: Path) -> None:
+        nonlocal foreign
+        if collision == "index":
+            copy_assets(prepared, stage)
+            foreign = stage / "index.html"
+            foreign.write_text("MANUAL DATA")
+        else:
+            foreign = stage / prepared.assets[0].public_path
+            foreign.parent.mkdir(parents=True, exist_ok=True)
+            foreign.write_text("MANUAL DATA")
+            raise OSError("Copy failed before ownership could be established")
+
+    monkeypatch.setattr(builder, "copy_assets", collide)
+    with pytest.raises(BuildError) as error:
+        builder.build_site(source)
+    assert foreign is not None and foreign.read_text() == "MANUAL DATA"
+    assert error.value.category == "recovery_required"
+    assert (tmp_path / ".enrama/transaction.json").exists()
+    assert snapshot(tmp_path / "dist") == old
+
+
+@pytest.mark.parametrize("change", ["edited-file", "replaced-root"])
+def test_changed_staging_is_preserved_during_failure_cleanup(
+    change: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from enrama.core import BuildError, builder
+    from enrama.core._manifest import verify_output
+
+    source = client(tmp_path)
+    builder.build_site(source)
+    old = snapshot(tmp_path / "dist")
+
+    def change_stage(root: Path) -> tuple[bytes, tuple[str, ...]]:
+        if root.name == "staging":
+            if change == "replaced-root":
+                root.rename(root.parent / "preserved-original-stage")
+                root.mkdir()
+            (root / "index.html").write_text("MANUAL STAGING DATA")
+            raise OSError("Verification failed after a foreign change")
+        return verify_output(root)
+
+    monkeypatch.setattr(builder, "verify_output", change_stage)
+    with pytest.raises(BuildError):
+        builder.build_site(source)
+    assert (
+        tmp_path / ".enrama/staging/index.html"
+    ).read_text() == "MANUAL STAGING DATA"
+    assert (tmp_path / ".enrama/transaction.json").exists()
+    assert snapshot(tmp_path / "dist") == old
