@@ -44,8 +44,8 @@ claim that the new code has passed every remote environment.
 - Plain-static-server root/subpath probes request both CSS and local images,
   independently of production site.url and with no runtime Enrama service.
 
-The full local suite passed **757 tests**, zero failures/errors/skips, including
-**63 new cases** beyond the inherited 694: 27 builder, 19 CLI, 3 real preview and 12
+The full local suite passed **761 tests**, zero failures/errors/skips, including
+**67 new cases** beyond the inherited 694: 31 builder, 19 CLI, 3 real preview and 12
 theme/resource/contrast cases plus two tracked-example E2E cases. Existing distribution consumers and static-hosting
 probes were extended too. Executed locked sync, Ruff lint/format, strict mypy,
 schema drift check and a full JUnit run. All three installed consumers completed
@@ -61,8 +61,20 @@ uv run --locked pytest --junitxml=reports/local-demo/pytest.xml -q
 uv build --build-constraint build-constraints.txt --require-build-hashes
 ```
 
-An independent whole-change review and final remote revision/CI are recorded
-below once complete. No remote check is claimed before actual execution.
+An independent read-only whole-change review covered c377dab..6742a48. It found
+one Important ownership defect and no Critical/Minor findings: cleanup used the
+planned inventory as proof of ownership. Four regressions failed first (foreign
+index/asset at a planned path, edited staging content and replaced staging root).
+The fix records only successfully created/verified files, checks staging identity
+and unchanged owned bytes, and preserves uncertain data with the transaction.
+All four then passed, as did the complete 761-case suite and quality checks.
+No deferred minor remains. No automatic issue acceptance is inferred.
+
+The review's excluded guarantees stay excluded: universal hostile/network
+filesystem or power-loss guarantees, automatic recovery/editor/release/deployment.
+Remote CI/Windows behavior is judged from actual execution, and the local browser
+and pinned-license evidence remain separately recorded rather than claiming the
+reviewer repeated them. Final remote revision/CI is recorded after publication.
 
 ## Browser evidence
 

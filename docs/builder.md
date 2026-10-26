@@ -68,8 +68,12 @@ After the new directory is installed, old-backup cleanup can fail or be
 interrupted. Keep the complete new site and any remaining recoverable backup,
 retain the transaction record and report failure, not success; do not restore a
 partially deleted backup. Before publication failures/interruption preserve the
-old site. Cleanup removes only this invocation's known generated paths, never
-unknown data, links, inputs or unrecognized old transactions. Successful cleanup
+old site. Cleanup records only files successfully created or byte-verified by this
+invocation, checks staging identity/content again, and never treats a planned
+filename as ownership proof. Failed/partial writes with uncertain ownership,
+foreign collisions, edited data or replaced roots remain with the transaction
+for manual recovery. Unknown data, links, inputs and unrecognized old operations
+are never cleaned. Successful cleanup
 removes staging/backup/transaction; recognized workspace/guard may persist.
 
 Expected input errors map to F01 code1, operational/protection/cleanup conflicts

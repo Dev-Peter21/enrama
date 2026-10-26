@@ -51,9 +51,9 @@
 ## Task 4: Example, installed E2E and delivery
 
 **Files:** examples/demo assets/config, docs/local-demo.md, docs/verification/local-demo.md, README/status/changelog; extend distribution CLI E2E and safety regressions.
-- [ ] Verify from built wheel/sdist outside checkout: init/edit/validate/build/preview; real HTTP pages/CSS/images and invalid input/incomplete operation preservation. Run lint/format/types/schema/full suite/constrained archives.
-- [ ] Perform one independent whole-change review, fix important findings with RED→GREEN and green suite. No new external publication.
-- [ ] Start demo preview on loopback, record URL/repro commands/screenshots/commits and real remaining limits. Preserve worktree and original checkout.
+- [x] Verify from built wheel/sdist outside checkout: init/edit/validate/build/preview; real HTTP pages/CSS/images and invalid input/incomplete operation preservation. Run lint/format/types/schema/full suite/constrained archives.
+- [x] Perform one independent whole-change review, fix important findings with RED→GREEN and green suite. No new external publication.
+- [x] Start demo preview on loopback, record URL/repro commands/screenshots/commits and real remaining limits. Preserve worktree and original checkout.
 
 
 ## Authorized scope update
