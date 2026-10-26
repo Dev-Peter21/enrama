@@ -125,3 +125,23 @@ def test_internal_defect_and_interrupt_map_without_tracebacks(
 
     monkeypatch.setattr(cli, "build_site", interrupt)
     assert CliRunner().invoke(cli.app, ["build"]).exit_code == 130
+
+
+def test_init_preserves_file_created_by_another_actor(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from enrama.core import BuildError
+    from enrama.project import init_project
+
+    real = Path.open
+
+    def collide(path: Path, *args: object, **kwargs: object) -> object:
+        if path.name == "enrama.yaml" and args and args[0] == "xb":
+            with real(path, "wb") as stream:
+                stream.write(b"FOREIGN DATA")
+        return real(path, *args, **kwargs)  # type: ignore[call-overload]
+
+    monkeypatch.setattr(Path, "open", collide)
+    with pytest.raises(BuildError):
+        init_project(tmp_path / "client")
+    assert (tmp_path / "client/enrama.yaml").read_bytes() == b"FOREIGN DATA"

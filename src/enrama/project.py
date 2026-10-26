@@ -28,25 +28,30 @@ socials: []
 def init_project(destination: str | Path) -> Path:
     target = Path(os.path.abspath(destination))
     created = False
-    expected = {"enrama.yaml", ".gitignore"}
+    expected: set[str] = set()
+    assets_created = False
     try:
         parent = target.parent.resolve(strict=True)
         target = parent / target.name
         target.mkdir()
         created = True
         (target / "assets").mkdir()
+        assets_created = True
         with (target / "enrama.yaml").open("xb") as f:
+            expected.add("enrama.yaml")
             f.write(STARTER.encode("utf-8"))
         with (target / ".gitignore").open("xb") as f:
+            expected.add(".gitignore")
             f.write(b"dist/\n.enrama/\n")
         return target
     except BaseException as error:
         if created:
             try:
                 # Empty starter assets is known; unknown injected content is kept.
-                if (target / "assets").is_symlink():
-                    raise OSError("Changed starter")
-                (target / "assets").rmdir()
+                if assets_created:
+                    if (target / "assets").is_symlink():
+                        raise OSError("Changed starter")
+                    (target / "assets").rmdir()
                 remove_owned(target, expected)
             except (OSError, BuildError):
                 raise BuildError(
