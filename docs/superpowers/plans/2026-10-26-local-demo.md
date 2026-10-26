@@ -44,9 +44,9 @@
 ## Task 3: U03/U04 packaged presentation
 
 **Files:** Extend renderer/base; create themes.py, packaged minimal/bold CSS, controlled icons/licenses; tests/unit/test_themes.py; packaging inventories.
-- [ ] Write failing tests for both styles, stable content/metadata, complete controlled icons, local hashed CSS/notices, contrast fallback/warnings, disabled/empty/long content and installed resources.
-- [ ] Apply Frontend Design and UX Quality: editorial minimal/strong bold, local system fonts, licensed pinned icon catalogs, visible focus, 44px targets and reduced-motion treatment. No remote assets.
-- [ ] Run semantic/contrast/responsive/browser checks, screenshots and packaging tests; commit independently.
+- [x] Write failing tests for both styles, stable content/metadata, complete controlled icons, local hashed CSS/notices, contrast fallback/warnings, disabled/empty/long content and installed resources.
+- [x] Apply Frontend Design and UX Quality: editorial minimal/strong bold, local system fonts, licensed pinned icon catalogs, visible focus, 44px targets and reduced-motion treatment. No remote assets.
+- [x] Run semantic/contrast/responsive/browser checks, screenshots and packaging tests; commit independently.
 
 ## Task 4: Example, installed E2E and delivery
 

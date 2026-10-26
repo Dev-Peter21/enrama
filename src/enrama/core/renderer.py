@@ -5,6 +5,7 @@ from importlib import resources
 from jinja2 import Environment, FunctionLoader, StrictUndefined, TemplateError
 
 from enrama.config import EnramaConfig
+from enrama.themes import icon_svg, theme_view
 
 from ._render_context import image_paths
 from ._render_errors import RenderError
@@ -31,11 +32,19 @@ def _load_template(name: str) -> str | None:
 
 def _context(config: EnramaConfig, prepared: PreparedAssets) -> dict[str, object]:
     paths = image_paths(config, prepared)
+    view = theme_view(config.theme)
     public_url = config.site.url
     if public_url is not None and not public_url.endswith("/"):
         public_url += "/"
     og_path = paths.get("site.og_image")
     return {
+        "theme": config.theme.name,
+        "stylesheet": view.stylesheet,
+        "primary": view.primary,
+        "background": view.background,
+        "text": view.text,
+        "on_primary": view.on_primary,
+        "focus": view.focus,
         "title": str(config.site.title),
         "description": str(config.site.description),
         "language": str(config.site.language),
@@ -46,12 +55,20 @@ def _context(config: EnramaConfig, prepared: PreparedAssets) -> dict[str, object
         "public_url": public_url,
         "og_image": public_url + og_path if public_url and og_path else None,
         "links": tuple(
-            {"title": str(link.title), "url": str(link.url)}
+            {
+                "title": str(link.title),
+                "url": str(link.url),
+                "icon": icon_svg(link.icon),
+            }
             for link in config.links
             if link.enabled
         ),
         "socials": tuple(
-            {"label": str(social.label), "url": str(social.url)}
+            {
+                "label": str(social.label),
+                "url": str(social.url),
+                "icon": icon_svg(social.icon, social=True),
+            }
             for social in config.socials
             if social.enabled
         ),

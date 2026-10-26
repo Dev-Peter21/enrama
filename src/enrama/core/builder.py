@@ -5,7 +5,9 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from enrama.config import load_config
+from enrama.themes import theme_view
 
+from . import _asset_files as files
 from ._build_errors import BuildError
 from ._manifest import MANIFEST, canonical, make_manifest, remove_owned, verify_output
 from ._project import ProjectSession, source_path
@@ -57,6 +59,8 @@ def _build(session: ProjectSession) -> BuildResult:
     )
     html = render_html(config, prepared).encode("utf-8")
     content = {asset.public_path: asset.data for asset in prepared.assets}
+    view = theme_view(config.theme)
+    content.update(view.assets)
     content["index.html"] = html
     manifest = make_manifest(content, config.schema_version)
     expected = set(content) | {MANIFEST}
@@ -80,8 +84,14 @@ def _build(session: ProjectSession) -> BuildResult:
         stage.mkdir()
         stage_created = True
         copy_assets(prepared, stage)
-        with (stage / "index.html").open("xb") as f:
-            f.write(html)
+        for name, data in content.items():
+            if name not in prepared.mapping.values():
+                files.write_snapshot(
+                    session.root,
+                    (stage / name).relative_to(session.root),
+                    data,
+                    staging=stage,
+                )
         with (stage / MANIFEST).open("xb") as f:
             f.write(manifest)
         verify_output(stage)
@@ -116,7 +126,7 @@ def _build(session: ProjectSession) -> BuildResult:
             verify_output(backup)
             remove_owned(backup, set(old[1]) | {MANIFEST})
         transaction.unlink()
-        return BuildResult(output, tuple(sorted(content)))
+        return BuildResult(output, tuple(sorted(content)), view.warnings)
     except BaseException as original:
         if started:
             try:

@@ -52,8 +52,16 @@ def test_busy_port_preserves_output(tmp_path: Path) -> None:
 
 
 @pytest.mark.skipif(os.name == "nt", reason="POSIX SIGINT process lifecycle probe")
-def test_foreground_preview_guard_http_safety_and_shutdown(tmp_path: Path) -> None:
+@pytest.mark.parametrize("low_contrast", [False, True])
+def test_foreground_preview_guard_http_safety_and_shutdown(
+    tmp_path: Path, low_contrast: bool
+) -> None:
     selected = source(tmp_path)
+    if low_contrast:
+        selected.write_text(
+            selected.read_text()
+            + 'theme: {text_color: "#FAFAFA", background_color: "#FFFFFF"}\n'
+        )
     port = free_port()
     url = f"http://127.0.0.1:{port}"
     process = subprocess.Popen(
@@ -120,6 +128,8 @@ def test_foreground_preview_guard_http_safety_and_shutdown(tmp_path: Path) -> No
         stdout, stderr = process.communicate(timeout=5)
         assert process.returncode == 0, (stdout, stderr)
         assert "http://127.0.0.1:" in stdout
+        if low_contrast:
+            assert "contrast" in stderr.lower()
         assert secret.read_text() == "DO NOT SERVE"
     finally:
         if process.poll() is None:

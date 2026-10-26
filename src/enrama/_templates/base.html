@@ -2,6 +2,7 @@
 <html lang="{{ language }}">
 <head>
   <meta charset="utf-8">
+  <link rel="stylesheet" href="{{ stylesheet }}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ title }}</title>
   <meta name="description" content="{{ description }}">
@@ -19,7 +20,7 @@
   <link rel="icon" href="{{ favicon }}">
 {% endif %}
 </head>
-<body>
+<body class="theme-{{ theme }}" style="--primary: {{ primary }}; --background: {{ background }}; --text: {{ text }}; --on-primary: {{ on_primary }}; --focus: {{ focus }};">
   <main>
     <header>
 {% if avatar is not none %}
@@ -31,16 +32,16 @@
 {% endif %}
     </header>
 {% if links %}
-    <ul>
+    <ul class="links">
 {% for link in links %}
-      <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+      <li><a href="{{ link.url }}">{{ link.icon }}<span>{{ link.title }}</span></a></li>
 {% endfor %}
     </ul>
 {% endif %}
 {% if socials %}
-    <ul>
+    <ul class="socials">
 {% for social in socials %}
-      <li><a href="{{ social.url }}">{{ social.label }}</a></li>
+      <li><a href="{{ social.url }}">{{ social.icon }}<span>{{ social.label }}</span></a></li>
 {% endfor %}
     </ul>
 {% endif %}

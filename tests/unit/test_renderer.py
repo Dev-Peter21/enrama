@@ -26,7 +26,9 @@ def test_profile_only_semantic_document(theme: str, tmp_path: Path) -> None:
     assert not any(
         doc.all(t) for t in ("ul", "a", "img", "p", "script", "style", "base", "svg")
     )
-    assert doc.all("link") == []
+    assert len(doc.all("link")) == 1
+    assert doc.all("link")[0].attrs["rel"] == "stylesheet"
+    assert str(doc.all("link")[0].attrs["href"]).startswith("assets/theme/")
 
 
 def test_optional_profile_and_ordered_collections(tmp_path: Path) -> None:
@@ -117,7 +119,7 @@ def test_metadata_presence_and_directory_urls(
     else:
         assert "og:image" not in meta
     assert links.get("icon") == assets.mapping.get("site.favicon")
-    assert set(links) == ({"canonical"} if canonical else set()) | (
+    assert set(links) == {"stylesheet"} | ({"canonical"} if canonical else set()) | (
         {"icon"} if favicon else set()
     )
     assert "og:locale" not in meta

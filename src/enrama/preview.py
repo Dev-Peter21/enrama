@@ -75,7 +75,12 @@ class PreviewServer(ThreadingHTTPServer):
         super().__init__(("127.0.0.1", port), _Handler)
 
 
-def run_preview(source: str | Path, port: int, on_ready: Callable[[str], None]) -> None:
+def run_preview(
+    source: str | Path,
+    port: int,
+    on_ready: Callable[[str], None],
+    on_warning: Callable[[str], None] | None = None,
+) -> None:
     with ProjectSession(source) as session:
         try:
             server = PreviewServer(session.root / "dist", port)
@@ -89,6 +94,9 @@ def run_preview(source: str | Path, port: int, on_ready: Callable[[str], None]) 
         with server:
             result = build_site(source, session=session)
             server.allowed = set(result.files)
+            if on_warning is not None:
+                for warning in result.warnings:
+                    on_warning(warning)
             on_ready(f"http://127.0.0.1:{server.server_port}/")
             try:
                 server.serve_forever(poll_interval=0.1)

@@ -1,0 +1,107 @@
+[
+  {
+    "source": "https://raw.githubusercontent.com/lucide-icons/lucide/c29c276f16590cf017126671535ad8c792be64d8/icons/link.svg",
+    "file": "lucide-link.svg",
+    "sha256": "4f3237183dcaabfac92f4e94c776a9a9e45c3c5e77a921061a6b34b61eb5413f"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/lucide-icons/lucide/c29c276f16590cf017126671535ad8c792be64d8/icons/external-link.svg",
+    "file": "lucide-external-link.svg",
+    "sha256": "3891241b8c3bfc3a8a930078f26ffc5a7e9763da6d0162ace2050b28d4c1d1fe"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/lucide-icons/lucide/c29c276f16590cf017126671535ad8c792be64d8/icons/message-circle.svg",
+    "file": "lucide-message-circle.svg",
+    "sha256": "146f39740fe50844394d56ae1f8821937655bcfff3842bf6fe8ffc0bcd324076"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/lucide-icons/lucide/c29c276f16590cf017126671535ad8c792be64d8/icons/mail.svg",
+    "file": "lucide-mail.svg",
+    "sha256": "3236a51d5b8ce9b0528cf2e6ad07e527bd636dded6f5a9d656072052b99caea8"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/lucide-icons/lucide/c29c276f16590cf017126671535ad8c792be64d8/icons/phone.svg",
+    "file": "lucide-phone.svg",
+    "sha256": "bd59dd10667cbe410a69e2fbbf4d9645d08abe862c8d89082bd4f533957859a8"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/lucide-icons/lucide/c29c276f16590cf017126671535ad8c792be64d8/icons/shopping-bag.svg",
+    "file": "lucide-shopping-bag.svg",
+    "sha256": "24a161961b559234b7a31af904dab18b437507336ba2decff3fe6b7772495896"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/lucide-icons/lucide/c29c276f16590cf017126671535ad8c792be64d8/icons/calendar.svg",
+    "file": "lucide-calendar.svg",
+    "sha256": "312ac8e715ac2b71bcc942dec2e8de9c1929085474f08885af35b563f6aa7a0b"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/lucide-icons/lucide/c29c276f16590cf017126671535ad8c792be64d8/icons/map-pin.svg",
+    "file": "lucide-map-pin.svg",
+    "sha256": "16f1042a62f1bda20ebab8bfc1cb79c0be285c980dea6c2c733a17902631405b"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/lucide-icons/lucide/c29c276f16590cf017126671535ad8c792be64d8/icons/file-text.svg",
+    "file": "lucide-file-text.svg",
+    "sha256": "52ca55846c202335fb870c8aa23e9345630ec10489303756d62e750f7109605c"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/lucide-icons/lucide/c29c276f16590cf017126671535ad8c792be64d8/icons/download.svg",
+    "file": "lucide-download.svg",
+    "sha256": "3daeee13ded5a3afa2198b1bb4e2262d163922f97d96ac6ff9953e8ed4fe039d"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/lucide-icons/lucide/c29c276f16590cf017126671535ad8c792be64d8/icons/globe.svg",
+    "file": "lucide-globe.svg",
+    "sha256": "82c6b8fa0b8e8d775ec9becd86f74a4e50bff7bee4c81f7362de45348504f14d"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/lucide-icons/lucide/c29c276f16590cf017126671535ad8c792be64d8/icons/play.svg",
+    "file": "lucide-play.svg",
+    "sha256": "d7c34786135922a92b6896f6c2384ceeb0346afbf6041dc79982011411409833"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/twbs/icons/afbfcbcb9bea79ea9923fa9ef82ea03d7ee6c01f/icons/instagram.svg",
+    "file": "bootstrap-instagram.svg",
+    "sha256": "19e53b107d19b81cc92217e9389b5d1cf98a7637ed965a5d07d6e84e8d200cb0"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/twbs/icons/afbfcbcb9bea79ea9923fa9ef82ea03d7ee6c01f/icons/facebook.svg",
+    "file": "bootstrap-facebook.svg",
+    "sha256": "fccefddbce24b7acef96fcdb75aa9bc37dc1d6e725efa8b32eca6b619ff153ff"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/twbs/icons/afbfcbcb9bea79ea9923fa9ef82ea03d7ee6c01f/icons/whatsapp.svg",
+    "file": "bootstrap-whatsapp.svg",
+    "sha256": "dc1de80c69f87f91ff4570e40baf8ff824a6fb81e617a9e054c26907cd608647"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/twbs/icons/afbfcbcb9bea79ea9923fa9ef82ea03d7ee6c01f/icons/youtube.svg",
+    "file": "bootstrap-youtube.svg",
+    "sha256": "c0b162de4d7b47a90a67b518d7890a94b65d8eefab11a05cb8d68ac7505d891f"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/twbs/icons/afbfcbcb9bea79ea9923fa9ef82ea03d7ee6c01f/icons/tiktok.svg",
+    "file": "bootstrap-tiktok.svg",
+    "sha256": "0647764edf4ee235bb49ffd6860dc2c0bf3b3e1bdace49469a8c0c0bc07f8ca6"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/twbs/icons/afbfcbcb9bea79ea9923fa9ef82ea03d7ee6c01f/icons/linkedin.svg",
+    "file": "bootstrap-linkedin.svg",
+    "sha256": "ddcbb2735eea12f090ea0ee371d1b9a3462531dc11efd0e944adc2d38c71e2df"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/twbs/icons/afbfcbcb9bea79ea9923fa9ef82ea03d7ee6c01f/icons/github.svg",
+    "file": "bootstrap-github.svg",
+    "sha256": "419c5de58f4bfeb06ed2e15e475965bd39cfb040d1c8627eed00bcba5f59ae96"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/twbs/icons/afbfcbcb9bea79ea9923fa9ef82ea03d7ee6c01f/icons/twitter-x.svg",
+    "file": "bootstrap-twitter-x.svg",
+    "sha256": "173e37e584ccb49cb87242a2e5444201da2d779cee1b1464732893302975950d"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/twbs/icons/afbfcbcb9bea79ea9923fa9ef82ea03d7ee6c01f/icons/telegram.svg",
+    "file": "bootstrap-telegram.svg",
+    "sha256": "c56e6919d63e25681ead8615fb50e80d5de5be0466cac9d2790611030af97cce"
+  }
+]

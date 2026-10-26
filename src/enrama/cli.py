@@ -133,5 +133,6 @@ def preview(
             lambda url: typer.echo(
                 "Preview: " + url + " (Ctrl+C to stop; restart to rebuild)"
             ),
+            on_warning=lambda warning: typer.echo("Warning: " + warning, err=True),
         )
     )

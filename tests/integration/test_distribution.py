@@ -188,7 +188,7 @@ render_data = {
     "schema_version": 1,
     "site": {"title": plain, "description": plain, "language": "en", "url": "https://example.com/client", "favicon": "image.ico", "og_image": "image.png"},
     "profile": {"name": plain, "avatar": "image.png"},
-    "links": [{"id": "go", "title": plain, "url": "https://other.example/?a=1&b=2"}],
+    "links": [{"id": "go", "title": plain, "url": "https://other.example/?a=1&b=2", "icon": "globe"}],
 }
 metadata["jinja2"] = m.version("Jinja2")
 metadata["markupsafe"] = m.version("MarkupSafe")
@@ -200,7 +200,9 @@ for theme in ("minimal", "bold"):
     render_assets = prepare_assets(render_config, source=client / "selected.yaml")
     html = render_html(render_config, render_assets)
     document = RenderedDocument(html)
-    assert not any(tag in ("script", "style", "base", "svg") for tag, attrs in document.elements)
+    assert not any(tag in ("script", "style", "base") for tag, attrs in document.elements)
+    assert sum(tag == "svg" for tag, attrs in document.elements) == 1
+    assert all(attrs.get("aria-hidden") == "true" for tag, attrs in document.elements if tag == "svg")
     assert sum(tag == "main" for tag, attrs in document.elements) == 1
     assert "&lt;script&gt;" in html and "{{7*7}}" in html
     anchors = [attrs for tag, attrs in document.elements if tag == "a"]
@@ -215,8 +217,9 @@ for theme in ("minimal", "bold"):
 original_config = render_config.model_dump()
 original_assets = render_assets
 expected_html = render_html(render_config, render_assets)
+allowed_render_reads = {str(files("enrama").joinpath(str(path).split("enrama/", 1)[1])) for path in d.files if str(path).startswith(("enrama/_templates/", "enrama/_themes/", "enrama/_icons/"))}
 def restrict_render_io(event, arguments):
-    if event == "open" and arguments[0] != str(resource):
+    if event == "open" and arguments[0] not in allowed_render_reads:
         raise AssertionError("Renderer opened an unexpected resource")
     if event.startswith("socket."):
         raise AssertionError("Renderer attempted network I/O")
@@ -388,6 +391,32 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
             "enrama/core/_project.py",
             "enrama/core/builder.py",
             "enrama/_templates/base.html",
+            "enrama/themes.py",
+            "enrama/_themes/minimal.css",
+            "enrama/_themes/bold.css",
+            "enrama/_themes/THIRD_PARTY_NOTICES.txt",
+            "enrama/_icons/provenance.json",
+            "enrama/_icons/bootstrap-facebook.svg",
+            "enrama/_icons/bootstrap-github.svg",
+            "enrama/_icons/bootstrap-instagram.svg",
+            "enrama/_icons/bootstrap-linkedin.svg",
+            "enrama/_icons/bootstrap-telegram.svg",
+            "enrama/_icons/bootstrap-tiktok.svg",
+            "enrama/_icons/bootstrap-twitter-x.svg",
+            "enrama/_icons/bootstrap-whatsapp.svg",
+            "enrama/_icons/bootstrap-youtube.svg",
+            "enrama/_icons/lucide-calendar.svg",
+            "enrama/_icons/lucide-download.svg",
+            "enrama/_icons/lucide-external-link.svg",
+            "enrama/_icons/lucide-file-text.svg",
+            "enrama/_icons/lucide-globe.svg",
+            "enrama/_icons/lucide-link.svg",
+            "enrama/_icons/lucide-mail.svg",
+            "enrama/_icons/lucide-map-pin.svg",
+            "enrama/_icons/lucide-message-circle.svg",
+            "enrama/_icons/lucide-phone.svg",
+            "enrama/_icons/lucide-play.svg",
+            "enrama/_icons/lucide-shopping-bag.svg",
             "enrama/py.typed",
             "enrama-0.1.0.dev0.dist-info/METADATA",
             "enrama-0.1.0.dev0.dist-info/WHEEL",
@@ -427,6 +456,32 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
             "src/enrama/core/_project.py",
             "src/enrama/core/builder.py",
             "src/enrama/_templates/base.html",
+            "src/enrama/themes.py",
+            "src/enrama/_themes/minimal.css",
+            "src/enrama/_themes/bold.css",
+            "src/enrama/_themes/THIRD_PARTY_NOTICES.txt",
+            "src/enrama/_icons/provenance.json",
+            "src/enrama/_icons/bootstrap-facebook.svg",
+            "src/enrama/_icons/bootstrap-github.svg",
+            "src/enrama/_icons/bootstrap-instagram.svg",
+            "src/enrama/_icons/bootstrap-linkedin.svg",
+            "src/enrama/_icons/bootstrap-telegram.svg",
+            "src/enrama/_icons/bootstrap-tiktok.svg",
+            "src/enrama/_icons/bootstrap-twitter-x.svg",
+            "src/enrama/_icons/bootstrap-whatsapp.svg",
+            "src/enrama/_icons/bootstrap-youtube.svg",
+            "src/enrama/_icons/lucide-calendar.svg",
+            "src/enrama/_icons/lucide-download.svg",
+            "src/enrama/_icons/lucide-external-link.svg",
+            "src/enrama/_icons/lucide-file-text.svg",
+            "src/enrama/_icons/lucide-globe.svg",
+            "src/enrama/_icons/lucide-link.svg",
+            "src/enrama/_icons/lucide-mail.svg",
+            "src/enrama/_icons/lucide-map-pin.svg",
+            "src/enrama/_icons/lucide-message-circle.svg",
+            "src/enrama/_icons/lucide-phone.svg",
+            "src/enrama/_icons/lucide-play.svg",
+            "src/enrama/_icons/lucide-shopping-bag.svg",
             "src/enrama/py.typed",
             "pyproject.toml",
             "README.md",

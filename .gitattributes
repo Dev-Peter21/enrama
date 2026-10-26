@@ -13,3 +13,10 @@ LICENSE text eol=lf
 
 # Keep the generated artifact byte-identical across Git checkout platforms.
 schemas/enrama-v1.schema.json text eol=lf
+
+# Keep bundled presentation resources and provenance byte-stable.
+*.html text eol=lf
+*.css text eol=lf
+*.svg text eol=lf
+src/enrama/_icons/provenance.json text eol=lf
+src/enrama/_themes/THIRD_PARTY_NOTICES.txt text eol=lf
