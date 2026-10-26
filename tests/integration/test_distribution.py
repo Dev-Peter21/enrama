@@ -105,7 +105,7 @@ metadata = {
     "python": d.metadata["Requires-Python"],
     "license": d.metadata["License-Expression"],
     "license_files": d.metadata.get_all("License-File"),
-    "requires": d.requires, "entry_points": list(d.entry_points),
+    "requires": d.requires, "entry_points": [{"name": e.name, "value": e.value, "group": e.group} for e in d.entry_points],
     "installed": sorted(x.metadata["Name"] for x in m.distributions()),
     "license_text": d.read_text("licenses/LICENSE"),
     "registry": REGISTRY_DATE,
@@ -279,6 +279,7 @@ print(json.dumps(metadata))
         "pyyaml<7,>=6.0.3",
         "pillow==13.0.0",
         "jinja2<4,>=3.1.6",
+        "typer<1,>=0.20",
     }
     assert metadata["jinja2"]
     assert metadata["markupsafe"]
@@ -308,7 +309,9 @@ print(json.dumps(metadata))
     assert metadata["config"]["socials"][0]["label"] == "GitHub"
     assert metadata["social_icon"] == "github"
     assert metadata["invalid_version_location"] == ["schema_version"]
-    assert metadata["entry_points"] == []
+    assert metadata["entry_points"] == [
+        {"name": "enrama", "value": "enrama.cli:app", "group": "console_scripts"}
+    ]
     assert {"enrama", "pydantic", "langcodes", "PyYAML"}.issubset(metadata["installed"])
     assert not {
         "pytest",
@@ -319,7 +322,6 @@ print(json.dumps(metadata))
         "types-PyYAML",
         "jsonschema",
         "types-jsonschema",
-        "typer",
         "fastapi",
     }.intersection(metadata["installed"])
 
@@ -359,6 +361,10 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
     with zipfile.ZipFile(first[".whl"]) as wheel:
         assert set(wheel.namelist()) == {
             "enrama/__init__.py",
+            "enrama/__main__.py",
+            "enrama/cli.py",
+            "enrama/project.py",
+            "enrama/preview.py",
             "enrama/config/__init__.py",
             "enrama/config/_language.py",
             "enrama/config/_paths.py",
@@ -385,6 +391,7 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
             "enrama/py.typed",
             "enrama-0.1.0.dev0.dist-info/METADATA",
             "enrama-0.1.0.dev0.dist-info/WHEEL",
+            "enrama-0.1.0.dev0.dist-info/entry_points.txt",
             "enrama-0.1.0.dev0.dist-info/RECORD",
             "enrama-0.1.0.dev0.dist-info/licenses/LICENSE",
         }
@@ -392,6 +399,10 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
         files = {"/".join(item.name.split("/")[1:]) for item in sdist if item.isfile()}
         assert files == {
             "src/enrama/__init__.py",
+            "src/enrama/__main__.py",
+            "src/enrama/cli.py",
+            "src/enrama/project.py",
+            "src/enrama/preview.py",
             "src/enrama/config/__init__.py",
             "src/enrama/config/_language.py",
             "src/enrama/config/_paths.py",

@@ -37,9 +37,9 @@
 
 **Files:** Create cli.py, __main__.py, project.py, preview.py; tests/unit/test_cli.py and tests/integration/test_preview.py. Add used Typer/lock/entrypoint and archive inventory expectations.
 **Interfaces:** enrama init DEST; validate/build/preview [--config PATH], preview[--port PORT], root help/version. Preview uses retained ProjectSession and exact bound loopback socket before build.
-- [ ] Write failing CLI tests for success/help/version/errorcodes/init conflicts/no partial destruction/readonly validate and real HTTP/process tests for port busy, guard contention, shutdown/restart and traversal/symlink denial.
-- [ ] Implement Typer commands, starter files and source-safe HTTP allowlist; use no backend or auto/watch/browser operation.
-- [ ] Run focused tests/quality/full suite and isolated consumer CLI; commit independently.
+- [x] Write failing CLI tests for success/help/version/errorcodes/init conflicts/no partial destruction/readonly validate and real HTTP/process tests for port busy, guard contention, shutdown/restart and traversal/symlink denial.
+- [x] Implement Typer commands, starter files and source-safe HTTP allowlist; use no backend or auto/watch/browser operation.
+- [x] Run focused tests/quality/full suite and isolated consumer CLI; commit independently.
 
 ## Task 3: U03/U04 packaged presentation
 
