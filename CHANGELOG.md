@@ -7,6 +7,12 @@ repository; a roadmap target does not imply that a release exists.
 
 ### Added
 
+- Accepted R03 first-release/PyPI contract: owner peter-dev, manual Trusted
+  Publishing, canonical artifacts and provenance, explicit authorization,
+  public-install checks, conservative retries and 0.1.x maintenance. TestPyPI
+  is optional and separate. Documentation only; no workflow, access setup,
+  version bump, tag, release, upload or deployment is added.
+
 - Local-demo branch: guarded G03 builds with deterministic output manifests,
   nonblocking project ownership, conservative rollback/cleanup and manual recovery
   after abrupt termination. Adds init/validate/build/foreground preview, packaged

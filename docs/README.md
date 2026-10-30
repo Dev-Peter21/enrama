@@ -32,7 +32,7 @@ The guarded builder, CLI/preview and both themes are also implemented. The edito
 | [G02 verification](verification/g02.md) | Actual renderer/escaping/metadata, installed resources, static hosting and matrix evidence |
 | [Local demo verification](verification/local-demo.md) | Local CLI/build/theme/preview/installed and visual evidence, with real limits |
 | [Testing](testing.md) | Validation strategy and security/packaging coverage |
-| [Releasing](releasing.md) | Intended release process and first-release gates |
+| [First release and PyPI publication](releasing.md) | Accepted R03 ownership, manual publication, canonical artifacts, verification, retries and maintenance |
 | [Decisions](decisions.md) | Accepted choices and decisions still requiring review |
 
 Community guidance lives at the repository root:

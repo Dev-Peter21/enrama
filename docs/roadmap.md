@@ -223,6 +223,11 @@ independent documentation/design work to happen sooner.
 
 ### R03 — Prepare and publish the first Python release
 
+- **Contract:** The [first-release and PyPI contract](releasing.md) was accepted
+  on 2026-10-30: owner peter-dev, manual Trusted Publishing from reviewed main
+  source, canonical artifacts, public installs, retries and 0.1.x maintenance.
+  TestPyPI is optional and separate. This stage delivers documentation only;
+  issue #17 remains open with no workflow or upload implemented.
 - **Scope:** Confirm namespace ownership and O06, add reviewed release automation,
   and prepare version `0.1.0`, changelog, artifacts, and GitHub release.
 - **Dependencies:** R02 and explicit authorization to publish a package/release.
