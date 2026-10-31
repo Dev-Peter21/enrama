@@ -17,9 +17,7 @@ def test_locked_sync_rejects_drift(drift: str, tmp_path: Path) -> None:
     else:
         project = tmp_path / "pyproject.toml"
         project.write_text(
-            project.read_text().replace(
-                'version = "0.1.0.dev0"', 'version = "0.1.0.dev1"'
-            )
+            project.read_text().replace('version = "0.1.0"', 'version = "0.1.1"')
         )
     before = lock.read_bytes() if lock.exists() else None
     result = run(uv(), "sync", "--locked", "--no-install-project", cwd=tmp_path)

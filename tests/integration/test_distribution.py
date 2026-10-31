@@ -332,7 +332,7 @@ print(json.dumps(metadata))
     assert "site-packages" in Path(metadata["origin"]).parts
     assert metadata.get("interpreter") == list(sys.version_info[:2])
     assert metadata["name"] == "enrama"
-    assert metadata["version"] == "0.1.0.dev0"
+    assert metadata["version"] == "0.1.0"
     assert metadata["python"] == ">=3.12"
     assert metadata["license"] == "MIT"
     assert metadata["license_files"] == ["LICENSE"]
@@ -482,11 +482,11 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
             "enrama/_icons/lucide-play.svg",
             "enrama/_icons/lucide-shopping-bag.svg",
             "enrama/py.typed",
-            "enrama-0.1.0.dev0.dist-info/METADATA",
-            "enrama-0.1.0.dev0.dist-info/WHEEL",
-            "enrama-0.1.0.dev0.dist-info/entry_points.txt",
-            "enrama-0.1.0.dev0.dist-info/RECORD",
-            "enrama-0.1.0.dev0.dist-info/licenses/LICENSE",
+            "enrama-0.1.0.dist-info/METADATA",
+            "enrama-0.1.0.dist-info/WHEEL",
+            "enrama-0.1.0.dist-info/entry_points.txt",
+            "enrama-0.1.0.dist-info/RECORD",
+            "enrama-0.1.0.dist-info/licenses/LICENSE",
         }
     with tarfile.open(first[".gz"]) as sdist:
         files = {"/".join(item.name.split("/")[1:]) for item in sdist if item.isfile()}

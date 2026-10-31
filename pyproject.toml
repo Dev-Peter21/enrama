@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "enrama"
-version = "0.1.0.dev0"
+version = "0.1.0"
 description = "Open-source, self-hosted link-in-bio site generator built with Python."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -13,10 +13,13 @@ license-files = ["LICENSE"]
 authors = [{ name = "Enrama contributors" }]
 keywords = ["link-in-bio", "static-site", "self-hosted"]
 classifiers = [
-    "Development Status :: 1 - Planning",
+    "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Topic :: Internet :: WWW/HTTP :: Site Management",
 ]
 dependencies = [
