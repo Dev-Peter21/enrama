@@ -53,6 +53,31 @@ def build(source: Path, output: Path) -> dict[str, Path]:
 
 @pytest.fixture(scope="session")
 def archives(tmp_path_factory: pytest.TempPathFactory) -> dict[str, Path]:
+    supplied = os.environ.get("ENRAMA_RELEASE_BUNDLE")
+    if supplied is not None:
+        bundle = Path(supplied).resolve()
+        sha = run("git", "rev-parse", "HEAD", cwd=ROOT)
+        assert sha.returncode == 0, sha.stderr
+        verified = run(
+            sys.executable,
+            "-I",
+            str(ROOT / "scripts/release.py"),
+            "verify",
+            "--bundle",
+            str(bundle),
+            "--expected-sha",
+            sha.stdout.strip(),
+            "--expected-version",
+            "0.1.0",
+            cwd=ROOT,
+        )
+        assert verified.returncode == 0, (
+            "Explicit release bundle failed verification: " + verified.stderr
+        )
+        return {
+            ".whl": bundle / "enrama-0.1.0-py3-none-any.whl",
+            ".gz": bundle / "enrama-0.1.0.tar.gz",
+        }
     return build(ROOT, tmp_path_factory.mktemp("artifacts"))
 
 
@@ -407,6 +432,7 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
             ".mypy_cache",
             ".ruff_cache",
             "dist",
+            "reports",
         ),
     )
     for name in (
