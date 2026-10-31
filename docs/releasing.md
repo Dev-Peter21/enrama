@@ -1,10 +1,11 @@
 # First release and PyPI publication contract
 
 Status: **R03 design accepted on 2026-10-30** for
-[issue #17](https://github.com/Dev-Peter21/enrama/issues/17). Documentation only:
-the issue remains open. No release workflow, external publisher configuration,
-version bump, tag, GitHub Release or package upload is implemented by this change.
-The development version remains `0.1.0.dev0` until authorized preparation.
+[issue #17](https://github.com/Dev-Peter21/enrama/issues/17). Technical preparation
+was authorized on 2026-10-31: metadata is now `0.1.0`, with the
+[manual preparation/verification workflow](release-preparation.md). It has no
+publisher step or upload privileges. The issue remains open: external setup,
+main integration, tags, public release and public-install verification are pending.
 
 ## Outcome and scope
 

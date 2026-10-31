@@ -33,10 +33,10 @@
 
 **Interfaces:** Installed metadata/CLI report 0.1.0; existing archive inventory and lock-failure tests keep their behavior.
 
-- [ ] Change the installed-consumer expected version to 0.1.0 and run its wheel case; observe old metadata failure.
-- [ ] Set version 0.1.0, appropriate Beta maturity and Python 3.12–3.15 classifiers; refresh only the project's lock entry using pinned uv.
-- [ ] Update exact dist-info inventory and stale-lock mutation for the prepared version. Preserve intentional historical-format fixture cases.
-- [ ] Run installed consumers and lock tests; commit the independently verified metadata change.
+- [x] Change the installed-consumer expected version to 0.1.0 and run its wheel case; observe old metadata failure.
+- [x] Set version 0.1.0, appropriate Beta maturity and Python 3.12–3.15 classifiers; refresh only the project's lock entry using pinned uv.
+- [x] Update exact dist-info inventory and stale-lock mutation for the prepared version. Preserve intentional historical-format fixture cases.
+- [x] Run installed consumers and lock tests; commit the independently verified metadata change.
 
 ## Task 2: Canonical release preparation and verification
 
@@ -44,11 +44,11 @@
 
 **Interfaces:** release.py subcommands check-source/bundle/verify take expected full source SHA and version; bundle receives archive/source/output paths, verify receives the downloaded bundle. Existing archives fixture optionally consumes ENRAMA_RELEASE_BUNDLE, verifying it before installation.
 
-- [ ] Write subprocess tests using real temporary Git repositories and tiny wheel/sdist fixtures: identity/dirty/main gates; exact metadata; unchanged payload copy; protected existing output; wrong/missing/extra/linked inputs; manifest/checksum/payload tampering.
-- [ ] Run and observe missing-helper failures. Implement a stdlib helper with strict expected names/version/SHA, content metadata checks, exclusive fresh output and no cleanup of uncertain data.
-- [ ] Write release.json with exact source/run/version/file hashes and publication_authorized false, plus schema and SHA256SUMS. Verify complete inventory and matching metadata/digests on download.
-- [ ] Extend the installed-consumer fixture to verify and consume an explicit bundle, failing rather than falling back. Run actual built wheel/sdist/PyYAML-source consumers with that bundle.
-- [ ] Run focused helper tests, quality checks and full suite. Commit the verified deliverable.
+- [x] Write subprocess tests using real temporary Git repositories and tiny wheel/sdist fixtures: identity/dirty/main gates; exact metadata; unchanged payload copy; protected existing output; wrong/missing/extra/linked inputs; manifest/checksum/payload tampering.
+- [x] Run and observe missing-helper failures. Implement a stdlib helper with strict expected names/version/SHA, content metadata checks, exclusive fresh output and no cleanup of uncertain data.
+- [x] Write release.json with exact source/run/version/file hashes and publication_authorized false, plus schema and SHA256SUMS. Verify complete inventory and matching metadata/digests on download.
+- [x] Extend the installed-consumer fixture to verify and consume an explicit bundle, failing rather than falling back. Run actual built wheel/sdist/PyYAML-source consumers with that bundle.
+- [x] Run focused helper tests, quality checks and full suite. Commit the verified deliverable.
 
 ## Task 3: Manual workflow, documentation and delivery
 

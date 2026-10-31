@@ -33,6 +33,8 @@ The guarded builder, CLI/preview and both themes are also implemented. The edito
 | [Local demo verification](verification/local-demo.md) | Local CLI/build/theme/preview/installed and visual evidence, with real limits |
 | [Testing](testing.md) | Validation strategy and security/packaging coverage |
 | [First release and PyPI publication](releasing.md) | Accepted R03 ownership, manual publication, canonical artifacts, verification, retries and maintenance |
+| [Release preparation](release-preparation.md) | Implemented credential-free manual workflow, source/CI gates, canonical bundle and local rehearsal |
+| [R03 preparation verification](verification/r03-preparation.md) | Executed metadata/bundle/consumer checks and honest manual-dispatch/publication boundaries |
 | [Decisions](decisions.md) | Accepted choices and decisions still requiring review |
 
 Community guidance lives at the repository root:

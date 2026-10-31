@@ -2,9 +2,14 @@
 
 ## Supported versions
 
-Enrama has no released software yet. There is no supported production version
-or security maintenance schedule. Version support will be documented with the
-first release.
+Enrama has no public release yet. The prepared `0.1.0` metadata does not establish
+PyPI availability or a supported production release.
+
+Once 0.1.0 ships, support covers the latest 0.1.x patch until 0.2.0 is published;
+older patches should upgrade. Python 3.12–3.15 is the initial verified range.
+Patch releases preserve CLI/YAML v1 and advertised Python support. There is no
+fixed release cadence, parallel LTS line or guaranteed remediation time. Update
+this page with the actual shipped version when publication is verified.
 
 ## Report a vulnerability privately
 
@@ -22,15 +27,17 @@ or paid bug bounty. Disclosure timing should be agreed with the reporter.
 
 ## Security design requirements
 
-The planned generator must validate URL protocols, escape untrusted HTML,
-load YAML safely, constrain asset paths to the client project, and avoid
-arbitrary HTML or executable templates from configuration. Tests must cover
-symlink escapes as well as ordinary path traversal.
+The implemented generator validates URL protocols, escapes untrusted HTML,
+loads bounded YAML safely and constrains assets/output under the documented
+filesystem rules. It does not execute HTML/templates from configuration.
+See [validation and limits](docs/testing.md) and the linked verification records,
+including traversal, symlink, protected-output and repeatability coverage.
 
 Generated sites are public artifacts: client configuration and assets must
 not contain secrets. Static hosting, DNS, TLS, and access to client repositories
 remain the responsibility of the site operator.
 
-Both preview and the future editor must bind to `127.0.0.1` by default. The
-editor's write endpoints need an explicit local security design before release.
-These are requirements for future implementation, not claims about existing code.
+Preview binds to `127.0.0.1`. The future editor must do so too; its write
+endpoints need a separate origin/CSRF/file-safety design before implementation.
+Release preparation has read-only GitHub permissions and no upload credentials
+or publishing job. External publisher setup and publication remain separate.

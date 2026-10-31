@@ -292,6 +292,41 @@ def test_ci_gate_fails_closed(
     assert not (tmp_path / "bundle").exists()
 
 
+@pytest.mark.parametrize("conclusion", ["success", "failure"])
+def test_source_gate_checks_ci_before_build(
+    conclusion: str, candidate: tuple[Path, Path, str], tmp_path: Path
+) -> None:
+    source, _, sha = candidate
+    report = tmp_path / "source-ci.json"
+    report.write_text(
+        json.dumps(
+            [
+                {
+                    "databaseId": 42,
+                    "headSha": sha,
+                    "headBranch": "main",
+                    "event": "push",
+                    "workflowName": "CI",
+                    "status": "completed",
+                    "conclusion": conclusion,
+                }
+            ]
+        )
+    )
+    result = release(
+        "check-source",
+        "--source",
+        str(source),
+        "--expected-sha",
+        sha,
+        "--expected-version",
+        "0.1.0",
+        "--ci-report",
+        str(report),
+    )
+    assert result.returncode == (0 if conclusion == "success" else 1)
+
+
 def test_existing_output_is_never_overwritten(
     candidate: tuple[Path, Path, str], tmp_path: Path
 ) -> None:

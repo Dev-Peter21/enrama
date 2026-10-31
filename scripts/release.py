@@ -305,6 +305,8 @@ def main() -> None:
             check_source(
                 args.source, args.expected_sha, args.expected_version, args.require_main
             )
+            if args.ci_report is not None:
+                source_ci(json.loads(regular(args.ci_report)), args.expected_sha)
         elif (
             args.command == "bundle"
             and args.archives is not None

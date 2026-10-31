@@ -5,6 +5,25 @@ repository; a roadmap target does not imply that a release exists.
 
 ## Unreleased
 
+### Prepared for 0.1.0
+
+- Package metadata now targets `0.1.0` with Beta maturity and Python 3.12–3.15
+  classifiers. This is preparation, not a public release or reserved PyPI name.
+- Added a manually dispatched, read-only release-preparation workflow: exact
+  main/SHA and successful source-CI gates, one archive/schema/provenance bundle,
+  SHA-256 verification and six-platform-environment installed consumers.
+- Added local bundle/recovery commands and updated current release/support
+  documentation. Publisher setup, upload/finalization, tags, public install and
+  deployment remain separately authorized work; no publishing job is included.
+- The candidate includes the implemented YAML v1 models/loader/schema, safe local
+  assets, shared escaped HTML/metadata, guarded static builds, init/validate/build,
+  foreground preview, minimal/bold themes and licensed controlled icons.
+
+## Historical foundation and design record
+
+The entries below describe their delivery stages, not the current implementation
+status. They are retained as history and are not public release announcements.
+
 ### Added
 
 - Accepted R03 first-release/PyPI contract: owner peter-dev, manual Trusted
@@ -118,8 +137,9 @@ repository; a roadmap target does not imply that a release exists.
   17 planned implementation tasks, and a final acceptance issue, tracked in the
   existing EnRama Project Kanban with priorities and native dependencies.
 
-The CLI, generator, themes, and editor remain planned. No package or release
-has been published.
+At initialization the CLI, generator, themes and editor were planned. The current
+candidate implements the CLI/generator/themes; the editor and public release
+remain future work.
 
 ### Fixed
 

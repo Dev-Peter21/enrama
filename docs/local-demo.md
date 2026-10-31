@@ -106,12 +106,13 @@ Build/install locally without publishing:
 ```console
 uv build --build-constraint build-constraints.txt --require-build-hashes
 uv venv /tmp/enrama-consumer --python 3.12
-uv pip install --python /tmp/enrama-consumer/bin/python dist/enrama-0.1.0.dev0-py3-none-any.whl --build-constraint build-constraints.txt --require-build-hashes
+uv pip install --python /tmp/enrama-consumer/bin/python dist/enrama-0.1.0-py3-none-any.whl --build-constraint build-constraints.txt --require-build-hashes
 /tmp/enrama-consumer/bin/enrama init /tmp/enrama-client
 /tmp/enrama-consumer/bin/enrama preview --config /tmp/enrama-client/enrama.yaml --port 8001
 ```
 
 Use absent /tmp destinations or choose new names. Windows uses Scripts paths and
 an appropriate writable temporary directory. Inspect local verification evidence
-before claiming platform compatibility; no remote matrix was triggered by this
-unpublished branch.
+before claiming platform compatibility. Current prepared metadata is 0.1.0,
+still unpublished; historical demo evidence records the earlier development
+version and its actual CI runs. See [release preparation](release-preparation.md).

@@ -74,10 +74,12 @@ def archives(tmp_path_factory: pytest.TempPathFactory) -> dict[str, Path]:
         assert verified.returncode == 0, (
             "Explicit release bundle failed verification: " + verified.stderr
         )
-        return {
+        selected = {
             ".whl": bundle / "enrama-0.1.0-py3-none-any.whl",
             ".gz": bundle / "enrama-0.1.0.tar.gz",
         }
+        assert_archive_contents(selected)
+        return selected
     return build(ROOT, tmp_path_factory.mktemp("artifacts"))
 
 
@@ -418,6 +420,65 @@ print(json.dumps(metadata))
     }.intersection(metadata["installed"])
 
 
+def test_supplied_bundle_rejects_unreviewed_archive_contents(
+    archives: dict[str, Path], tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    candidate = tmp_path / "candidate"
+    candidate.mkdir()
+    version = "0.1.0"
+    for path in archives.values():
+        shutil.copyfile(path, candidate / path.name)
+    wheel = next(candidate.glob("*.whl"))
+    with zipfile.ZipFile(wheel, "a") as z:
+        z.writestr("enrama/unreviewed.py", "UNREVIEWED = True")
+    shutil.copyfile(
+        ROOT / "schemas/enrama-v1.schema.json", candidate / "enrama-v1.schema.json"
+    )
+    sha = run("git", "rev-parse", "HEAD", cwd=ROOT).stdout.strip()
+    records = [
+        {
+            "name": p.name,
+            "size": p.stat().st_size,
+            "sha256": hashlib.sha256(p.read_bytes()).hexdigest(),
+        }
+        for p in sorted(candidate.iterdir())
+    ]
+    record = {
+        "format_version": 1,
+        "package": "enrama",
+        "version": version,
+        "tag": "v" + version,
+        "source_sha": sha,
+        "source_ref": None,
+        "source_ci": None,
+        "repository": "Dev-Peter21/enrama",
+        "run_id": None,
+        "run_attempt": None,
+        "publication_authorized": False,
+        "files": records,
+    }
+    (candidate / "release.json").write_bytes(
+        (json.dumps(record, indent=2, sort_keys=True) + "\n").encode()
+    )
+    sums = "".join(
+        hashlib.sha256(p.read_bytes()).hexdigest() + "  " + p.name + "\n"
+        for p in sorted(candidate.iterdir())
+    )
+    (candidate / "SHA256SUMS").write_bytes(sums.encode())
+    monkeypatch.setenv("ENRAMA_RELEASE_BUNDLE", str(candidate))
+    result = run(
+        sys.executable,
+        "-m",
+        "pytest",
+        str(ROOT / "tests/integration/test_distribution.py")
+        + "::test_install_outside_checkout[wheel]",
+        "-q",
+        cwd=ROOT,
+    )
+    assert result.returncode == 1, result.stdout + result.stderr
+    assert "Unreviewed wheel contents" in result.stdout
+
+
 def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
     source = tmp_path / "checkout"
     shutil.copytree(
@@ -451,7 +512,11 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
             hashlib.sha256(first[kind].read_bytes()).digest()
             == hashlib.sha256(second[kind].read_bytes()).digest()
         )
-    with zipfile.ZipFile(first[".whl"]) as wheel:
+    assert_archive_contents(first)
+
+
+def assert_archive_contents(archives: dict[str, Path]) -> None:
+    with zipfile.ZipFile(archives[".whl"]) as wheel:
         assert set(wheel.namelist()) == {
             "enrama/__init__.py",
             "enrama/__main__.py",
@@ -513,8 +578,8 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
             "enrama-0.1.0.dist-info/entry_points.txt",
             "enrama-0.1.0.dist-info/RECORD",
             "enrama-0.1.0.dist-info/licenses/LICENSE",
-        }
-    with tarfile.open(first[".gz"]) as sdist:
+        }, "Unreviewed wheel contents"
+    with tarfile.open(archives[".gz"]) as sdist:
         files = {"/".join(item.name.split("/")[1:]) for item in sdist if item.isfile()}
         assert files == {
             "src/enrama/__init__.py",

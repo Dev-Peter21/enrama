@@ -1,5 +1,10 @@
 # Python development setup
 
+Current R03 preparation uses version `0.1.0`, still unpublished. The initial
+`0.1.0.dev0` values and F02 acceptance below describe that historical foundation.
+See [release preparation](release-preparation.md) for the current package stage;
+prepared metadata does not complete the public-install/deployment MVP gates.
+
 Status: **implemented F02 foundation on `develop`**, following the design
 approved on 2026-10-22 for [issue #3](https://github.com/Dev-Peter21/enrama/issues/3).
 This repository supplies an importable package, locked developer tools, real

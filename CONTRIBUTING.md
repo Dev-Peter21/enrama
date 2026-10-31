@@ -46,7 +46,8 @@ into `develop`; implementation branches, when used, should start from and target
 `develop`. Do not publish application code directly to `main`. This branch policy
 does not authorize starting implementation during a documentation/design-only task.
 A maintainer reviews and merges contributions; the project currently has no
-release workflow. Foundation CI runs on PRs targeting `develop`/`main` and
+publication workflow. The [manual preparation workflow](docs/release-preparation.md)
+only builds/verifies files and cannot publish. Foundation CI runs on PRs targeting `develop`/`main` and
 pushes to both branches once the workflow is present on that branch.
 
 ## Python development workflow
