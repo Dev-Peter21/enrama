@@ -73,6 +73,19 @@ ignored under reports/r03-preparation; no credentials are included.
 
 ## Workflow validation and execution boundary
 
+Independent read-only whole-change review of `691bf1d..bc387dc` found **no
+Critical, Important or Minor findings**. The reviewer freshly ran all **26
+release-helper tests**, read the 788-pass suite output and checked the source,
+canonical fixture, workflow and documentation. No deferred minor remains.
+
+Review rulings preserve the authorized boundary: live dispatch/transfer needs
+main integration; PyPI security/publisher setup, tagging, public installation and
+post-publication recovery are future validation; digests are not cryptographic
+authenticity against coordinated replacement or a hostile-filesystem sandbox;
+Windows console SIGINT is outside existing POSIX probes. Earlier issue acceptance
+and unchanged generator code were not re-audited as new work. These limitations
+must not be promoted into successful hosted/public-release claims.
+
 **actionlint 1.7.12** validated both CI and release-preparation YAML. Its official
 download checksum was verified. Checkout/setup/upload pins reuse reviewed CI
 versions. Download uses **actions/download-artifact v8.0.2**, full commit

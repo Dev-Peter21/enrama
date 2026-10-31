@@ -56,8 +56,8 @@
 
 **Interfaces:** Manual main dispatch takes expected SHA; requires exact main push CI success, builds one canonical set and uploads it for six consumer jobs. Reports retain actual environment/JUnit evidence. No publication-capable job is included.
 
-- [ ] Add workflow_dispatch-only preparation/verification using read permissions and reviewed full action pins. Require main, expected SHA and successful exact-source CI; run quality/schema, build once, bundle, then verify/install the same bytes in all six environments.
-- [ ] Validate with actionlint, parse inputs/permissions, run the actual helper/build/consumer commands locally. Do not fabricate a main dispatch or alter default branch/trigger to test it.
-- [ ] Document developer rehearsal commands, immutable provenance, retention/manual recovery, version 0.1.0 still unpublished, future support policy and deferred external/main/publication gates. Keep historical verification records historical.
-- [ ] Run locked quality/schema/full tests, Markdown checks and constrained build. Request one fresh read-only whole-change review; fix concrete important findings with regression tests.
+- [x] Add workflow_dispatch-only preparation/verification using read permissions and reviewed full action pins. Require main, expected SHA and successful exact-source CI; run quality/schema, build once, bundle, then verify/install the same bytes in all six environments.
+- [x] Validate with actionlint, parse inputs/permissions, run the actual helper/build/consumer commands locally. Do not fabricate a main dispatch or alter default branch/trigger to test it.
+- [x] Document developer rehearsal commands, immutable provenance, retention/manual recovery, version 0.1.0 still unpublished, future support policy and deferred external/main/publication gates. Keep historical verification records historical.
+- [x] Run locked quality/schema/full tests, Markdown checks and constrained build. Request one fresh read-only whole-change review; fix concrete important findings with regression tests.
 - [ ] Integrate verified changes to develop, push as authorized delivery, retain evidence and leave issue #17 open. Report actual CI/dispatch boundaries and recommend separately authorized main integration and external setup next.
