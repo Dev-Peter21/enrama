@@ -15,7 +15,7 @@ F01 acceptance or imply public package availability.
 enrama init DESTINATION
 enrama validate [--config PATH]
 enrama build [--config PATH]
-enrama preview [--config PATH] [--port PORT]
+enrama preview [--config PATH] [--port PORT] [--host 127.0.0.1|0.0.0.0]
 ```
 
 Each command supports `--help`. Root-level `enrama --help` describes the commands;
@@ -27,7 +27,7 @@ Options shown above belong after the subcommand. Unknown commands, unsupported
 options, missing required arguments, and invalid option values return `2`.
 Argument parsing precedes configuration validation and filesystem writes.
 
-The MVP has no `--output`, `--force`, `clean` command, `--host`, watch/reload
+The MVP has no `--output`, `--force`, `clean` command, watch/reload
 option, or automatic browser-opening option. These are not implicit aliases.
 
 ## Configuration discovery and path resolution
@@ -170,7 +170,7 @@ not trigger a build. Manual output edits are detected by the next build's checks
 
 1. Parse arguments and resolve the project configuration path.
 2. Acquire the project's exclusive output ownership.
-3. Check and reserve the exact address `127.0.0.1:PORT` before modifying `dist/`.
+3. Check and reserve the exact selected address (default `127.0.0.1:PORT`) before modifying `dist/`.
 4. Run the same validation/build and overwrite protections as `enrama build`.
 5. Serve only the successfully published `dist/` and print its local URL.
 6. On normal shutdown, stop the server, close sockets, release ownership, and
@@ -178,7 +178,7 @@ not trigger a build. Manual output edits are detected by the next build's checks
 
 The default port is `8000`. `--port PORT` accepts an integer from `1` through
 `65535`; `0`, non-integers, and values outside this range return `2`. There is
-no silent fallback to another port and no network-interface override in the MVP.
+no silent fallback to another port. Explicit `--host 0.0.0.0` supports containers.
 An occupied port returns `3` without modifying `dist/`.
 
 A startup/build failure releases the reserved port and exclusive ownership and
@@ -265,3 +265,7 @@ model/loader behavior, build/manifest implementation, concurrency mechanics,
 CLI commands, server code, and executable tests remain their existing roadmap
 tasks. The scenarios above define expected behavior for those tasks; they are
 not evidence of implemented functionality or passing product tests.
+
+### Container preview bind
+
+`--host` defaults to `127.0.0.1`. Explicit `--host 0.0.0.0` binds IPv4 interfaces for containers; other values are usage errors (`2`). Exposing a preview directly exposes generated content to that network. The reusable Docker template publishes the port only on host loopback. The HTTP allowlist, project lock and output safeguards apply to either bind address.

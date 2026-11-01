@@ -1,4 +1,4 @@
-"""Foreground loopback preview of allowlisted output, never source directories."""
+"""Foreground explicit-bind preview of allowlisted output, never source directories."""
 
 import mimetypes
 import socket
@@ -68,11 +68,11 @@ class _Handler(BaseHTTPRequestHandler):
 class PreviewServer(ThreadingHTTPServer):
     daemon_threads = True
 
-    def __init__(self, output: Path, port: int) -> None:
+    def __init__(self, output: Path, port: int, host: str = "127.0.0.1") -> None:
         self.output = output
         self.allowed: set[str] = set()
 
-        super().__init__(("127.0.0.1", port), _Handler)
+        super().__init__((host, port), _Handler)
 
 
 def run_preview(
@@ -80,15 +80,17 @@ def run_preview(
     port: int,
     on_ready: Callable[[str], None],
     on_warning: Callable[[str], None] | None = None,
+    *,
+    host: str = "127.0.0.1",
 ) -> None:
     with ProjectSession(source) as session:
         try:
-            server = PreviewServer(session.root / "dist", port)
+            server = PreviewServer(session.root / "dist", port, host=host)
         except OSError:
             raise BuildError(
                 "operational",
                 "port_unavailable",
-                "The requested loopback port is unavailable",
+                "The requested host/port is unavailable",
                 "Stop the process using that port or choose an explicit different --port",
             ) from None
         with server:
@@ -97,7 +99,7 @@ def run_preview(
             if on_warning is not None:
                 for warning in result.warnings:
                     on_warning(warning)
-            on_ready(f"http://127.0.0.1:{server.server_port}/")
+            on_ready(f"http://{host}:{server.server_port}/")
             try:
                 server.serve_forever(poll_interval=0.1)
             except KeyboardInterrupt:
