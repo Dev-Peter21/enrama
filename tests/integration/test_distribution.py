@@ -11,6 +11,7 @@ import zipfile
 from pathlib import Path
 
 import pytest
+from packaging.specifiers import SpecifierSet
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -43,6 +44,13 @@ def install_arguments(kind: str, archive: Path, *, public: bool) -> list[str]:
         "--only-binary" if kind == ".whl" else "--no-binary",
         "enrama",
     ]
+
+
+def assert_pyyaml_version(version: str, *, public: bool) -> None:
+    if public:
+        assert version in SpecifierSet(">=6.0.3,<7")
+    else:
+        assert version == "6.0.3"
 
 
 def build(source: Path, output: Path) -> dict[str, Path]:
@@ -166,6 +174,7 @@ metadata = {
     "license_files": d.metadata.get_all("License-File"),
     "requires": d.requires, "entry_points": [{"name": e.name, "value": e.value, "group": e.group} for e in d.entry_points],
     "installed": sorted(x.metadata["Name"] for x in m.distributions()),
+    "resolved_versions": {x.metadata["Name"]: x.version for x in m.distributions()},
     "license_text": d.read_text("licenses/LICENSE"),
     "registry": REGISTRY_DATE,
     "pyyaml": m.version("PyYAML"),
@@ -305,7 +314,10 @@ assert cli("build", "--config", cli_source).returncode == 1
 assert Path("cli-client/dist/index.html").read_bytes() == built
 Path(cli_source).write_bytes(original_yaml)
 metadata["installed_cli"] = {"init":True,"validate":True,"build":True,"repeatable":True,"preservation":True}
-if os.name != "nt":
+metadata["preview_themes"] = []
+def preview_theme(expected_text, expected_css):
+    if os.name == "nt":
+        return
     with socket.socket() as probe:
         probe.bind(("127.0.0.1", 0))
         port = probe.getsockname()[1]
@@ -322,9 +334,10 @@ if os.name != "nt":
                 if time.monotonic()>deadline: raise AssertionError("Installed preview startup timed out")
                 time.sleep(.05)
         parsed = RenderedDocument(page)
+        assert expected_text in page
         css = next(attrs["href"] for tag, attrs in parsed.elements if tag == "link" and attrs.get("rel")=="stylesheet")
         with urlopen("http://127.0.0.1:"+str(port)+"/"+css, timeout=2) as response:
-            assert response.status==200 and b":focus-visible" in response.read()
+            assert response.status==200 and response.read()==expected_css
         assert cli("build", "--config", cli_source).returncode==3
         preview.send_signal(signal.SIGINT)
         stdout, stderr = preview.communicate(timeout=5)
@@ -332,6 +345,33 @@ if os.name != "nt":
         metadata["installed_cli"]["preview"] = True
     finally:
         if preview.poll() is None: preview.kill(); preview.communicate(timeout=5)
+
+# Follow the actual client workflow with valid YAML edits and both presentations.
+import yaml
+metadata["cli_themes"] = []
+metadata["edited_yaml"] = False
+for selected_theme in ("minimal", "bold"):
+    edited_name = "Edited client " + selected_theme
+    edited = {
+        "schema_version": 1,
+        "site": {"title": edited_name, "description": "Edited description", "language": "en"},
+        "profile": {"name": edited_name},
+        "theme": {"name": selected_theme},
+        "links": [{"id": "edited", "title": "Edited link", "url": "https://example.com/edited"}],
+    }
+    Path(cli_source).write_text(yaml.safe_dump(edited), encoding="utf-8")
+    assert cli("validate", "--config", cli_source).returncode == 0
+    assert cli("build", "--config", cli_source).returncode == 0
+    edited_html = Path("cli-client/dist/index.html").read_text(encoding="utf-8")
+    assert edited_name in edited_html and "https://example.com/edited" in edited_html
+    document = RenderedDocument(edited_html)
+    stylesheet = next(attrs["href"] for tag, attrs in document.elements if tag=="link" and attrs.get("rel")=="stylesheet")
+    expected_css = files("enrama").joinpath("_themes", selected_theme+".css").read_bytes()
+    assert (Path("cli-client/dist")/stylesheet).read_bytes() == expected_css
+    preview_theme(edited_name, expected_css)
+    metadata["cli_themes"].append(selected_theme)
+    if os.name != "nt": metadata["preview_themes"].append(selected_theme)
+metadata["edited_yaml"] = True
 
 # Rendering may read only its fixed installed template, never client files/network.
 original_config = render_config.model_dump()
@@ -386,6 +426,10 @@ print(json.dumps(metadata))
     assert probe.returncode == 0, probe.stderr
     print(probe.stdout)
     metadata = json.loads(probe.stdout)
+    assert metadata["cli_themes"] == ["minimal", "bold"]
+    assert metadata["edited_yaml"] is True
+    assert set(metadata["resolved_versions"]) == set(metadata["installed"])
+    assert all(metadata["resolved_versions"].values())
     assert Path(metadata["origin"]).is_relative_to(Path(metadata["prefix"]))
     assert not Path(metadata["origin"]).is_relative_to(ROOT)
     assert "site-packages" in Path(metadata["origin"]).parts
@@ -407,6 +451,9 @@ print(json.dumps(metadata))
     assert all(metadata["installed_cli"].values())
     if os.name != "nt":
         assert metadata["installed_cli"]["preview"] is True
+        assert metadata["preview_themes"] == ["minimal", "bold"]
+    else:
+        assert metadata["preview_themes"] == []
     assert metadata["jinja2"]
     assert metadata["markupsafe"]
     assert metadata["rendered_themes"] == ["minimal", "bold"]
@@ -419,7 +466,7 @@ print(json.dumps(metadata))
         "WEBP": "webp",
         "ICO": "ico",
     }
-    assert metadata["pyyaml"] == "6.0.3"
+    assert_pyyaml_version(metadata["pyyaml"], public=public)
     assert metadata["loaded"] == metadata["config"]
     assert metadata["diagnostic"] == {
         "category": "model_validation",

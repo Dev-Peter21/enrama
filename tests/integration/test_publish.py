@@ -655,3 +655,20 @@ def test_artifact_and_release_asset_media_types(
     assert "application/octet-stream" not in " ".join(requests[-1])
     assert pub.remote.gh_bytes("releases/assets/123") == b"download"
     assert "Accept: application/octet-stream" in requests[-1]
+
+
+@pytest.mark.parametrize("version", ["6.0.3", "6.0.4", "6.1.0"])
+def test_public_pyyaml_uses_advertised_range(version: str) -> None:
+    from test_distribution import assert_pyyaml_version
+
+    assert_pyyaml_version(version, public=True)
+
+
+@pytest.mark.parametrize(
+    ("version", "public"), [("6.0.2", True), ("7.0", True), ("6.0.4", False)]
+)
+def test_pyyaml_outside_contract_is_rejected(version: str, public: bool) -> None:
+    from test_distribution import assert_pyyaml_version
+
+    with pytest.raises(AssertionError):
+        assert_pyyaml_version(version, public=public)
