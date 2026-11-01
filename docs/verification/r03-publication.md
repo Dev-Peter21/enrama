@@ -8,7 +8,7 @@ successful public release or installation.
 ## Checks executed
 
 - **843 local tests passed**, zero failures/errors/skips, Python 3.12.15.
-- **55 new offline publication tests** cover exact dispatch/source/authorization,
+- **56 new offline publication tests** cover exact dispatch/source/authorization,
   successful run/job/artifact identity, expired/wrong ZIP/provenance/source CI,
   safe exclusive extraction, actual canonical bundle handling, partial/complete
   and conflicting PyPI state, immutable tag checks, missing-only release assets,
@@ -23,6 +23,11 @@ successful public release or installation.
 - Read-only GitHub metadata checks confirmed the actual historical preparation
   run/artifact API shape used by the controller. This is not dispatching the new
   workflow or approving its candidate.
+- The actual historical artifact download through the new transport matched ZIP
+  SHA-256 `fc1bed647f6ed791499efd6331bf389cbfacc9f3e13e10dfc836018187e873bf`.
+  A media-type regression first reproduced HTTP 415: artifact redirects use the
+  JSON API media type, while release assets need octet-stream. The corrected
+  real read-only download and dedicated offline test both passed.
 
 ## RED/GREEN evidence
 

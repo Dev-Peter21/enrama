@@ -639,3 +639,19 @@ def test_original_bundle_end_to_end_gate(
         assert {p.name: p.read_bytes() for p in output.iterdir()} == {
             p.name: p.read_bytes() for p in original.iterdir()
         }
+
+
+def test_artifact_and_release_asset_media_types(
+    pub: ModuleType, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    requests = []
+
+    def command(*args: str) -> bytes:
+        requests.append(args)
+        return b"download"
+
+    monkeypatch.setattr(pub.remote, "command", command)
+    assert pub.remote.gh_bytes("actions/artifacts/456/zip") == b"download"
+    assert "application/octet-stream" not in " ".join(requests[-1])
+    assert pub.remote.gh_bytes("releases/assets/123") == b"download"
+    assert "Accept: application/octet-stream" in requests[-1]

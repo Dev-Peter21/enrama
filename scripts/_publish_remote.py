@@ -37,9 +37,12 @@ def gh(
 
 
 def gh_bytes(path: str) -> bytes:
-    return command(
-        "api", f"repos/{REPOSITORY}/{path}", "-H", "Accept: application/octet-stream"
-    )
+    # Artifact downloads start at a JSON API redirect; release assets require
+    # the octet-stream Accept header to return bytes instead of asset metadata.
+    args = ["api", f"repos/{REPOSITORY}/{path}"]
+    if path.startswith("releases/assets/"):
+        args += ["-H", "Accept: application/octet-stream"]
+    return command(*args)
 
 
 def public_bytes(url: str) -> bytes:
