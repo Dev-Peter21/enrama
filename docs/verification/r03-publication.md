@@ -7,8 +7,8 @@ successful public release or installation.
 
 ## Checks executed
 
-- **843 local tests passed**, zero failures/errors/skips, Python 3.12.15.
-- **56 new offline publication tests** cover exact dispatch/source/authorization,
+- **850 local tests passed**, zero failures/errors/skips, Python 3.12.15.
+- **62 new offline publication tests** cover exact dispatch/source/authorization,
   successful run/job/artifact identity, expired/wrong ZIP/provenance/source CI,
   safe exclusive extraction, actual canonical bundle handling, partial/complete
   and conflicting PyPI state, immutable tag checks, missing-only release assets,
@@ -20,6 +20,11 @@ successful public release or installation.
   actionlint 1.7.12 passed for all three workflows.
 - Existing wheel/sdist/PyYAML-source installed consumers passed as part of the
   full suite. Generator/runtime source and dependency lock were not changed.
+- All three isolated consumers validate/build valid edited YAML and verify the
+  exact minimal/bold CSS through the installed CLI; both previews execute on
+  POSIX. Complete resolved name/version inventories are retained in JUnit output.
+- Public PyYAML resolution is checked against the advertised `>=6.0.3,<7`,
+  while ordinary locked consumers retain the development version assertion.
 - Read-only GitHub metadata checks confirmed the actual historical preparation
   run/artifact API shape used by the controller. This is not dispatching the new
   workflow or approving its candidate.
@@ -40,6 +45,12 @@ successful public release or installation.
    unconfirmed upload instead of repeatedly attempting it.
 4. A draft absent from GitHub's published by-tag endpoint caused a duplicate-create
    attempt in the fake transport; listing existing drafts now resumes the draft.
+5. Independent review identified three verification gaps: edited YAML/bold CLI
+   coverage, an inappropriate public PyYAML exact-version check, and incomplete
+   resolved-version evidence. A wheel consumer failed with missing theme evidence;
+   public-range tests failed before their helper existed. After the single fix
+   pass, 63 targeted checks and the full **850-test** suite passed. See the
+   [English review report](../reviews/20261101-1750-codereview-r03-publication.md).
 
 ## Honest boundaries
 

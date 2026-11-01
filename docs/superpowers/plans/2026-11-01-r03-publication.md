@@ -33,23 +33,23 @@
 **Files:** create `scripts/publish.py`, `scripts/_publish_remote.py`, `tests/integration/test_publish.py`.
 **Interfaces:** `publish.py` CLI commands `candidate`, `stage`, `public-files`, `finalize`; environment inputs carry exact source SHA, preparation run ID, artifact ID, artifact ZIP SHA-256 and authorization phrase. Reuse `release.verify`; network boundaries are separately testable functions.
 
-- [ ] Write offline tests for exact identity/context, successful preparation/CI/jobs, ZIP confinement, provenance, public missing/partial/complete/conflicting state and idempotent tag/release recovery; observe RED.
-- [ ] Implement bounded transport and deterministic state transitions; reject conflicts before any mutation; test GREEN.
-- [ ] Commit the gates and tests.
+- [x] Write offline tests for exact identity/context, successful preparation/CI/jobs, ZIP confinement, provenance, public missing/partial/complete/conflicting state and idempotent tag/release recovery; observe RED.
+- [x] Implement bounded transport and deterministic state transitions; reject conflicts before any mutation; test GREEN.
+- [x] Commit the gates and tests.
 
 ### Task 2: Manual orchestration and actual public consumers
 
 **Files:** create `.github/workflows/publish.yml`; modify `tests/integration/test_distribution.py`; extend `tests/integration/test_publish.py`.
 **Interfaces:** `candidate` writes verified `reports/candidate`; `stage` writes only missing archives to `reports/upload` and positive evidence; public consumers explicitly resolve `enrama==0.1.0` from production PyPI without cache/local substitution; `finalize` requires successful current-run public jobs.
 
-- [ ] Write failing workflow permission/trigger/gate tests and public-install command tests.
-- [ ] Add read-only inspect, environment-approved upload, six public verification jobs and environment-approved finalization; all actions pinned to reviewed existing SHAs.
-- [ ] Verify actionlint, offline orchestration tests, quality/schema and full regression; commit.
+- [x] Write failing workflow permission/trigger/gate tests and public-install command tests.
+- [x] Add read-only inspect, environment-approved upload, six public verification jobs and environment-approved finalization; all actions pinned to reviewed existing SHAs.
+- [x] Verify actionlint, offline orchestration tests, quality/schema and full regression; commit.
 
 ### Task 3: Documentation, independent review and develop delivery
 
 **Files:** create `docs/publication.md`, `docs/release-notes/0.1.0.md`, `docs/verification/r03-publication.md`, English timestamped `docs/reviews/*`; update release/setup/index/changelog wording accurately.
 
-- [ ] Document exact future dispatch/approval/retry commands, evidence, retention and limitations; no publication claim or private account security data.
-- [ ] Review the complete implementation once with a fresh reviewer; fix material findings with RED/GREEN tests and rerun regression.
-- [ ] Fetch/reconcile develop, integrate/push only develop, verify exact delivered CI and report evidence; main/tag/publication remain untouched.
+- [x] Document exact future dispatch/approval/retry commands, evidence, retention and limitations; no publication claim or private account security data.
+- [x] Review the complete implementation once with a fresh reviewer; fix material findings with RED/GREEN tests and rerun regression.
+- Delivery gate: fetch/reconcile develop, integrate/push only develop, verify exact delivered CI and record the final outcome in issue #17 and ignored `reports/r03-publication/`; main/tag/publication remain untouched.
