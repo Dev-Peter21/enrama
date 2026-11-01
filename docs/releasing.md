@@ -4,8 +4,11 @@ Status: **R03 design accepted on 2026-10-30** for
 [issue #17](https://github.com/Dev-Peter21/enrama/issues/17). Technical preparation
 was authorized on 2026-10-31: metadata is now `0.1.0`, with the
 [manual preparation/verification workflow](release-preparation.md). It has no
-publisher step or upload privileges. The issue remains open: external setup,
-main integration, tags, public release and public-install verification are pending.
+publisher step or upload privileges. The prepared source was integrated into main
+and its manual preparation verified on 2026-11-01. Restricted publisher setup is
+complete. The separate [publication workflow](publication.md) is implemented for
+review on develop; its main integration, execution, tags, public release and
+public-install verification remain separately gated. R03 remains open.
 
 ## Outcome and scope
 

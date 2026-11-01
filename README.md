@@ -10,7 +10,8 @@ Once published, the site runs independently of Enrama.
 > are implemented. Version metadata is prepared for the first release; this does
 > not mean that `enrama==0.1.0` is available on PyPI. Try [the example](examples/demo/README.md)
 > or [local workflow](docs/local-demo.md). The [manual preparation workflow](docs/release-preparation.md)
-> only builds and verifies files; publisher setup, tags and public release remain
+> only builds and verifies files; the separate [publication workflow](docs/publication.md)
+> is implemented for review on develop. Its main integration, tags and public release remain
 > separate authorized steps.
 
 ## Developer setup
@@ -107,6 +108,7 @@ Start with the [documentation index](docs/README.md), or go directly to:
 - [Testing strategy](docs/testing.md)
 - [Release process](docs/releasing.md)
 - [Release preparation commands and workflow](docs/release-preparation.md)
+- [Manual publication, approvals and recovery](docs/publication.md)
 - [Decisions and open questions](docs/decisions.md)
 
 ## Contributing and support

@@ -36,12 +36,15 @@ not a rewrite of the immutable preparation bundle.
 ### Current dispatch boundary
 
 GitHub requires a workflow_dispatch workflow to be present on the default branch.
-Main integration is not part of this delivery. Therefore the manual workflow is
-prepared on develop but has **not been dispatched remotely**. Do not change
-default branches or add automatic triggers merely to bypass this gate. After
-separately authorized main integration and a successful exact-revision push CI,
-a maintainer may run the preparation workflow manually with that main SHA.
-Even a successful run cannot publish: there is no publishing job in this slice.
+The preparation-only source was separately integrated into main at `395f56d` on
+2026-11-01. [Main CI](https://github.com/Dev-Peter21/enrama/actions/runs/41340975410)
+and [manual preparation](https://github.com/Dev-Peter21/enrama/actions/runs/41341168447)
+both succeeded; the original bundle was downloaded and verified. That historical
+run cannot execute the newer publication controller: after separately authorized
+integration of the [publication workflow](publication.md), prepare a candidate
+for that exact new main revision before requesting publication approval. Do not
+rewrite/relabel the historical bundle or add automatic publication triggers.
+Preparation itself still has no publishing job or upload privileges.
 
 ## Bundle and verification commands
 
@@ -100,13 +103,13 @@ SIGINT behavior; consumer records state the actual checks performed.
 
 ## Remaining release work
 
-Separately authorize reviewed integration into main and then execute/inspect the
-manual preparation on that exact revision. Verify PyPI account readiness and name
-authority, choose/configure the restricted publisher/environment and implement
-the separately reviewed upload/finalization stage. Only later authorize the exact
-candidate's tag/publication. Download the actual public files, verify their hashes,
-install in clean environments and finalize GitHub notes/assets/support state.
-The current helper's 0.1.0 result is not a successful public install.
+The restricted pending publisher/environment have been configured, and a separate
+manual upload/finalization workflow is implemented on develop. Review and
+separately authorize its main integration, then verify CI/preparation for that
+exact revision. Only later authorize the exact candidate's upload/tag/release.
+Actual public files, clean public installs and final release/support state remain
+unverified until production publication. The helper's local 0.1.0 result is not
+a successful public install. See the [publication runbook](publication.md).
 
 Keep TestPyPI optional/separate, deployment under R04 and final acceptance under
 MVP01. See [GitHub's dispatch requirement](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow)

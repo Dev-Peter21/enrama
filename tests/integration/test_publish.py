@@ -3,12 +3,16 @@
 import hashlib
 import importlib
 import io
+import json
 import zipfile
 from pathlib import Path
 from types import ModuleType
 from typing import Any
 
 import pytest
+import yaml
+from test_release import bundle as make_bundle
+from test_release import candidate as source_candidate  # noqa: F401
 
 ROOT = Path(__file__).resolve().parents[2]
 SHA = "a" * 40
@@ -423,3 +427,215 @@ def test_partial_release_uploads_missing_without_clobber(
     pub.ensure_release(tmp_path, "notes")
     assert state["draft"] is False
     assert any(kw.get("method") == "PATCH" for _, kw in calls)
+
+
+def test_manual_workflow_has_scoped_approval_and_no_build() -> None:
+    workflow = yaml.load(
+        (ROOT / ".github/workflows/publish.yml").read_text(), Loader=yaml.BaseLoader
+    )
+    assert set(workflow["on"]) == {"workflow_dispatch"}
+    assert workflow["concurrency"]["cancel-in-progress"] == "false"
+    assert workflow["permissions"] == {"contents": "read", "actions": "read"}
+    jobs = workflow["jobs"]
+    assert set(jobs) == {"inspect", "upload", "public-verify", "finalize"}
+    assert (
+        jobs["upload"]["environment"]
+        == jobs["finalize"]["environment"]
+        == "pypi-production"
+    )
+    assert jobs["upload"]["permissions"]["id-token"] == "write"
+    assert jobs["finalize"]["permissions"]["contents"] == "write"
+    assert "id-token" not in jobs["finalize"]["permissions"]
+    assert jobs["finalize"]["needs"] == ["public-verify"]
+    assert len(jobs["public-verify"]["strategy"]["matrix"]["include"]) == 6
+    for name, job in jobs.items():
+        if name != "upload":
+            assert "id-token" not in job.get("permissions", {})
+        for step in job["steps"]:
+            if "uses" in step:
+                assert len(step["uses"].split("@")[-1]) == 40
+            run = step.get("run", "")
+            assert "uv build" not in run and "--clobber" not in run
+            if "uv publish" in run:
+                assert name == "upload" and "--trusted-publishing always" in run
+                assert step["if"] == "steps.stage.outputs.upload_needed == 'true'"
+
+
+@pytest.mark.parametrize("kind", [".whl", ".gz"])
+def test_public_install_uses_production_specifier_not_local_archive(kind: str) -> None:
+    from test_distribution import install_arguments
+
+    args = install_arguments(kind, Path("/private/original.whl"), public=True)
+    assert args[0] == "enrama==0.1.0" and "/private/original.whl" not in args
+    assert "https://pypi.org/simple" in args and "--no-cache" in args
+    assert ("--only-binary" if kind == ".whl" else "--no-binary") in args
+
+
+def test_inspection_never_creates_tag_or_release(
+    pub: ModuleType, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    def gh(_path: str, **kwargs: Any) -> Any:
+        assert kwargs.get("method", "GET") == "GET"
+        return [] if _path == "releases?per_page=100" else None
+
+    monkeypatch.setattr(pub.remote, "gh", gh)
+    pub.ensure_tag(SHA, create=False)
+    pub.ensure_release(tmp_path, "notes", write=False)
+
+
+def test_unconfirmed_assets_never_publish_draft(
+    pub: ModuleType, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    (tmp_path / "SHA256SUMS").write_bytes(b"sums")
+    state = {
+        "id": 1,
+        "tag_name": "v0.1.0",
+        "body": "notes",
+        "prerelease": False,
+        "draft": True,
+        "assets": [],
+    }
+
+    def gh(_path: str, **kwargs: Any) -> Any:
+        assert kwargs.get("method", "GET") == "GET"
+        return state
+
+    count = []
+    monkeypatch.setattr(pub.remote, "gh", gh)
+    monkeypatch.setattr(pub.remote, "command", lambda *args: count.append(args))
+    with pytest.raises(ValueError, match="confirm"):
+        pub.ensure_release(tmp_path, "notes")
+    assert len(count) == 1
+
+
+def test_failed_public_matrix_blocks_finalization(
+    pub: ModuleType, context_env: None, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("GITHUB_JOB", "finalize")
+    monkeypatch.setenv("GITHUB_RUN_ID", "789")
+    monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "1")
+    monkeypatch.setattr(
+        pub.remote, "gh", lambda *args, **kwargs: {"jobs": [], "total_count": 0}
+    )
+    monkeypatch.setattr(
+        pub, "ensure_tag", lambda _sha: pytest.fail("Tag must not be created")
+    )
+    with pytest.raises(ValueError):
+        pub.finalize(pub.context(), tmp_path)
+
+
+def test_retry_finds_existing_draft_without_creating_another(
+    pub: ModuleType, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    draft = {
+        "id": 1,
+        "tag_name": "v0.1.0",
+        "body": "notes",
+        "prerelease": False,
+        "draft": True,
+        "assets": [],
+    }
+
+    def gh(path: str, **kwargs: Any) -> Any:
+        if path == "releases/tags/v0.1.0":
+            return None
+        if path == "releases?per_page=100":
+            return [draft]
+        if kwargs.get("method") == "PATCH":
+            draft["draft"] = False
+            return draft
+        pytest.fail("Unexpected operation: " + path)
+
+    monkeypatch.setattr(pub.remote, "gh", gh)
+    pub.ensure_release(tmp_path, "notes")
+    assert draft["draft"] is False
+
+
+@pytest.mark.parametrize("problem", [None, "provenance", "ci", "attempt"])
+def test_original_bundle_end_to_end_gate(
+    pub: ModuleType,
+    context_env: None,
+    source_candidate: tuple[Path, Path, str],  # noqa: F811 - imported pytest fixture
+    preparation: tuple[dict[str, Any], dict[str, Any], dict[str, Any]],
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    problem: str | None,
+) -> None:
+    source, _, sha = source_candidate
+    original = tmp_path / "original"
+    assert make_bundle(source_candidate, original).returncode == 0
+    record = json.loads((original / "release.json").read_text())
+    record.update(
+        source_ref="refs/heads/main",
+        run_id="123",
+        run_attempt="1",
+        source_ci={
+            "databaseId": 999,
+            "headSha": sha,
+            "headBranch": "main",
+            "event": "push",
+            "workflowName": "CI",
+            "status": "completed",
+            "conclusion": "success",
+        },
+    )
+    if problem == "provenance":
+        record["run_id"] = "124"
+    (original / "release.json").write_bytes(pub.release.canonical(record))
+    content = {
+        p.name: p.read_bytes() for p in original.iterdir() if p.name != "SHA256SUMS"
+    }
+    (original / "SHA256SUMS").write_bytes(pub.release.checksums(content))
+    stream = io.BytesIO()
+    with zipfile.ZipFile(stream, "w") as z:
+        for p in original.iterdir():
+            z.writestr(p.name, p.read_bytes())
+    data = stream.getvalue()
+    digest = hashlib.sha256(data).hexdigest()
+    run, jobs, artifact = preparation
+    run["head_sha"] = sha
+    if problem == "attempt":
+        run["run_attempt"] = 2
+    artifact.update(name="r03-candidate-" + sha, digest="sha256:" + digest)
+    artifact["workflow_run"]["head_sha"] = sha
+
+    def gh(path: str, **kwargs: Any) -> Any:
+        assert kwargs.get("method", "GET") == "GET"
+        if path == "actions/runs/123":
+            return run
+        if path.endswith("/jobs?per_page=100"):
+            return jobs
+        if path == "actions/artifacts/456":
+            return artifact
+        if path == "git/ref/heads/main":
+            return {"object": {"sha": sha}}
+        if path == "actions/runs/999":
+            return {
+                "head_sha": sha,
+                "head_branch": "main",
+                "event": "push",
+                "path": ".github/workflows/ci.yml",
+                "status": "completed",
+                "conclusion": "failure" if problem == "ci" else "success",
+            }
+        if path == "releases?per_page=100":
+            return []
+        if path in {"git/ref/tags/v0.1.0", "releases/tags/v0.1.0"}:
+            return None
+        pytest.fail("Unexpected network operation: " + path)
+
+    monkeypatch.setattr(pub.remote, "gh", gh)
+    monkeypatch.setattr(pub.remote, "gh_bytes", lambda _path: data)
+    monkeypatch.setattr(pub, "release_notes", lambda _c: "notes")
+    monkeypatch.chdir(source)
+    monkeypatch.setenv("GITHUB_SHA", sha)
+    selected = pub.Context(sha, 123, 456, digest)
+    output = tmp_path / "selected"
+    if problem is not None:
+        with pytest.raises(ValueError):
+            pub.candidate(selected, output)
+    else:
+        pub.candidate(selected, output)
+        assert {p.name: p.read_bytes() for p in output.iterdir()} == {
+            p.name: p.read_bytes() for p in original.iterdir()
+        }

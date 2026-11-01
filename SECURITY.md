@@ -40,4 +40,8 @@ remain the responsibility of the site operator.
 Preview binds to `127.0.0.1`. The future editor must do so too; its write
 endpoints need a separate origin/CSRF/file-safety design before implementation.
 Release preparation has read-only GitHub permissions and no upload credentials
-or publishing job. External publisher setup and publication remain separate.
+or publishing job. The separate publication workflow requires exact-candidate
+authorization and protected environment approval, limits OIDC to upload and
+contents write to finalization, and rejects conflicting public files/tags/assets.
+See the [publication controls and limits](docs/publication.md). Workflow
+implementation and publisher registration do not authorize execution/publication.

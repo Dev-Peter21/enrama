@@ -30,6 +30,21 @@ def uv() -> str:
     return executable
 
 
+def install_arguments(kind: str, archive: Path, *, public: bool) -> list[str]:
+    if not public:
+        return [str(archive)]
+    return [
+        "enrama==0.1.0",
+        "--index-url",
+        "https://pypi.org/simple",
+        "--no-cache",
+        "--no-config",
+        "--no-sources",
+        "--only-binary" if kind == ".whl" else "--no-binary",
+        "enrama",
+    ]
+
+
 def build(source: Path, output: Path) -> dict[str, Path]:
     result = run(
         uv(),
@@ -54,6 +69,10 @@ def build(source: Path, output: Path) -> dict[str, Path]:
 @pytest.fixture(scope="session")
 def archives(tmp_path_factory: pytest.TempPathFactory) -> dict[str, Path]:
     supplied = os.environ.get("ENRAMA_RELEASE_BUNDLE")
+    if "ENRAMA_PUBLIC_INSTALL" in os.environ:
+        assert os.environ["ENRAMA_PUBLIC_INSTALL"] == "production" and supplied, (
+            "Public verification requires the explicit original release bundle"
+        )
     if supplied is not None:
         bundle = Path(supplied).resolve()
         sha = run("git", "rev-parse", "HEAD", cwd=ROOT)
@@ -97,13 +116,15 @@ def test_install_outside_checkout(
     )
     assert created.returncode == 0, created.stderr
     python = environment / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+    public = os.environ.get("ENRAMA_PUBLIC_INSTALL") == "production"
+    assert not public or not yaml_from_source, "Public checks select wheel and sdist"
     installed = run(
         uv(),
         "pip",
         "install",
         "--python",
         str(python),
-        str(archives[kind]),
+        *install_arguments(kind, archives[kind], public=public),
         "--build-constraint",
         str(ROOT / "build-constraints.txt"),
         "--require-build-hashes",
@@ -111,6 +132,17 @@ def test_install_outside_checkout(
         cwd=tmp_path,
     )
     assert installed.returncode == 0, installed.stderr
+    if public:
+        print(
+            json.dumps(
+                {
+                    "public_index": "https://pypi.org/simple",
+                    "requirement": "enrama==0.1.0",
+                    "archive_kind": kind,
+                    "local_archive_substitution": False,
+                }
+            )
+        )
     if yaml_from_source:
         print(installed.stderr)
     probe_code = """

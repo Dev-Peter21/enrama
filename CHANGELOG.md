@@ -7,6 +7,11 @@ repository; a roadmap target does not imply that a release exists.
 
 ### Prepared for 0.1.0
 
+- Implemented the separate, manual `publish.yml` for review on develop: exact
+  original-candidate and environment approval gates, OIDC upload of missing
+  original files, six-environment actual public consumers, and recoverable
+  tag/GitHub Release finalization. No publication was dispatched by this delivery.
+
 - Package metadata now targets `0.1.0` with Beta maturity and Python 3.12–3.15
   classifiers. This is preparation, not a public release or reserved PyPI name.
 - Added a manually dispatched, read-only release-preparation workflow: exact
@@ -14,7 +19,8 @@ repository; a roadmap target does not imply that a release exists.
   SHA-256 verification and six-platform-environment installed consumers.
 - Added local bundle/recovery commands and updated current release/support
   documentation. Publisher setup, upload/finalization, tags, public install and
-  deployment remain separately authorized work; no publishing job is included.
+  deployment remained separately authorized at that preparation stage; its
+  `release.yml` still has no publishing job.
 - The candidate includes the implemented YAML v1 models/loader/schema, safe local
   assets, shared escaped HTML/metadata, guarded static builds, init/validate/build,
   foreground preview, minimal/bold themes and licensed controlled icons.

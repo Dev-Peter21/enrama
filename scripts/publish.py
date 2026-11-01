@@ -167,6 +167,8 @@ def candidate(c: Context, output: Path) -> None:
         }.items()
     ):
         raise ValueError("Original exact-source main CI is no longer successful")
+    ensure_tag(c.sha, create=False)
+    ensure_release(output, release_notes(c), write=False)
     print(
         release.canonical(
             {
@@ -237,29 +239,61 @@ def stage(bundle: Path, output: Path) -> bool:
     return bool(missing)
 
 
-def ensure_tag(sha: str) -> None:
+def ensure_tag(sha: str, *, create: bool = True) -> None:
     tag = remote.gh(f"git/ref/tags/{TAG}", missing=True)
     if tag is None:
-        remote.gh(
-            "git/refs", method="POST", data={"ref": "refs/tags/" + TAG, "sha": sha}
-        )
+        if create:
+            remote.gh(
+                "git/refs", method="POST", data={"ref": "refs/tags/" + TAG, "sha": sha}
+            )
         return
     target = tag["object"]
     for _ in range(5):
         if target["type"] != "tag":
             break
         target = remote.gh("git/tags/" + target["sha"])["object"]
-    if target != {
-        "type": "commit",
-        "sha": sha,
-        **({"url": target["url"]} if "url" in target else {}),
-    }:
+    if target.get("type") != "commit" or target.get("sha") != sha:
         raise ValueError("Existing tag points elsewhere; tags are never moved")
 
 
-def ensure_release(bundle: Path, notes: str) -> None:
+def missing_assets(state: Any, notes: str, expected: dict[str, bytes]) -> list[str]:
+    if (
+        state["tag_name"] != TAG
+        or state["body"] != notes
+        or state["prerelease"] is not False
+    ):
+        raise ValueError("Existing release identity or reviewed notes differ")
+    seen: set[str] = set()
+    for asset in state["assets"]:
+        name = asset["name"]
+        if name not in expected or name in seen or asset["size"] != len(expected[name]):
+            raise ValueError("Existing GitHub release asset conflicts")
+        if remote.gh_bytes(f"releases/assets/{asset['id']}") != expected[name]:
+            raise ValueError("Existing GitHub release asset bytes differ")
+        seen.add(name)
+    return sorted(expected.keys() - seen)
+
+
+def find_release() -> Any:
     state = remote.gh(f"releases/tags/{TAG}", missing=True)
+    if state is not None:
+        return state
+    # The by-tag endpoint returns published releases, not drafts. A write-token
+    # retry must find its existing draft rather than creating another one.
+    releases = remote.gh("releases?per_page=100")
+    if not isinstance(releases, list) or len(releases) >= 100:
+        raise ValueError("Release listing is ambiguous; inspect manually")
+    matches = [r for r in releases if r["tag_name"] == TAG]
+    if len(matches) > 1:
+        raise ValueError("Multiple matching release drafts; inspect manually")
+    return matches[0] if matches else None
+
+
+def ensure_release(bundle: Path, notes: str, *, write: bool = True) -> None:
+    state = find_release()
     if state is None:
+        if not write:
+            return
         state = remote.gh(
             "releases",
             method="POST",
@@ -271,22 +305,10 @@ def ensure_release(bundle: Path, notes: str) -> None:
                 "prerelease": False,
             },
         )
-    if (
-        state["tag_name"] != TAG
-        or state["body"] != notes
-        or state["prerelease"] is not False
-    ):
-        raise ValueError("Existing release identity or reviewed notes differ")
     expected = {p.name: release.regular(p) for p in bundle.iterdir()}
-    seen: set[str] = set()
-    for asset in state["assets"]:
-        name = asset["name"]
-        if name not in expected or name in seen or asset["size"] != len(expected[name]):
-            raise ValueError("Existing GitHub release asset conflicts")
-        if remote.gh_bytes(f"releases/assets/{asset['id']}") != expected[name]:
-            raise ValueError("Existing GitHub release asset bytes differ")
-        seen.add(name)
-    missing = sorted(expected.keys() - seen)
+    missing = missing_assets(state, notes, expected)
+    if not write:
+        return
     if missing:
         remote.command(
             "release",
@@ -296,11 +318,29 @@ def ensure_release(bundle: Path, notes: str) -> None:
             "--repo",
             release.REPOSITORY,
         )
-        # Inspect uploaded bytes before making a draft release public.
-        ensure_release(bundle, notes)
-        return
+        state = find_release()
+        if missing_assets(state, notes, expected):
+            raise ValueError(
+                "Cannot confirm uploaded assets; preserve draft and retry originals"
+            )
     if state["draft"]:
-        remote.gh(f"releases/{state['id']}", method="PATCH", data={"draft": False})
+        updated = remote.gh(
+            f"releases/{state['id']}", method="PATCH", data={"draft": False}
+        )
+        if updated.get("draft") is not False or missing_assets(
+            updated, notes, expected
+        ):
+            raise ValueError(
+                "Cannot confirm completed release; inspect before retrying"
+            )
+
+
+def release_notes(c: Context) -> str:
+    notes = release.regular(Path("docs/release-notes/0.1.0.md")).decode("utf-8")
+    return (
+        notes
+        + f"\nSource: `{c.sha}`\nPreparation: https://github.com/{release.REPOSITORY}/actions/runs/{c.run}\nArtifact ZIP SHA-256: `{c.digest}`\n"
+    )
 
 
 def finalize(c: Context, bundle: Path) -> None:
@@ -316,8 +356,7 @@ def finalize(c: Context, bundle: Path) -> None:
     successful_jobs({"jobs": selected, "total_count": len(selected)}, names)
     if public_state(bundle):
         raise ValueError("Public files are incomplete; finalization is forbidden")
-    notes = release.regular(Path("docs/release-notes/0.1.0.md")).decode("utf-8")
-    notes += f"\nSource: `{c.sha}`\nPreparation: https://github.com/{release.REPOSITORY}/actions/runs/{c.run}\nArtifact ZIP SHA-256: `{c.digest}`\n"
+    notes = release_notes(c)
     ensure_tag(c.sha)
     ensure_release(bundle, notes)
     print(
@@ -362,7 +401,7 @@ def main() -> None:
         # Avoid echoing subprocess output: a publisher must never log credentials.
         parser.exit(
             1,
-            f"Publication stopped ({type(error).__name__}); preserve originals and inspect retained evidence.\n",
+            f"Publication stopped: {str(error) if isinstance(error, ValueError) else type(error).__name__}; preserve originals and inspect retained evidence.\n",
         )
 
 

@@ -35,6 +35,7 @@ The guarded builder, CLI/preview and both themes are also implemented. The edito
 | [First release and PyPI publication](releasing.md) | Accepted R03 ownership, manual publication, canonical artifacts, verification, retries and maintenance |
 | [Release preparation](release-preparation.md) | Implemented credential-free manual workflow, source/CI gates, canonical bundle and local rehearsal |
 | [R03 preparation verification](verification/r03-preparation.md) | Executed metadata/bundle/consumer checks and honest manual-dispatch/publication boundaries |
+| [Manual publication](publication.md) | Develop implementation, exact-candidate approvals, public consumption, tag/release recovery and remaining execution gates |
 | [Decisions](decisions.md) | Accepted choices and decisions still requiring review |
 
 Community guidance lives at the repository root:
