@@ -5,7 +5,42 @@ repository; a roadmap target does not imply that a release exists.
 
 ## Unreleased
 
-### Prepared for 0.1.0
+### Changed
+
+- Updated repository installation, release and support documentation to reflect
+  the verified 0.1.0 publication. This documentation change does not replace
+  the published archives, their embedded README/metadata or the released tag.
+
+## [0.1.0](https://github.com/Dev-Peter21/enrama/releases/tag/v0.1.0) — 2026-11-02
+
+### Added
+
+- First production [PyPI release](https://pypi.org/project/enrama/0.1.0/), under
+  MIT, supporting Python 3.12–3.15.
+- `init`, `validate`, `build` and manual loopback `preview` commands; typed YAML
+  v1 models, bounded safe loading, actionable diagnostics and a local JSON Schema.
+- Guarded static generation with confined local assets, deterministic output,
+  shared escaped HTML/SEO metadata and responsive minimal/bold themes.
+- Manual release preparation and environment-approved Trusted Publishing, with
+  original-archive verification, public consumers and matching GitHub Release assets.
+
+### Verified publication
+
+- Released source/tag: `73602dd85aca2cb02df607d9e815a1c76218b733` / `v0.1.0`.
+- Public wheel/sdist consumption: **12 passed** across six hosted environments;
+  two additional clean public consumers passed locally on macOS. All five
+  GitHub Release assets match the original candidate. See the
+  [publication record](docs/verification/r03-release.md), including recovery
+  from the initial immediate-verification failure and the Windows preview limit.
+- The client GitHub Pages recipe and final MVP acceptance remain separate work;
+  this package release does not claim a deployed client site or complete MVP.
+
+## Historical foundation and design record
+
+The entries below describe earlier delivery stages, not current release status.
+They are retained as history and are not additional public release announcements.
+
+### Release preparation — 2026-10-31 to 2026-11-01
 
 - Implemented the separate, manual `publish.yml` for review on develop: exact
   original-candidate and environment approval gates, OIDC upload of missing
@@ -24,11 +59,6 @@ repository; a roadmap target does not imply that a release exists.
 - The candidate includes the implemented YAML v1 models/loader/schema, safe local
   assets, shared escaped HTML/metadata, guarded static builds, init/validate/build,
   foreground preview, minimal/bold themes and licensed controlled icons.
-
-## Historical foundation and design record
-
-The entries below describe their delivery stages, not the current implementation
-status. They are retained as history and are not public release announcements.
 
 ### Added
 

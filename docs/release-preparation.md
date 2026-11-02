@@ -1,10 +1,12 @@
 # Release preparation without publishing
 
 R03 technical preparation implements the [accepted contract](releasing.md),
-with version `0.1.0`/Beta metadata and Python 3.12–3.15 classifiers. **This version
-is not yet published.** The helper/workflow has no upload command, publisher,
+with version `0.1.0`/Beta metadata and Python 3.12–3.15 classifiers. **0.1.0 was
+published and verified on 2026-11-02**; see the [release record](verification/r03-release.md).
+The helper/workflow has no upload command, publisher,
 environment, OIDC/write permission, tag creation or GitHub Release creation.
-R03 stays open until separately authorized setup, publication and public checks.
+R03 stays open for maintainer acceptance. These commands remain preparation-only;
+new local builds are not replacements for the already published 0.1.0 files.
 
 ## Manual GitHub workflow
 
@@ -40,11 +42,12 @@ The preparation-only source was separately integrated into main at `395f56d` on
 2026-11-01. [Main CI](https://github.com/Dev-Peter21/enrama/actions/runs/41340975410)
 and [manual preparation](https://github.com/Dev-Peter21/enrama/actions/runs/41341168447)
 both succeeded; the original bundle was downloaded and verified. That historical
-run cannot execute the newer publication controller: after separately authorized
-integration of the [publication workflow](publication.md), prepare a candidate
-for that exact new main revision before requesting publication approval. Do not
-rewrite/relabel the historical bundle or add automatic publication triggers.
-Preparation itself still has no publishing job or upload privileges.
+run did not publish. After the newer publication controller was authorized and
+integrated at `73602dd`, [preparation #41355780347](https://github.com/Dev-Peter21/enrama/actions/runs/41355780347)
+verified that exact source and supplied the 0.1.0 production files. Both are
+historical exact-revision records, not permission to relabel a bundle or rebuild
+the published version. Preparation itself still has no publishing job or upload
+privileges. See the [executed publication record](verification/r03-release.md).
 
 ## Bundle and verification commands
 
@@ -103,13 +106,14 @@ SIGINT behavior; consumer records state the actual checks performed.
 
 ## Remaining release work
 
-The restricted pending publisher/environment have been configured, and a separate
-manual upload/finalization workflow is implemented on develop. Review and
-separately authorize its main integration, then verify CI/preparation for that
-exact revision. Only later authorize the exact candidate's upload/tag/release.
-Actual public files, clean public installs and final release/support state remain
-unverified until production publication. The helper's local 0.1.0 result is not
-a successful public install. See the [publication runbook](publication.md).
+The 0.1.0 source was integrated into main, verified in CI, prepared and published
+through the separately approved manual workflow. Public consumption, final tag
+and release assets were verified; see the [release record](verification/r03-release.md).
+Repository documentation is now updated on develop; maintainer acceptance/closure
+is separate. Keep published files and `v0.1.0` unchanged. A later release requires
+a new reviewed version/candidate and explicit authorization; a local build here
+is not a replacement public install or permission to upload. See the
+[publication runbook](publication.md).
 
 Keep TestPyPI optional/separate, deployment under R04 and final acceptance under
 MVP01. See [GitHub's dispatch requirement](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow)

@@ -1,21 +1,20 @@
 # First release and PyPI publication contract
 
-Status: **R03 design accepted on 2026-10-30** for
-[issue #17](https://github.com/Dev-Peter21/enrama/issues/17). Technical preparation
-was authorized on 2026-10-31: metadata is now `0.1.0`, with the
-[manual preparation/verification workflow](release-preparation.md). It has no
-publisher step or upload privileges. The prepared source was integrated into main
-and its manual preparation verified on 2026-11-01. Restricted publisher setup is
-complete. The separate [publication workflow](publication.md) is implemented for
-review on develop; its main integration, execution, tags, public release and
-public-install verification remain separately gated. R03 remains open.
+Status: **0.1.0 published and verified on 2026-11-02** on
+[PyPI](https://pypi.org/project/enrama/0.1.0/) and
+[GitHub](https://github.com/Dev-Peter21/enrama/releases/tag/v0.1.0), following the
+R03 design accepted on 2026-10-30. See the [publication evidence](verification/r03-release.md).
+The [preparation workflow](release-preparation.md) remains read-only; the separate
+[publication workflow](publication.md) used explicit candidate authorization and
+two maintainer environment approvals. [Issue #17](https://github.com/Dev-Peter21/enrama/issues/17)
+remains open for maintainer acceptance; publishing does not auto-close the issue.
 
 ## Outcome and scope
 
 R03 delivers `enrama==0.1.0` on production PyPI, a matching GitHub Release and
 verified installation from the actual public distribution. Existing
 [R02 validation](verification/local-demo.md) is a prerequisite, not evidence
-that this future version has already shipped. Verify each candidate's own SHA
+that any later version has shipped. Verify each candidate's own SHA
 and artifacts.
 
 The live [Pages recipe](deployment.md) belongs to **R04 / #18**; final MVP
@@ -51,8 +50,8 @@ access setup, integration into main, tag creation or publication.
 | YAML contract | `schema_version: 1` |
 | Initial supported Python | 3.12, 3.13, 3.14 and 3.15 |
 
-The account exists; its projects page showed zero active projects when reviewed.
-That does not verify email/2FA readiness or reserve the name. Before publication,
+The original setup review preceded project creation; production publication has
+now succeeded through the restricted publisher. Before any future publication,
 check verified email, mandatory 2FA readiness, current name availability and
 authority to publish. Stop for a maintainer decision on conflicts; do not rename
 automatically. Naming review is not legal trademark clearance.
@@ -206,10 +205,11 @@ Keep R03 open until evidence establishes:
    actual changelog and accurate README/docs/support state.
 6. Reported/recovered partial failures, without hidden replacement or false success.
 
-Design documentation completes only the contract stage. Future steps are
-preparation/implementation in develop, then separately authorized main integration,
-external setup, tag/publication and public verification. TestPyPI, R04 deployment
-and final MVP acceptance remain distinct.
+The 0.1.0 evidence records actual publication and public verification. Its tag and
+files remain frozen; repository documentation updates are not replacement package
+uploads. Maintainer acceptance/issue closure, TestPyPI, R04 deployment and final
+MVP acceptance remain distinct. A later package version needs its own reviewed
+preparation, source integration, explicit publication authorization and verification.
 
 ## Primary references
 

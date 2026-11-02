@@ -31,18 +31,18 @@ need review. It does not imply any implementation is present.
 | D22 | Agreed [G02 rendering contract](rendering.md): in-memory shared HTML base, trusted packaged Jinja2 with autoescape/StrictUndefined, matching G01 bindings, optional metadata, directory-form public URLs, same-context links and structured operational/internal failures | Maintainer approved the contract and authorized implementation on develop on 2026-10-24; implemented pending acceptance, see [G02 verification](verification/g02.md); no builder, CLI or final theme presentation |
 | D23 | Accepted [R03 contract](releasing.md): PyPI owner peter-dev, version 0.1.0/tag v0.1.0, reviewed main source, manual Actions Trusted Publishing, canonical archives/schema/hashes, explicit upload authorization, public-install evidence, controlled retries and latest-patch 0.1.x maintenance until 0.2.0 | Maintainer approved on 2026-10-30. Documentation only; no workflow, external setup, tag or publication. TestPyPI is optional and independent. |
 | D24 | [R03 technical preparation](release-preparation.md): prepared 0.1.0/Beta metadata, stdlib bundle verifier and workflow_dispatch-only source/CI-gated construction with six canonical consumers | Authorized on 2026-10-31 for develop. No publisher/upload/finalization job, OIDC/write permissions, external setup, main integration or tags. Local rehearsal is not production approval. |
+| D25 | First production release: enrama 0.1.0 / v0.1.0, source `73602dd85aca2cb02df607d9e815a1c76218b733`; published files and tag remain immutable | Published and verified on 2026-11-02 after explicit candidate authorization and two maintainer environment approvals. See [release evidence](verification/r03-release.md). Repository documentation updates target develop; R03 acceptance, R04 and MVP01 remain separate. |
 
-The GitHub repository uses `main`. Version `0.1.0` is the first release target,
-not an existing release. The PyPI name and CLI command are intended to be `enrama`.
-`main` remains the default branch; source-code implementation must target
-`develop`. F02 supplies the importable development package `0.1.0.dev0`; it is
-not a public PyPI distribution or a completed product release.
+The repository's default branch is `main`; development targets `develop`.
+Distribution and CLI are `enrama`. Version `0.1.0` is now a verified public
+release; the original F02 `0.1.0.dev0` state is historical. A newer development
+commit does not replace the published files or authorize another release.
 
 ## Open decisions and when to resolve them
 
 | ID | Decision needed | Resolve before |
 | --- | --- | --- |
-| O01 | Revalidate availability, project authority and potential conflicts before publication. R03 selects owner account peter-dev, but no project name is reserved and naming is not legally cleared | Before publication; the historical 2026-10-22 PyPI 404 is not current availability/ownership evidence |
+| O01 | Revalidate project authority and potential naming conflicts before future publication/rebranding. The first enrama project/release exists; package publication does not establish trademark clearance | Before future publication or rebranding; historical pre-publication PyPI 404 checks are not current evidence |
 | O05 | Font source/license and contrast policy for customized colors; icon providers are accepted by C01, while pinned SVG revisions and retained license notices must be verified when bundling | Theme implementation and M3 acceptance |
 | O07 | Dedicated private community conduct contact | Expanding community operations |
 | O08 | Round-trip YAML writer and editor protections against unauthorized local writes | M5 editor implementation |
@@ -55,7 +55,7 @@ than silently choosing a public contract.
 
 | ID | Resolution | Evidence |
 | --- | --- | --- |
-| O06 | Accepted on 2026-10-30: owner peter-dev, manual OIDC Trusted Publishing, first release 0.1.0/tag v0.1.0 from reviewed main source, immutable published content/tags, canonical-file retries and latest-patch 0.1.x support until 0.2.0, without cadence/SLA. TestPyPI is optional and separate. Account readiness, namespace authority and external publisher configuration remain execution prerequisites, not completed setup. | [R03 contract](releasing.md), D23 and [issue #17](https://github.com/Dev-Peter21/enrama/issues/17) |
+| O06 | Accepted on 2026-10-30: owner peter-dev, manual OIDC Trusted Publishing, first release 0.1.0/tag v0.1.0 from reviewed main source, immutable content/tags, canonical-file retries and latest-patch 0.1.x support until 0.2.0, without cadence/SLA. Production publication and public verification completed on 2026-11-02; TestPyPI remains optional/separate. | [R03 contract](releasing.md), [release evidence](verification/r03-release.md), D23/D25 and [issue #17](https://github.com/Dev-Peter21/enrama/issues/17) |
 | O02 | Accepted on 2026-10-22: current-directory YAML discovery or explicit `--config`; output only in project-local `dist/`; no init overwrite or destructive bypass; ownership/integrity checks and staged replacement; manual preview at `127.0.0.1:8000` with optional port; exclusive output ownership; exit codes `0`, `1`, `2`, `3`, `70`, and `130` | [CLI/filesystem contract](cli-contract.md) and [F01 #2](https://github.com/Dev-Peter21/enrama/issues/2) |
 | O03 | Accepted on 2026-10-23: required/default fields and null policy; strict types/unknown keys; text/list limits; cross-collection IDs/order/enabled rules; per-field URL schemes and restricted mailto/tel forms; registry-backed language subset; six-digit colors; social, favicon, and OG image fields; nine platforms and twelve general icons. Platform controls presentation only and never restricts destination domains. Lucide/Bootstrap Icons sources accepted; C01 models implement this policy. | [YAML v1 contract](configuration.md), [C01 verification](verification/c01.md), and [C01 #5](https://github.com/Dev-Peter21/enrama/issues/5) |
 | O04 | Agreed on 2026-10-24: per-role PNG/JPEG/static WebP and PNG/ICO; 5 MiB image/1 MiB favicon/10 MiB unique total; fixed pixel/ICO limits; Pillow structure/decode validation; reject every internal symlink; preserve validated bytes; full SHA-256 canonical paths, exact-byte reuse and explicit collisions; English structured errors with F01 exit mapping. Output replacement, stale cleanup and publication remain F01/G03. | [G01 contract](assets.md) and [G01 #8](https://github.com/Dev-Peter21/enrama/issues/8); implementation accepted and issue completed on 2026-10-24, see [G01 verification](verification/g01.md) |

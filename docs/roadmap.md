@@ -7,11 +7,12 @@ published as [GitHub issues](backlog.md) and tracked in the
 The issue index maps task IDs to issue numbers. Preserve these dependencies,
 scope boundaries, and acceptance criteria when updating the backlog.
 
-`0.1.0` is prepared but unreleased. The foundation, configuration, generator,
-CLI/preview, themes, example and technical validation are delivered on develop;
-issues #1–#16 were accepted/completed on GitHub. R03 now has
-[technical preparation](release-preparation.md); external setup, publication,
-R04 deployment and final MVP acceptance remain pending. M5 is a future 0.2
+`0.1.0` was [published and verified](verification/r03-release.md) on 2026-11-02.
+The foundation, configuration, generator, CLI/preview, themes, example and
+technical validation are delivered; issues #1–#16 were accepted/completed on
+GitHub. R03 publication and post-release documentation are delivered, with
+maintainer acceptance/closure still separate. R04 deployment and final MVP
+acceptance remain pending. M5 is a future 0.2
 proposal outside the published MVP backlog.
 
 ## Milestones
@@ -230,7 +231,11 @@ independent documentation/design work to happen sooner.
   source, canonical artifacts, public installs, retries and 0.1.x maintenance.
   TestPyPI is optional and separate. Technical preparation was authorized on
   2026-10-31: [metadata and manual preparation/verification](release-preparation.md)
-  are implemented, with no upload job or external setup. Issue #17 remains open.
+  were implemented first without upload privileges. Restricted external setup,
+  reviewed publication workflow, actual PyPI/GitHub publication and public
+  consumption were subsequently completed; see the [release evidence](verification/r03-release.md).
+  Post-release documentation is updated on develop. Issue #17 remains open for
+  maintainer acceptance, not because publication is still pending.
 - **Scope:** Confirm namespace ownership and O06, add reviewed release automation,
   and prepare version `0.1.0`, changelog, artifacts, and GitHub release.
 - **Dependencies:** R02 and explicit authorization to publish a package/release.

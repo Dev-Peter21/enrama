@@ -1,12 +1,15 @@
 # Manual production publication
 
-Status: implemented for review on **develop**, 2026-11-01. This delivery does
-not integrate main, dispatch publication, exchange an OIDC token, create a tag
-or release, or upload to either index. [R03](releasing.md) remains open.
+Status: **0.1.0 published and verified on 2026-11-02**, from source
+`73602dd85aca2cb02df607d9e815a1c76218b733`, after separately authorized main
+integration, preparation, publication and maintainer approvals. See the
+[execution record](verification/r03-release.md). This runbook describes the
+implemented controls; it is not permission to dispatch again or replace 0.1.0.
+[R03](releasing.md) remains open for maintainer acceptance.
 
 ## Identity and controls
 
-The pending production publisher is restricted to `Dev-Peter21/enrama`, workflow
+The production publisher is restricted to `Dev-Peter21/enrama`, workflow
 filename `publish.yml`, environment `pypi-production`. That environment allows
 only branch `main`, requires approval by `Dev-Peter21`, disables administrator
 bypass, and has no permanent upload secret. Self-review is allowed for the
@@ -32,7 +35,12 @@ The first approval authorizes uploading the named candidate; the second authoriz
 the matching tag/GitHub Release. Entering the dispatch phrase alone cannot bypass
 the environment approvals.
 
-## Future execution prerequisites
+## Execution prerequisites and frozen first release
+
+The requirements below governed 0.1.0 and remain authorization boundaries.
+The current controller is fixed to version 0.1.0: a future package version needs
+reviewed version/controller changes and a new candidate. Do not run it on a new
+documentation SHA to republish 0.1.0, move its tag or substitute rebuilt files.
 
 1. Separately review/authorize develop integration into main. Do not dispatch from
    develop. The workflow must exist on main and run from that reviewed definition.
@@ -129,8 +137,10 @@ mark the MVP complete or deploy a client site; R04/MVP01 remain separate work.
 See [implementation verification](verification/r03-publication.md). Offline tests
 exercise identity, recovery and conflict handling through fake remote boundaries;
 they do not establish that OIDC/upload/tag/Release mutation works live. Ordinary
-CI on develop runs regression and static workflow checks. Actual public package
-consumption cannot be claimed before the separately authorized production run.
+CI on develop runs regression and static workflow checks. Actual 0.1.0 public
+consumption is recorded in the [publication evidence](verification/r03-release.md);
+it is not evidence for a future candidate. The implementation-only record retains
+its historical limits.
 
 References: [uv publishing/retries](https://docs.astral.sh/uv/guides/package/),
 [GitHub release API](https://docs.github.com/en/rest/releases/releases),

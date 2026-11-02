@@ -1,13 +1,13 @@
 # Deployment
 
-Status: public deployment/Pages workflow remains planned. A static generator and
-synthetic local demo are implemented on the local-demo branch; see
-[local demo](local-demo.md). No public deployment is included.
+Status: the generator is [released as 0.1.0](verification/r03-release.md), while
+the tested client Pages recipe/public deployment remains R04 work. See the
+[source demo](local-demo.md); a package release does not establish a deployed site.
 
 ## Separate generator and client projects
 
 `Dev-Peter21/enrama` holds the open-source generator, built-in themes,
-documentation, and eventual package releases.
+documentation, and package releases.
 
 A separate client repository holds its `enrama.yaml`, logo, images, and an
 optional build/deployment workflow. Use one project per client, with no shared
@@ -15,7 +15,7 @@ database or multi-tenant application.
 
 ## Static hosting contract
 
-The future `enrama build` writes a self-contained `dist/` directory. Publish
+`enrama build` writes a self-contained `dist/` directory. Publish
 that directory to a suitable static host. Production serves files and does not
 need Python, Enrama, an API, or a database.
 
@@ -49,13 +49,14 @@ write and OIDC token permissions. Use deployment concurrency, prevent untrusted
 PRs from deploying, and pin reviewed action versions when writing the recipe.
 The repository must use GitHub Actions as its Pages source.
 
-The tested workflow will be provided after an installable release exists. This
-avoids publishing a recipe that depends on an unavailable or unverified package.
+The installable 0.1.0 release now exists. R04 still needs its separately reviewed
+recipe and an explicitly authorized client/test deployment; no workflow is
+implemented or live deployment claimed by this documentation update.
 See the [official custom Pages workflow documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
 
 ## Local preview
 
-The future preview command serves generated files on `127.0.0.1` by default.
+The preview command serves generated files on `127.0.0.1` by default.
 It is a local development convenience. Deployment does not require running it.
 The accepted [CLI contract](cli-contract.md#manual-preview-lifecycle) fixes the
 default port to `8000`, allows `--port`, and requires manual stop/restart to

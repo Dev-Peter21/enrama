@@ -1,9 +1,11 @@
 # Documentation
 
-Enrama includes its F02 Python package/tooling foundation and F03 CI on `develop`.
-The C01 models, C02 safe YAML loader/diagnostics and C03 generated editor schema
-are also implemented there, along with G01 asset preparation and staging copying.
-The guarded builder, CLI/preview and both themes are also implemented. The editor remains planned; issue acceptance is separate.
+Enrama [0.1.0 is published](https://pypi.org/project/enrama/0.1.0/), including typed
+YAML, safe loading/assets, JSON Schema, the guarded generator, CLI/preview and
+minimal/bold themes. See the [installation instructions](../README.md#install-and-create-a-page)
+and [verified publication](verification/r03-release.md). Development continues on
+`develop`; the visual editor, tested client Pages recipe and final MVP acceptance
+remain separate roadmap work.
 
 | Document | Purpose |
 | --- | --- |
@@ -35,7 +37,8 @@ The guarded builder, CLI/preview and both themes are also implemented. The edito
 | [First release and PyPI publication](releasing.md) | Accepted R03 ownership, manual publication, canonical artifacts, verification, retries and maintenance |
 | [Release preparation](release-preparation.md) | Implemented credential-free manual workflow, source/CI gates, canonical bundle and local rehearsal |
 | [R03 preparation verification](verification/r03-preparation.md) | Executed metadata/bundle/consumer checks and honest manual-dispatch/publication boundaries |
-| [Manual publication](publication.md) | Develop implementation, exact-candidate approvals, public consumption, tag/release recovery and remaining execution gates |
+| [Manual publication](publication.md) | Exact-candidate approvals, public consumption and immutable tag/release recovery controls |
+| [0.1.0 publication verification](verification/r03-release.md) | Actual PyPI/GitHub publication, successful public consumers, hashes, recovery history and remaining acceptance |
 | [Decisions](decisions.md) | Accepted choices and decisions still requiring review |
 
 Community guidance lives at the repository root:

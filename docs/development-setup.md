@@ -1,9 +1,11 @@
 # Python development setup
 
-Current R03 preparation uses version `0.1.0`, still unpublished. The initial
+Version `0.1.0` was [published and verified](verification/r03-release.md) on
+2026-11-02. The initial
 `0.1.0.dev0` values and F02 acceptance below describe that historical foundation.
-See [release preparation](release-preparation.md) for the current package stage;
-prepared metadata does not complete the public-install/deployment MVP gates.
+Use [README installation](../README.md#install-and-create-a-page) for the public
+package; this guide covers source development. New checkout builds do not replace
+the frozen release. Client deployment and final MVP acceptance remain separate.
 
 Status: **implemented F02 foundation on `develop`**, following the design
 approved on 2026-10-22 for [issue #3](https://github.com/Dev-Peter21/enrama/issues/3).
@@ -27,7 +29,8 @@ C01 subsequently adds the [configuration models](configuration.md), using
 Pydantic 2.14.1; the exact langcodes pin fixes its bundled IANA registry snapshot.
 C02 adds `pyyaml>=6.0.3,<7` (locked to 6.0.3), with
 `types-pyyaml==6.0.12.20260906` in the dev group for strict typing.
-The source still has no CLI or generator. F02-only statements
+At the C02 snapshot the source had no CLI or generator; both are now released.
+F02-only statements
 below about the original initializer-only package describe that foundation
 snapshot; current inclusion and installation checks cover C01/C02 modules
 and `py.typed`. See [C01 verification](verification/c01.md) and
@@ -43,10 +46,11 @@ and `py.typed`. See [C01 verification](verification/c01.md) and
 | Target compatibility matrix | Python `3.12`, `3.13`, `3.14`, and `3.15` |
 | Tool syntax/type-checking baseline | Python `3.12` |
 
-F02's initial setup must work locally on Python 3.12. F03 will automate the
-target matrix; it must actually execute checks on each selected interpreter.
-The agreed matrix is a verification target, not evidence that compatibility has
-already passed. Future Python versions require validation before a support claim.
+F02's initial setup used Python 3.12. CI now executes the agreed matrix, and the
+[0.1.0 publication record](verification/r03-release.md) includes actual public
+consumers on every supported interpreter/platform combination. A configured
+matrix alone is not evidence of success for a later revision. Future Python
+versions require validation before a support claim.
 
 Record the actual interpreter patch version used in verification. The minor
 version selector alone is not a promise of identical interpreter binaries across

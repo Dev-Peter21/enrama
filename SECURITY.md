@@ -2,14 +2,15 @@
 
 ## Supported versions
 
-Enrama has no public release yet. The prepared `0.1.0` metadata does not establish
-PyPI availability or a supported production release.
+Enrama **0.1.0**, released on 2026-11-02, is the current supported public version:
+[PyPI](https://pypi.org/project/enrama/0.1.0/) and
+[GitHub Release](https://github.com/Dev-Peter21/enrama/releases/tag/v0.1.0).
 
-Once 0.1.0 ships, support covers the latest 0.1.x patch until 0.2.0 is published;
+Support covers the latest 0.1.x patch until 0.2.0 is published;
 older patches should upgrade. Python 3.12–3.15 is the initial verified range.
 Patch releases preserve CLI/YAML v1 and advertised Python support. There is no
-fixed release cadence, parallel LTS line or guaranteed remediation time. Update
-this page with the actual shipped version when publication is verified.
+fixed release cadence, parallel LTS line or guaranteed remediation time. Development
+commits and historical preparation builds are not additional supported releases.
 
 ## Report a vulnerability privately
 
@@ -45,3 +46,5 @@ authorization and protected environment approval, limits OIDC to upload and
 contents write to finalization, and rejects conflicting public files/tags/assets.
 See the [publication controls and limits](docs/publication.md). Workflow
 implementation and publisher registration do not authorize execution/publication.
+Published archives and the released tag are immutable; corrections require a
+reviewed new release. See the [0.1.0 publication evidence](docs/verification/r03-release.md).
