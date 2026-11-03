@@ -246,6 +246,7 @@ independent documentation/design work to happen sooner.
 
 ### R04 — Validate the GitHub Pages client recipe
 
+- **Design:** See the accepted [R04 Pages contract](deployment.md#r04-github-pages-recipe-contract).
 - **Scope:** Publish a recipe using a pinned Enrama release, Pages artifact
   upload/deploy actions, and an independently maintained client repository.
 - **Dependencies:** R03; explicit authorization for any test repository or deployment.

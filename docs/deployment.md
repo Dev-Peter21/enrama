@@ -33,26 +33,70 @@ The operator manages hosting, DNS, TLS, and any external service linked from
 the page. Site content and distributed assets are public; do not include secrets
 or private source files in the output.
 
-## GitHub Pages recipe to implement in M4
+## R04 GitHub Pages recipe contract
 
-The client workflow should:
+The maintainer accepted this design on 2026-11-03 for
+[issue #18](https://github.com/Dev-Peter21/enrama/issues/18). The recipe will be
+documented in the generator repository for clients to copy. The client
+repository owns its YAML, assets, and workflow.
 
-1. Check out the client repository.
-2. Set up a supported Python/uv environment.
-3. Install a pinned, released Enrama version from its verified distribution.
-4. Validate the client YAML and build the site.
-5. Upload only `dist/` with `actions/upload-pages-artifact`.
-6. Deploy it with `actions/deploy-pages` to the `github-pages` environment.
+### Test destination
 
-Grant the build only the permissions it needs. The deployment job needs Pages
-write and OIDC token permissions. Use deployment concurrency, prevent untrusted
-PRs from deploying, and pin reviewed action versions when writing the recipe.
-The repository must use GitHub Actions as its Pages source.
+Use the public repository `Dev-Peter21/enrama-pages-demo` with synthetic content
+and no custom domain. The expected Pages URL is
+`https://dev-peter21.github.io/enrama-pages-demo/`. Use GitHub Actions as the
+Pages source. Confirm the actual Pages base URL before deploying. The configured
+`site.url` must match that HTTPS directory URL, including the repository subpath
+and a trailing slash. A mismatch blocks deployment and is corrected in the
+reviewed YAML. Repository creation, Pages setup, and each live deployment are
+separate execution steps.
 
-The installable 0.1.0 release now exists. R04 still needs its separately reviewed
-recipe and an explicitly authorized client/test deployment; no workflow is
-implemented or live deployment claimed by this documentation update.
-See the [official custom Pages workflow documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
+### Build and deployment
+
+1. On pull requests and pushes to `main`, validate and build the client site.
+   Use Linux, Python 3.12, pinned uv 0.13.5, and the public PyPI release
+   `enrama==0.1.0`. Start from a clean client checkout and record the installed
+   versions. Use the released CLI for validation and generation.
+2. A manual run from the client's `main` builds the reviewed commit. Upload
+   only the static contents of `dist/` with `actions/upload-pages-artifact`.
+   Check that `index.html` is at the artifact root and that generated assets
+   resolve within it. The publication artifact excludes client source files,
+   workspace state, and the hidden build manifest. Preserve the local manifest
+   for build evidence.
+3. The deployment job depends on the successful build and uses
+   `actions/deploy-pages` with that run's artifact. It does not rebuild after
+   approval. Pin reviewed action revisions by commit SHA during implementation.
+   The build uses read access. Pages write and OIDC token permissions are
+   confined to the deployment job.
+4. Restrict the `github-pages` environment to `main`. Pedro reviews the
+   commit, theme, and artifact before approving each deployment. Allow him to
+   approve a run he started. Serialize deployments for the destination without
+   canceling an active deployment. Verify one theme before starting the next.
+
+See the [official Pages workflow documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
+and [environment protection settings](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments).
+
+### Live acceptance
+
+Deploy `bold` first and `minimal` second from separate reviewed commits on
+`main`. Each commit selects its theme in `enrama.yaml`, and each deployment
+requires its own approval. Leave `minimal` as the final public demo.
+
+For each theme, check the root locally and the repository subpath on Pages.
+Verify that the live HTML, CSS, images, and favicon load, that the canonical
+and Open Graph metadata use the expected public URLs, and that enabled links
+have the expected destinations. Check mobile layout and keyboard navigation.
+Confirm that hosting serves static files. Record the client SHA, installed
+Enrama version, theme, Actions run, artifact identity, deployment URL, and check
+results for both runs before accepting R04.
+
+### Failure and recovery
+
+A validation or build failure blocks deployment and preserves any existing
+site. A failed live check is recorded and leaves R04 open. Recover by restoring
+the last verified client content in a reviewed commit on `main`, then build,
+approve, deploy, and verify it again. If there is no verified deployment yet,
+fix the issue in a reviewed commit and repeat the checks. Recovery is manual.
 
 ## Local preview
 
