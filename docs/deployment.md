@@ -36,9 +36,9 @@ or private source files in the output.
 ## R04 GitHub Pages recipe contract
 
 The maintainer accepted this design on 2026-11-03 for
-[issue #18](https://github.com/Dev-Peter21/enrama/issues/18). The recipe will be
-documented in the generator repository for clients to copy. The client
-repository owns its YAML, assets, and workflow.
+[issue #18](https://github.com/Dev-Peter21/enrama/issues/18). The generator
+repository provides a copyable recipe. The client repository owns its YAML,
+assets, and workflow.
 
 ### Test destination
 
@@ -75,6 +75,30 @@ separate execution steps.
 
 See the [official Pages workflow documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
 and [environment protection settings](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments).
+
+### Copy the recipe
+
+Copy [pages.yml](../examples/github-pages/pages.yml) into the client repository
+as `.github/workflows/pages.yml`. Put `enrama.yaml` and its referenced assets at
+the repository root. The [synthetic demo](../examples/demo/) provides sample
+inputs. Set its `site.url` to the test destination above and select `bold` for
+the first reviewed commit. Ignore `dist/` and `.enrama/` in the client repository.
+
+After the destination is authorized, configure the repository's Pages source
+as **GitHub Actions** and set up the `github-pages` environment before the first
+manual run. Select `main` as the only deployment branch, set Pedro as a required
+reviewer, and leave **Prevent self-review** off. Turn off administrator bypass
+so the deploy job waits for review.
+
+Run **Client Pages** from `main` in the Actions tab. The build logs show the
+resolved package versions. Review the commit, theme, expected Pages URL,
+generated inventory with file digests, and artifact link in the run summary.
+The pinned upload action omits hidden files from the archive, including the
+Enrama build manifest. Approve the deployment after reviewing the candidate.
+Use the deployment job's URL for the live checks below. If an attempt needs
+repeating, start a fresh manual run for the reviewed commit so the build and
+approval refer to the same artifact. A deploy-only rerun cannot select the
+original attempt's artifact.
 
 ### Live acceptance
 
