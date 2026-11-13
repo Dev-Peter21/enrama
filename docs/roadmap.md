@@ -7,10 +7,13 @@ published as [GitHub issues](backlog.md) and tracked in the
 The issue index maps task IDs to issue numbers. Preserve these dependencies,
 scope boundaries, and acceptance criteria when updating the backlog.
 
-`0.1.0` is unreleased. F00 documentation, the F01 contract, and the F02 Python
-package/tooling foundation are delivered on `develop`; the CLI and generator
-remain planned. See [F02 verification](verification/f02.md). M5 remains a future
-0.2 proposal and is outside the published MVP backlog.
+`0.1.0` was [published and verified](verification/r03-release.md) on 2026-11-02.
+The foundation, configuration, generator, CLI/preview, themes, example and
+technical validation are delivered; issues #1–#16 were accepted/completed on
+GitHub. R03 publication and post-release documentation are delivered, with
+maintainer acceptance/closure still separate. R04 deployment and final MVP
+acceptance remain pending. M5 is a future 0.2
+proposal outside the published MVP backlog.
 
 ## Milestones
 
@@ -223,6 +226,16 @@ independent documentation/design work to happen sooner.
 
 ### R03 — Prepare and publish the first Python release
 
+- **Contract:** The [first-release and PyPI contract](releasing.md) was accepted
+  on 2026-10-30: owner peter-dev, manual Trusted Publishing from reviewed main
+  source, canonical artifacts, public installs, retries and 0.1.x maintenance.
+  TestPyPI is optional and separate. Technical preparation was authorized on
+  2026-10-31: [metadata and manual preparation/verification](release-preparation.md)
+  were implemented first without upload privileges. Restricted external setup,
+  reviewed publication workflow, actual PyPI/GitHub publication and public
+  consumption were subsequently completed; see the [release evidence](verification/r03-release.md).
+  Post-release documentation is updated on develop. Issue #17 remains open for
+  maintainer acceptance, not because publication is still pending.
 - **Scope:** Confirm namespace ownership and O06, add reviewed release automation,
   and prepare version `0.1.0`, changelog, artifacts, and GitHub release.
 - **Dependencies:** R02 and explicit authorization to publish a package/release.
@@ -233,6 +246,7 @@ independent documentation/design work to happen sooner.
 
 ### R04 — Validate the GitHub Pages client recipe
 
+- **Design:** See the accepted [R04 Pages contract](deployment.md#r04-github-pages-recipe-contract).
 - **Scope:** Publish a recipe using a pinned Enrama release, Pages artifact
   upload/deploy actions, and an independently maintained client repository.
 - **Dependencies:** R03; explicit authorization for any test repository or deployment.

@@ -1,0 +1,229 @@
+name: Publish first release
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact reviewed main source SHA (40 lowercase hex characters)
+        type: string
+        required: true
+      preparation_run_id:
+        description: Successful Release preparation run ID for that exact source
+        type: string
+        required: true
+      candidate_artifact_id:
+        description: Original canonical candidate artifact ID from that run
+        type: string
+        required: true
+      candidate_zip_sha256:
+        description: Reviewed original artifact ZIP digest (64 lowercase hex characters)
+        type: string
+        required: true
+      authorization:
+        description: 'Exact phrase: publish enrama==0.1.0 SOURCE_SHA RUN_ID ARTIFACT_ID ZIP_SHA256'
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+# Serialize all attempts for this first version; never cancel an active upload.
+concurrency:
+  group: production-enrama-0.1.0
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  UV_MANAGED_PYTHON: 'true'
+  SOURCE_SHA: ${{ inputs.source_sha }}
+  PREPARATION_RUN_ID: ${{ inputs.preparation_run_id }}
+  CANDIDATE_ARTIFACT_ID: ${{ inputs.candidate_artifact_id }}
+  CANDIDATE_ZIP_SHA256: ${{ inputs.candidate_zip_sha256 }}
+  PUBLICATION_AUTHORIZATION: ${{ inputs.authorization }}
+
+jobs:
+  inspect:
+    name: Inspect exact candidate and production state
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: '0.13.5'
+          python-version: '3.12'
+          enable-cache: false
+      - run: uv sync --locked
+      - name: Verify original preparation identity and exact ZIP before approval
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p reports
+          uv run --locked python scripts/publish.py candidate > reports/candidate-check.json
+      - name: Inspect existing production bytes without credentials
+        id: stage
+        run: uv run --locked python scripts/publish.py stage > reports/public-state.json
+      - name: Present exact candidate for environment approval
+        run: |
+          cat reports/candidate-check.json >> "$GITHUB_STEP_SUMMARY"
+          cat reports/candidate/SHA256SUMS >> "$GITHUB_STEP_SUMMARY"
+          cat reports/public-state.json >> "$GITHUB_STEP_SUMMARY"
+      - name: Retain inspection evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: publication-inspection
+          path: |
+            reports/candidate-check.json
+            reports/public-state.json
+          retention-days: 90
+
+  upload:
+    name: Approve and upload only missing original archives
+    needs: inspect
+    environment: pypi-production
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: '0.13.5'
+          python-version: '3.12'
+          enable-cache: false
+      - run: uv sync --locked
+      - name: Recheck exact main and original artifact after approval
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p reports
+          uv run --locked python scripts/publish.py candidate > reports/candidate-check.json
+      - name: Recheck production and stage only missing originals
+        id: stage
+        run: uv run --locked python scripts/publish.py stage > reports/public-state.json
+      - name: Upload missing originals through production Trusted Publishing
+        if: steps.stage.outputs.upload_needed == 'true'
+        run: >-
+          uv publish --no-config --trusted-publishing always
+          --publish-url https://upload.pypi.org/legacy/
+          --check-url https://pypi.org/simple/ reports/upload/*
+      - name: Verify actual public files match original bytes
+        run: uv run --locked python scripts/publish.py public-files
+      - name: Retain upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: publication-upload
+          path: |
+            reports/candidate-check.json
+            reports/public-state.json
+          retention-days: 90
+
+  public-verify:
+    name: Public (${{ matrix.os }}, Python ${{ matrix.python }})
+    needs: upload
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: linux, runner: ubuntu-24.04, python: '3.12'}
+          - {os: linux, runner: ubuntu-24.04, python: '3.13'}
+          - {os: linux, runner: ubuntu-24.04, python: '3.14'}
+          - {os: linux, runner: ubuntu-24.04, python: '3.15'}
+          - {os: macos, runner: macos-15, python: '3.12'}
+          - {os: windows, runner: windows-2025, python: '3.12'}
+    env:
+      UV_PYTHON: ${{ matrix.python }}
+      EXPECTED_PYTHON: ${{ matrix.python }}
+      ENRAMA_RELEASE_BUNDLE: reports/candidate
+      ENRAMA_PUBLIC_INSTALL: production
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: '0.13.5'
+          python-version: ${{ matrix.python }}
+          enable-cache: false
+      - run: uv sync --locked
+      - name: Retrieve and verify the original candidate as hash reference
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p reports
+          uv run --locked python scripts/publish.py candidate > reports/candidate-check.json
+      - name: Download actual public files and compare exact original bytes
+        run: uv run --locked python scripts/publish.py public-files
+      - name: Record actual interpreter
+        run: uv run --locked python scripts/ci.py environment
+      - name: Install public wheel and sdist in clean consumers
+        run: >-
+          uv run --locked pytest
+          'tests/integration/test_distribution.py::test_install_outside_checkout[wheel]'
+          'tests/integration/test_distribution.py::test_install_outside_checkout[sdist]'
+          --junitxml=reports/pytest.xml
+      - name: Require positive public consumer results
+        run: uv run --locked python scripts/ci.py report
+      - name: Retain public verification evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: publication-public-${{ matrix.os }}-py${{ matrix.python }}
+          path: |
+            reports/environment.json
+            reports/pytest.xml
+            reports/tests.json
+            reports/candidate-check.json
+          retention-days: 90
+
+  finalize:
+    name: Approve matching tag and GitHub Release finalization
+    needs: [public-verify]
+    environment: pypi-production
+    permissions:
+      contents: write
+      actions: read
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: '0.13.5'
+          python-version: '3.12'
+          enable-cache: false
+      - run: uv sync --locked
+      - name: Recheck exact main and original bundle after finalization approval
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p reports
+          uv run --locked python scripts/publish.py candidate > reports/candidate-check.json
+      - name: Recheck public jobs/files, preserve existing tags/assets, finalize
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: uv run --locked python scripts/publish.py finalize
+      - name: Retain finalization evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: publication-finalization
+          path: reports/candidate-check.json
+          retention-days: 90

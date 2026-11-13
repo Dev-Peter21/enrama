@@ -1,10 +1,11 @@
 # Run the local demo
 
-The local demo implements G03, U01–U04 and the single synthetic example
-`examples/demo`. It does not formally accept or close any GitHub issue. No package is
-published to PyPI, no release/deployment is performed, and the visual editor stays
-outside this scope. Integration/push to develop was subsequently authorized;
-see the verification record for the exact final revision and CI.
+The source demo implements G03, U01–U04 and the synthetic `examples/demo`.
+Enrama 0.1.0 is now [published](verification/r03-release.md); use
+[README installation](../README.md#install-and-create-a-page) to run that public
+version without cloning. The commands below exercise the source checkout.
+Historical demo work did not publish or deploy; its verification record keeps
+that original scope. The visual editor and client deployment remain separate.
 
 ## Environment and basic workflow
 
@@ -16,7 +17,7 @@ uv run --locked enrama --help
 uv run --locked enrama --version
 uv run --locked enrama init my-client
 cd my-client
-# Edit enrama.yaml. The current generator remains a local development package.
+# Edit enrama.yaml. These commands use the activated checkout environment.
 enrama validate
 enrama build
 enrama preview --port 8000
@@ -25,7 +26,7 @@ enrama preview --port 8000
 Inside a separate client directory, use the absolute executable from the Enrama
 checkout's `.venv/bin/enrama` (Windows: `.venv/Scripts/enrama.exe`), or activate
 that environment first. Do not assume `uv run` in a client directory discovers
-the generator repository or that `uvx enrama` works before a package is published.
+the generator repository. The pinned public commands in README use PyPI instead.
 Help/version are available without configuration. Output is always client-local
 `dist/`; there is no --force, --output, watch or automatic browser launch.
 
@@ -106,12 +107,14 @@ Build/install locally without publishing:
 ```console
 uv build --build-constraint build-constraints.txt --require-build-hashes
 uv venv /tmp/enrama-consumer --python 3.12
-uv pip install --python /tmp/enrama-consumer/bin/python dist/enrama-0.1.0.dev0-py3-none-any.whl --build-constraint build-constraints.txt --require-build-hashes
+uv pip install --python /tmp/enrama-consumer/bin/python dist/enrama-0.1.0-py3-none-any.whl --build-constraint build-constraints.txt --require-build-hashes
 /tmp/enrama-consumer/bin/enrama init /tmp/enrama-client
 /tmp/enrama-consumer/bin/enrama preview --config /tmp/enrama-client/enrama.yaml --port 8001
 ```
 
 Use absent /tmp destinations or choose new names. Windows uses Scripts paths and
 an appropriate writable temporary directory. Inspect local verification evidence
-before claiming platform compatibility; no remote matrix was triggered by this
-unpublished branch.
+before claiming platform compatibility. These are disposable local 0.1.0 builds,
+not replacements for the published files. Historical demo evidence records the
+earlier development version and its actual CI runs. See the
+[public release evidence](verification/r03-release.md).

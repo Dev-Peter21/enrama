@@ -6,11 +6,29 @@ An open-source, self-hosted link-in-bio site generator built with Python.
 One project per client. One YAML file. One command to generate a static site.
 Once published, the site runs independently of Enrama.
 
-> **Functional local demo.** Configuration, safe assets,
-> the shared renderer, guarded builder, CLI and two local themes are implemented.
-> Try [the example](examples/demo/README.md) or [the local demo workflow](docs/local-demo.md). The development version stays
-> `0.1.0.dev0`; no PyPI release or public deployment is included. GitHub issue
-> acceptance remains separate from this implementation.
+**Enrama 0.1.0 was released on November 2, 2026.** Install it from
+[PyPI](https://pypi.org/project/enrama/0.1.0/) or inspect the matching
+[GitHub Release](https://github.com/Dev-Peter21/enrama/releases/tag/v0.1.0).
+Python 3.12–3.15 is supported. The client GitHub Pages recipe and final MVP
+acceptance remain separate roadmap work.
+
+## Install and create a page
+
+With Python 3.12–3.15 and [uv installed](docs/development-setup.md):
+
+```console
+uvx --from enrama==0.1.0 enrama init my-links
+cd my-links
+# Edit enrama.yaml with your profile, links and theme.
+uvx --from enrama==0.1.0 enrama validate
+uvx --from enrama==0.1.0 enrama build
+uvx --from enrama==0.1.0 enrama preview
+```
+
+Preview serves the page on loopback port 8000. Stop/restart it after YAML edits;
+use `--port` to choose another port. Publish only the generated `dist/` directory
+to your chosen static host. See [configuration](docs/configuration.md),
+[build/recovery rules](docs/builder.md), and [release verification](docs/verification/r03-release.md).
 
 ## Developer setup
 
@@ -51,18 +69,18 @@ maintain client link pages without depending on a hosted link-in-bio platform.
 The first real-world validation case is replacing a client's unavailable
 Linktree page with an independently hosted site.
 
-The generator will run locally or in CI. Its output will be plain HTML, CSS,
-images, and minimal JavaScript that any suitable static host can serve. No
-Enrama account, production backend, or database will be required.
+The generator runs locally or in CI and produces plain HTML, CSS and images
+that a static host can serve. Generated pages require no Enrama account,
+production backend, database or Python runtime.
 
-## Planned first release
+## Included in 0.1.0
 
-- Python 3.12+, distributed through PyPI and GitHub.
+- Python 3.12–3.15, verified with clean public wheel and source-distribution installs.
 - `enrama init`, `validate`, `build`, and `preview` commands.
 - Typed, versioned YAML configuration for profile, links, socials, theme, and assets.
 - Two responsive themes: `minimal` and `bold`.
 - Semantic HTML, accessible links, SEO metadata, Open Graph, and favicon support.
-- Static output in `dist/` and a documented GitHub Pages deployment recipe.
+- Static output in `dist/`; the live GitHub Pages recipe remains R04 work.
 
 The local visual editor is planned for `0.2`. Login, managed hosting, click
 analytics, subscriptions, and URL shortening are outside the MVP.
@@ -80,8 +98,8 @@ uv run --locked enrama preview --config my-client/enrama.yaml --port 8000
 Open the printed loopback URL. Stop/restart to rebuild after edits. Publish only
 `dist/` when deployment is explicitly authorized; production needs no Python or
 Enrama service. See [safe build/recovery](docs/builder.md) and
-[local demo instructions](docs/local-demo.md). `uvx enrama` is not available from
-an unpublished local package.
+[local demo instructions](docs/local-demo.md). This source workflow tests your
+checkout; the pinned `uvx --from enrama==0.1.0` commands above use the public release.
 
 ## Documentation
 
@@ -105,6 +123,9 @@ Start with the [documentation index](docs/README.md), or go directly to:
 - [Published MVP backlog and Kanban](docs/backlog.md)
 - [Testing strategy](docs/testing.md)
 - [Release process](docs/releasing.md)
+- [Release preparation commands and workflow](docs/release-preparation.md)
+- [Manual publication, approvals and recovery](docs/publication.md)
+- [Verified 0.1.0 publication and immutable files](docs/verification/r03-release.md)
 - [Decisions and open questions](docs/decisions.md)
 
 ## Contributing and support
@@ -117,8 +138,8 @@ are welcome. See [SUPPORT.md](SUPPORT.md), the
 The maintainer is [@Dev-Peter21](https://github.com/Dev-Peter21).
 The project uses the [MIT License](LICENSE).
 
-The Enrama name is provisional. This initialization does not reserve a PyPI
-namespace or establish trademark clearance.
+The Enrama name remains provisional for branding; package publication does not
+establish trademark clearance.
 
 ## Docker without host Python
 

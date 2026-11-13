@@ -11,6 +11,7 @@ import zipfile
 from pathlib import Path
 
 import pytest
+from packaging.specifiers import SpecifierSet
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -28,6 +29,28 @@ def uv() -> str:
     executable = shutil.which("uv")
     assert executable is not None, "Install the documented uv version first"
     return executable
+
+
+def install_arguments(kind: str, archive: Path, *, public: bool) -> list[str]:
+    if not public:
+        return [str(archive)]
+    return [
+        "enrama==0.1.0",
+        "--index-url",
+        "https://pypi.org/simple",
+        "--no-cache",
+        "--no-config",
+        "--no-sources",
+        "--only-binary" if kind == ".whl" else "--no-binary",
+        "enrama",
+    ]
+
+
+def assert_pyyaml_version(version: str, *, public: bool) -> None:
+    if public:
+        assert version in SpecifierSet(">=6.0.3,<7")
+    else:
+        assert version == "6.0.3"
 
 
 def build(source: Path, output: Path) -> dict[str, Path]:
@@ -53,6 +76,37 @@ def build(source: Path, output: Path) -> dict[str, Path]:
 
 @pytest.fixture(scope="session")
 def archives(tmp_path_factory: pytest.TempPathFactory) -> dict[str, Path]:
+    supplied = os.environ.get("ENRAMA_RELEASE_BUNDLE")
+    if "ENRAMA_PUBLIC_INSTALL" in os.environ:
+        assert os.environ["ENRAMA_PUBLIC_INSTALL"] == "production" and supplied, (
+            "Public verification requires the explicit original release bundle"
+        )
+    if supplied is not None:
+        bundle = Path(supplied).resolve()
+        sha = run("git", "rev-parse", "HEAD", cwd=ROOT)
+        assert sha.returncode == 0, sha.stderr
+        verified = run(
+            sys.executable,
+            "-I",
+            str(ROOT / "scripts/release.py"),
+            "verify",
+            "--bundle",
+            str(bundle),
+            "--expected-sha",
+            sha.stdout.strip(),
+            "--expected-version",
+            "0.1.0",
+            cwd=ROOT,
+        )
+        assert verified.returncode == 0, (
+            "Explicit release bundle failed verification: " + verified.stderr
+        )
+        selected = {
+            ".whl": bundle / "enrama-0.1.0-py3-none-any.whl",
+            ".gz": bundle / "enrama-0.1.0.tar.gz",
+        }
+        assert_archive_contents(selected)
+        return selected
     return build(ROOT, tmp_path_factory.mktemp("artifacts"))
 
 
@@ -70,13 +124,15 @@ def test_install_outside_checkout(
     )
     assert created.returncode == 0, created.stderr
     python = environment / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+    public = os.environ.get("ENRAMA_PUBLIC_INSTALL") == "production"
+    assert not public or not yaml_from_source, "Public checks select wheel and sdist"
     installed = run(
         uv(),
         "pip",
         "install",
         "--python",
         str(python),
-        str(archives[kind]),
+        *install_arguments(kind, archives[kind], public=public),
         "--build-constraint",
         str(ROOT / "build-constraints.txt"),
         "--require-build-hashes",
@@ -84,6 +140,17 @@ def test_install_outside_checkout(
         cwd=tmp_path,
     )
     assert installed.returncode == 0, installed.stderr
+    if public:
+        print(
+            json.dumps(
+                {
+                    "public_index": "https://pypi.org/simple",
+                    "requirement": "enrama==0.1.0",
+                    "archive_kind": kind,
+                    "local_archive_substitution": False,
+                }
+            )
+        )
     if yaml_from_source:
         print(installed.stderr)
     probe_code = """
@@ -107,6 +174,7 @@ metadata = {
     "license_files": d.metadata.get_all("License-File"),
     "requires": d.requires, "entry_points": [{"name": e.name, "value": e.value, "group": e.group} for e in d.entry_points],
     "installed": sorted(x.metadata["Name"] for x in m.distributions()),
+    "resolved_versions": {x.metadata["Name"]: x.version for x in m.distributions()},
     "license_text": d.read_text("licenses/LICENSE"),
     "registry": REGISTRY_DATE,
     "pyyaml": m.version("PyYAML"),
@@ -246,7 +314,10 @@ assert cli("build", "--config", cli_source).returncode == 1
 assert Path("cli-client/dist/index.html").read_bytes() == built
 Path(cli_source).write_bytes(original_yaml)
 metadata["installed_cli"] = {"init":True,"validate":True,"build":True,"repeatable":True,"preservation":True}
-if os.name != "nt":
+metadata["preview_themes"] = []
+def preview_theme(expected_text, expected_css):
+    if os.name == "nt":
+        return
     with socket.socket() as probe:
         probe.bind(("127.0.0.1", 0))
         port = probe.getsockname()[1]
@@ -263,9 +334,10 @@ if os.name != "nt":
                 if time.monotonic()>deadline: raise AssertionError("Installed preview startup timed out")
                 time.sleep(.05)
         parsed = RenderedDocument(page)
+        assert expected_text in page
         css = next(attrs["href"] for tag, attrs in parsed.elements if tag == "link" and attrs.get("rel")=="stylesheet")
         with urlopen("http://127.0.0.1:"+str(port)+"/"+css, timeout=2) as response:
-            assert response.status==200 and b":focus-visible" in response.read()
+            assert response.status==200 and response.read()==expected_css
         assert cli("build", "--config", cli_source).returncode==3
         preview.send_signal(signal.SIGINT)
         stdout, stderr = preview.communicate(timeout=5)
@@ -273,6 +345,33 @@ if os.name != "nt":
         metadata["installed_cli"]["preview"] = True
     finally:
         if preview.poll() is None: preview.kill(); preview.communicate(timeout=5)
+
+# Follow the actual client workflow with valid YAML edits and both presentations.
+import yaml
+metadata["cli_themes"] = []
+metadata["edited_yaml"] = False
+for selected_theme in ("minimal", "bold"):
+    edited_name = "Edited client " + selected_theme
+    edited = {
+        "schema_version": 1,
+        "site": {"title": edited_name, "description": "Edited description", "language": "en"},
+        "profile": {"name": edited_name},
+        "theme": {"name": selected_theme},
+        "links": [{"id": "edited", "title": "Edited link", "url": "https://example.com/edited"}],
+    }
+    Path(cli_source).write_text(yaml.safe_dump(edited), encoding="utf-8")
+    assert cli("validate", "--config", cli_source).returncode == 0
+    assert cli("build", "--config", cli_source).returncode == 0
+    edited_html = Path("cli-client/dist/index.html").read_text(encoding="utf-8")
+    assert edited_name in edited_html and "https://example.com/edited" in edited_html
+    document = RenderedDocument(edited_html)
+    stylesheet = next(attrs["href"] for tag, attrs in document.elements if tag=="link" and attrs.get("rel")=="stylesheet")
+    expected_css = files("enrama").joinpath("_themes", selected_theme+".css").read_bytes()
+    assert (Path("cli-client/dist")/stylesheet).read_bytes() == expected_css
+    preview_theme(edited_name, expected_css)
+    metadata["cli_themes"].append(selected_theme)
+    if os.name != "nt": metadata["preview_themes"].append(selected_theme)
+metadata["edited_yaml"] = True
 
 # Rendering may read only its fixed installed template, never client files/network.
 original_config = render_config.model_dump()
@@ -327,12 +426,16 @@ print(json.dumps(metadata))
     assert probe.returncode == 0, probe.stderr
     print(probe.stdout)
     metadata = json.loads(probe.stdout)
+    assert metadata["cli_themes"] == ["minimal", "bold"]
+    assert metadata["edited_yaml"] is True
+    assert set(metadata["resolved_versions"]) == set(metadata["installed"])
+    assert all(metadata["resolved_versions"].values())
     assert Path(metadata["origin"]).is_relative_to(Path(metadata["prefix"]))
     assert not Path(metadata["origin"]).is_relative_to(ROOT)
     assert "site-packages" in Path(metadata["origin"]).parts
     assert metadata.get("interpreter") == list(sys.version_info[:2])
     assert metadata["name"] == "enrama"
-    assert metadata["version"] == "0.1.0.dev0"
+    assert metadata["version"] == "0.1.0"
     assert metadata["python"] == ">=3.12"
     assert metadata["license"] == "MIT"
     assert metadata["license_files"] == ["LICENSE"]
@@ -348,6 +451,9 @@ print(json.dumps(metadata))
     assert all(metadata["installed_cli"].values())
     if os.name != "nt":
         assert metadata["installed_cli"]["preview"] is True
+        assert metadata["preview_themes"] == ["minimal", "bold"]
+    else:
+        assert metadata["preview_themes"] == []
     assert metadata["jinja2"]
     assert metadata["markupsafe"]
     assert metadata["rendered_themes"] == ["minimal", "bold"]
@@ -360,7 +466,7 @@ print(json.dumps(metadata))
         "WEBP": "webp",
         "ICO": "ico",
     }
-    assert metadata["pyyaml"] == "6.0.3"
+    assert_pyyaml_version(metadata["pyyaml"], public=public)
     assert metadata["loaded"] == metadata["config"]
     assert metadata["diagnostic"] == {
         "category": "model_validation",
@@ -393,6 +499,65 @@ print(json.dumps(metadata))
     }.intersection(metadata["installed"])
 
 
+def test_supplied_bundle_rejects_unreviewed_archive_contents(
+    archives: dict[str, Path], tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    candidate = tmp_path / "candidate"
+    candidate.mkdir()
+    version = "0.1.0"
+    for path in archives.values():
+        shutil.copyfile(path, candidate / path.name)
+    wheel = next(candidate.glob("*.whl"))
+    with zipfile.ZipFile(wheel, "a") as z:
+        z.writestr("enrama/unreviewed.py", "UNREVIEWED = True")
+    shutil.copyfile(
+        ROOT / "schemas/enrama-v1.schema.json", candidate / "enrama-v1.schema.json"
+    )
+    sha = run("git", "rev-parse", "HEAD", cwd=ROOT).stdout.strip()
+    records = [
+        {
+            "name": p.name,
+            "size": p.stat().st_size,
+            "sha256": hashlib.sha256(p.read_bytes()).hexdigest(),
+        }
+        for p in sorted(candidate.iterdir())
+    ]
+    record = {
+        "format_version": 1,
+        "package": "enrama",
+        "version": version,
+        "tag": "v" + version,
+        "source_sha": sha,
+        "source_ref": None,
+        "source_ci": None,
+        "repository": "Dev-Peter21/enrama",
+        "run_id": None,
+        "run_attempt": None,
+        "publication_authorized": False,
+        "files": records,
+    }
+    (candidate / "release.json").write_bytes(
+        (json.dumps(record, indent=2, sort_keys=True) + "\n").encode()
+    )
+    sums = "".join(
+        hashlib.sha256(p.read_bytes()).hexdigest() + "  " + p.name + "\n"
+        for p in sorted(candidate.iterdir())
+    )
+    (candidate / "SHA256SUMS").write_bytes(sums.encode())
+    monkeypatch.setenv("ENRAMA_RELEASE_BUNDLE", str(candidate))
+    result = run(
+        sys.executable,
+        "-m",
+        "pytest",
+        str(ROOT / "tests/integration/test_distribution.py")
+        + "::test_install_outside_checkout[wheel]",
+        "-q",
+        cwd=ROOT,
+    )
+    assert result.returncode == 1, result.stdout + result.stderr
+    assert "Unreviewed wheel contents" in result.stdout
+
+
 def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
     source = tmp_path / "checkout"
     shutil.copytree(
@@ -407,6 +572,7 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
             ".mypy_cache",
             ".ruff_cache",
             "dist",
+            "reports",
         ),
     )
     for name in (
@@ -425,7 +591,11 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
             hashlib.sha256(first[kind].read_bytes()).digest()
             == hashlib.sha256(second[kind].read_bytes()).digest()
         )
-    with zipfile.ZipFile(first[".whl"]) as wheel:
+    assert_archive_contents(first)
+
+
+def assert_archive_contents(archives: dict[str, Path]) -> None:
+    with zipfile.ZipFile(archives[".whl"]) as wheel:
         assert set(wheel.namelist()) == {
             "enrama/__init__.py",
             "enrama/__main__.py",
@@ -482,13 +652,13 @@ def test_explicit_contents_and_repeatable_build(tmp_path: Path) -> None:
             "enrama/_icons/lucide-play.svg",
             "enrama/_icons/lucide-shopping-bag.svg",
             "enrama/py.typed",
-            "enrama-0.1.0.dev0.dist-info/METADATA",
-            "enrama-0.1.0.dev0.dist-info/WHEEL",
-            "enrama-0.1.0.dev0.dist-info/entry_points.txt",
-            "enrama-0.1.0.dev0.dist-info/RECORD",
-            "enrama-0.1.0.dev0.dist-info/licenses/LICENSE",
-        }
-    with tarfile.open(first[".gz"]) as sdist:
+            "enrama-0.1.0.dist-info/METADATA",
+            "enrama-0.1.0.dist-info/WHEEL",
+            "enrama-0.1.0.dist-info/entry_points.txt",
+            "enrama-0.1.0.dist-info/RECORD",
+            "enrama-0.1.0.dist-info/licenses/LICENSE",
+        }, "Unreviewed wheel contents"
+    with tarfile.open(archives[".gz"]) as sdist:
         files = {"/".join(item.name.split("/")[1:]) for item in sdist if item.isfile()}
         assert files == {
             "src/enrama/__init__.py",

@@ -5,7 +5,68 @@ repository; a roadmap target does not imply that a release exists.
 
 ## Unreleased
 
+### Changed
+
+- Updated repository installation, release and support documentation to reflect
+  the verified 0.1.0 publication. This documentation change does not replace
+  the published archives, their embedded README/metadata or the released tag.
+
+## [0.1.0](https://github.com/Dev-Peter21/enrama/releases/tag/v0.1.0) — 2026-11-02
+
 ### Added
+
+- First production [PyPI release](https://pypi.org/project/enrama/0.1.0/), under
+  MIT, supporting Python 3.12–3.15.
+- `init`, `validate`, `build` and manual loopback `preview` commands; typed YAML
+  v1 models, bounded safe loading, actionable diagnostics and a local JSON Schema.
+- Guarded static generation with confined local assets, deterministic output,
+  shared escaped HTML/SEO metadata and responsive minimal/bold themes.
+- Manual release preparation and environment-approved Trusted Publishing, with
+  original-archive verification, public consumers and matching GitHub Release assets.
+
+### Verified publication
+
+- Released source/tag: `73602dd85aca2cb02df607d9e815a1c76218b733` / `v0.1.0`.
+- Public wheel/sdist consumption: **12 passed** across six hosted environments;
+  two additional clean public consumers passed locally on macOS. All five
+  GitHub Release assets match the original candidate. See the
+  [publication record](docs/verification/r03-release.md), including recovery
+  from the initial immediate-verification failure and the Windows preview limit.
+- The client GitHub Pages recipe and final MVP acceptance remain separate work;
+  this package release does not claim a deployed client site or complete MVP.
+
+## Historical foundation and design record
+
+The entries below describe earlier delivery stages, not current release status.
+They are retained as history and are not additional public release announcements.
+
+### Release preparation — 2026-10-31 to 2026-11-01
+
+- Implemented the separate, manual `publish.yml` for review on develop: exact
+  original-candidate and environment approval gates, OIDC upload of missing
+  original files, six-environment actual public consumers, and recoverable
+  tag/GitHub Release finalization. No publication was dispatched by this delivery.
+
+- Package metadata now targets `0.1.0` with Beta maturity and Python 3.12–3.15
+  classifiers. This is preparation, not a public release or reserved PyPI name.
+- Added a manually dispatched, read-only release-preparation workflow: exact
+  main/SHA and successful source-CI gates, one archive/schema/provenance bundle,
+  SHA-256 verification and six-platform-environment installed consumers.
+- Added local bundle/recovery commands and updated current release/support
+  documentation. Publisher setup, upload/finalization, tags, public install and
+  deployment remained separately authorized at that preparation stage; its
+  `release.yml` still has no publishing job.
+- The candidate includes the implemented YAML v1 models/loader/schema, safe local
+  assets, shared escaped HTML/metadata, guarded static builds, init/validate/build,
+  foreground preview, minimal/bold themes and licensed controlled icons.
+
+### Added
+
+- Accepted R03 first-release/PyPI contract: owner peter-dev, manual Trusted
+  Publishing, canonical artifacts and provenance, explicit authorization,
+  public-install checks, conservative retries and 0.1.x maintenance. TestPyPI
+  is optional and separate. Documentation only; no workflow, access setup,
+  version bump, tag, release, upload or deployment is added.
 
 - Local-demo branch: guarded G03 builds with deterministic output manifests,
   nonblocking project ownership, conservative rollback/cleanup and manual recovery
@@ -112,8 +173,9 @@ repository; a roadmap target does not imply that a release exists.
   17 planned implementation tasks, and a final acceptance issue, tracked in the
   existing EnRama Project Kanban with priorities and native dependencies.
 
-The CLI, generator, themes, and editor remain planned. No package or release
-has been published.
+At initialization the CLI, generator, themes and editor were planned. The current
+candidate implements the CLI/generator/themes; the editor and public release
+remain future work.
 
 ### Fixed
 

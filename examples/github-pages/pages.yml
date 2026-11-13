@@ -1,0 +1,116 @@
+name: Client Pages
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && 'client-pages-deployment' || format('client-pages-check-{0}', github.run_id) }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pages: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: '0.13.5'
+          python-version: '3.12'
+          enable-cache: false
+      - name: Build with the public release
+        run: |
+          uv venv --managed-python --python 3.12 .venv
+          uv pip install --python .venv/bin/python --default-index https://pypi.org/simple --only-binary enrama 'enrama==0.1.0'
+          uv --version
+          .venv/bin/python --version
+          .venv/bin/enrama --version
+          uv pip freeze --python .venv/bin/python
+          .venv/bin/enrama validate
+          .venv/bin/enrama build
+      - name: Read the configured Pages URL
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        id: pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+      - name: Verify the publication candidate
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        env:
+          PAGES_BASE_URL: ${{ steps.pages.outputs.base_url }}
+        run: |
+          .venv/bin/python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          import yaml
+
+          config = yaml.safe_load(Path("enrama.yaml").read_text(encoding="utf-8"))
+          base = os.environ["PAGES_BASE_URL"].rstrip("/") + "/"
+          if not base.startswith("https://") or config["site"].get("url") != base:
+              raise SystemExit(f"Set site.url to the Pages HTTPS directory URL ({base}) and rerun from main.")
+
+          dist = Path("dist")
+          manifest = (dist / ".enrama-manifest.json").read_text(encoding="utf-8")
+          expected = {entry["path"] for entry in json.loads(manifest)["files"]}
+          files = set()
+          for path in dist.rglob("*"):
+              if path.is_symlink() or (path.is_file() and path.stat().st_nlink != 1):
+                  raise SystemExit(f"Linked path in publication candidate: {path}")
+              if path.is_file():
+                  files.add(path.relative_to(dist).as_posix())
+          if "index.html" not in expected or files != expected | {".enrama-manifest.json"}:
+              raise SystemExit("The publication candidate must match the generated inventory and contain index.html.")
+
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as summary:
+              print(f"Client commit: {os.environ['GITHUB_SHA']}", file=summary)
+              print(f"\nTheme: {config.get('theme', {}).get('name', 'minimal')}", file=summary)
+              print(f"\nPages URL: {base}", file=summary)
+              print("\nGenerated inventory\n\n```json", file=summary)
+              print(manifest.rstrip(), file=summary)
+              print("```", file=summary)
+          PY
+      - name: Upload static files
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        id: artifact
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        with:
+          name: github-pages-${{ github.run_attempt }}
+          path: dist/
+          retention-days: 7
+      - name: Record the artifact for approval
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        env:
+          ARTIFACT_ID: ${{ steps.artifact.outputs.artifact_id }}
+        run: |
+          test -n "$ARTIFACT_ID"
+          printf '\n[Review the Pages artifact](%s/%s/actions/runs/%s/artifacts/%s)\n' \
+            "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" "$ARTIFACT_ID" >> "$GITHUB_STEP_SUMMARY"
+
+  deploy:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy the reviewed artifact
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+        with:
+          artifact_name: github-pages-${{ github.run_attempt }}

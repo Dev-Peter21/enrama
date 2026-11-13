@@ -1,9 +1,10 @@
 # Contributing to Enrama
 
 Thank you for helping make independently hosted link pages easier to maintain.
-The Python package foundation, configuration models, and developer tooling are implemented on
-`develop`. The local-demo branch adds the builder, CLI/preview and two themes; see
-[local demo scope](docs/local-demo.md). Formal issue acceptance is separate.
+Enrama 0.1.0 is [published](https://pypi.org/project/enrama/0.1.0/), including the
+configuration models, builder, CLI/preview and two themes. Work on `develop`
+targets future changes; see the [source workflow](docs/local-demo.md).
+Publication evidence and formal roadmap acceptance are recorded separately.
 
 ## Before you start
 
@@ -22,7 +23,7 @@ The [Code of Conduct](CODE_OF_CONDUCT.md) applies to all participation.
 ## Local documentation workflow
 
 ```console
-git clone https://github.com/Dev-Peter21/enrama.git
+git clone --branch develop https://github.com/Dev-Peter21/enrama.git
 cd enrama
 git switch -c docs/describe-your-change
 ```
@@ -45,16 +46,24 @@ The default branch is `main`. Future source-code implementation must integrate
 into `develop`; implementation branches, when used, should start from and target
 `develop`. Do not publish application code directly to `main`. This branch policy
 does not authorize starting implementation during a documentation/design-only task.
-A maintainer reviews and merges contributions; the project currently has no
-release workflow. Foundation CI runs on PRs targeting `develop`/`main` and
-pushes to both branches once the workflow is present on that branch.
+A maintainer reviews and merges contributions. The
+[manual preparation workflow](docs/release-preparation.md) only builds/verifies
+files; the separate [publication workflow](docs/publication.md) requires explicit
+candidate authorization and protected-environment approvals. Documentation edits,
+merges, tags and release events do not automatically publish packages. CI runs
+on PRs targeting `develop`/`main` and pushes to both branches.
+
+Never replace released archives, change their embedded metadata, move `v0.1.0`
+or rebuild files for re-upload under 0.1.0. Repository documentation can be
+corrected on develop without changing that frozen release. Packaging CI builds
+are disposable verification artifacts, not replacement release files.
 
 ## Python development workflow
 
 Install uv **0.13.5** using the [setup instructions](docs/development-setup.md),
 then start from `develop` with Python 3.12. Follow the documented locked sync,
 Ruff, strict mypy, pytest, and constrained build commands before submitting a PR.
-The intended compatibility matrix is 3.12–3.15; F03 automates it. Local
+The compatibility matrix is 3.12–3.15; CI automates it. Local
 Python 3.12 evidence alone does not establish the full matrix. The accepted
 [F03 design](docs/continuous-integration.md) also requires macOS and Windows
 checks on Python 3.12; see its verification record for actual results.
