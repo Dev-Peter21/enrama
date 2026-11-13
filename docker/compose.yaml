@@ -1,0 +1,29 @@
+# Version this template together with the image digest in your consumer repo.
+x-enrama: &enrama
+  image: ${ENRAMA_CLI_IMAGE:?Set a verified Enrama CLI image digest}
+  user: "${ENRAMA_UID:?Set your numeric UID}:${ENRAMA_GID:?Set your numeric GID}"
+  working_dir: /site
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  tmpfs: ["/tmp:rw,noexec,nosuid,size=64m"]
+  network_mode: none
+  volumes:
+    - type: bind
+      source: ${ENRAMA_SITE:?Set an existing client directory}
+      target: /site
+      bind:
+        create_host_path: false
+services:
+  cli:
+    <<: *enrama
+    command: [validate]
+  preview:
+    <<: *enrama
+    network_mode: bridge
+    command: [preview, --host, 0.0.0.0, --port, "8000"]
+    ports:
+      - "127.0.0.1:${ENRAMA_PREVIEW_PORT:-8000}:8000"
+    init: true
+    stop_signal: SIGINT
+    stop_grace_period: 5s

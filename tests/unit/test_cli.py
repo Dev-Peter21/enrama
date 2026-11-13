@@ -63,6 +63,7 @@ def test_init_validate_build_workflow(
         (["preview", "--port", "0"], 2),
         (["preview", "--port", "65536"], 2),
         (["preview", "--port", "abc"], 2),
+        (["preview", "--host", "localhost"], 2),
         (["init", "missing-parent/client"], 3),
     ],
 )

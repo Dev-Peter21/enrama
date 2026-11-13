@@ -140,3 +140,7 @@ The project uses the [MIT License](LICENSE).
 
 The Enrama name remains provisional for branding; package publication does not
 establish trademark clearance.
+
+## Docker without host Python
+
+See [reusable Docker guide](docs/docker.md) for SHA/digest-pinned CLI and static runtime images, a versioned Compose template, and local testing. Registry publication is pending; the guide includes verified local build commands.
